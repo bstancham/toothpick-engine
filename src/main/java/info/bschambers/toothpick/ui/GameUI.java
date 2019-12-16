@@ -1,0 +1,26 @@
+package info.bschambers.toothpick.ui;
+
+import info.bschambers.toothpick.game.GameProgram;
+
+/**
+ * Any GameUI implementation will need to store a reference to it's associated GameProgram
+ * instance, then when {@link repaintUI} is called it can retrieve the relevent game
+ * assets for display.<br/>
+ *
+ * The display routine implementation will be different for different UI systems but these
+ * are the steps which need to be present in order to display a GameProgram properly:<br/>
+ *
+ * - paint the background - either plain colour, or an image
+ * - paint actors
+ * - paint text
+ * - paint lines
+ * - paint circles
+ * - etc
+ */
+public interface GameUI {
+
+    void repaintUI();
+
+    void setProgram(GameProgram program);
+
+}
