@@ -2,6 +2,8 @@ package info.bschambers.toothpick.ui;
 
 public interface ATMenuItem {
 
+    enum Code { RET, UP, DOWN, LEFT, RIGHT }
+
     /**
      * This is the text which will appear on the menu.<br/>
      *
@@ -17,6 +19,13 @@ public interface ATMenuItem {
      * menu-item as an anonymous inner class inside a method.  Then you can use this to
      * assign variables local to the containing method!
      */
-    void action();
+    void action(Code c);
+
+    static final ATMenuItem SPACER = new ATMenuItem() {
+            @Override
+            public String text() { return ""; }
+            @Override
+            public void action(Code c) {}
+        };
 
 }

@@ -10,17 +10,18 @@ import info.bschambers.toothpick.game.GameProgram;
  * The display routine implementation will be different for different UI systems but these
  * are the steps which need to be present in order to display a GameProgram properly:<br/>
  *
- * - paint the background - either plain colour, or an image
- * - paint actors
- * - paint text
- * - paint lines
- * - paint circles
- * - etc
+ * - background - either plain colour, or an image
+ * - menus
+ * - actors
+ * - text
+ * - lines/circles/etc
  */
 public interface GameUI {
 
     void repaintUI();
 
     void setProgram(GameProgram program);
+
+    void setMenu(ATMenu menu);
 
 }

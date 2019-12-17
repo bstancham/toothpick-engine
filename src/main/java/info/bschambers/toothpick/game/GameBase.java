@@ -26,7 +26,8 @@ public class GameBase {
 
     public void setMenu(ATMenu menu) {
         this.menu = menu;
-        this.menu.setGameBase(this);
+        if (ui != null)
+            ui.setMenu(menu);
         System.out.println("GameBase.setMenu() --> " + menu.getClass());
     }
 
