@@ -7,7 +7,9 @@ import java.util.List;
 public class ATMenu implements ATMenuItem {
 
     private String title;
+    private ATMenu parent = null;
     private boolean active = false;
+    private boolean delegating = false;
     private List<ATMenuItem> options = new ArrayList<>();
     private int selected = 0;
 
@@ -20,8 +22,20 @@ public class ATMenu implements ATMenuItem {
 
     @Override
     public void action(Code c) {
-        if (c == Code.RET) {
-            getSelectedItem().action(c);
+        ATMenuItem item = getSelectedItem();
+        if (delegating && item instanceof ATMenu) {
+            item.action(c);
+        } else if (delegating) {
+            System.out.println("ERROR - can't delegate to menu-item type: "
+                               + item.getClass());
+        } else if (c == Code.RET) {
+            if (item instanceof ATMenu) {
+                setDelegating(true);
+            } else {
+                getSelectedItem().action(c);
+            }
+        } else if (c == Code.CANCEL) {
+            cancel();
         } else if (c == Code.UP) {
             incrSelected(-1);
         } else if (c == Code.DOWN) {
@@ -34,8 +48,20 @@ public class ATMenu implements ATMenuItem {
     public boolean isActive() { return active; }
     public void setActive(boolean val) { active = val; }
 
+    public void cancel() {
+        if (parent != null) {
+            parent.setDelegating(false);
+        }
+    }
+
+    public boolean isDelegating() { return delegating; }
+    public void setDelegating(boolean val) { delegating = val; }
+
     public void add(ATMenuItem item) {
         options.add(item);
+        if (item instanceof ATMenu) {
+            ((ATMenu) item).parent = this;
+        }
     }
 
     /**

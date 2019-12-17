@@ -10,11 +10,17 @@ import java.util.List;
 public class Gfx {
 
     public static void paintMenu(Graphics g, ATMenu menu) {
+        paintMenu(g, menu, 30, 30);
+    }
+
+    public static void paintMenu(Graphics g, ATMenu menu, int posX, int posY) {
         TextBox box = new TextBox();
         box.add(menu.text());
         box.add("");
         for (int i = 0; i < menu.getNumItems(); i++)
             box.add(menu.getItem(i).text());
+        box.posX = posX;
+        box.posY = posY;
         box.paint(g);
         // mark selected item
         int sel = menu.getSelectedIndex() + 2;
@@ -24,6 +30,13 @@ public class Gfx {
         int h = box.lineHeight;
         g.setColor(Color.CYAN);
         g.drawRect(x, y, w, h);
+        // sub-menu
+        if (menu.isDelegating()) {
+            ATMenuItem item = menu.getSelectedItem();
+            if (item instanceof ATMenu) {
+                paintMenu(g, (ATMenu) item, posX + 30, posY + 30);
+            }
+        }
     }
 
     public static class TextBox {
@@ -60,10 +73,12 @@ public class Gfx {
             // calculate overall size
             int height = textHeight + padTop + padBot;
             int width = textWidth + padLeft + padRight;
-            // background
+            // box
             g.setColor(bgColor);
             g.fillRect(posX, posY, width, height);
-            // lines
+            g.setColor(defaultColor);
+            g.drawRect(posX, posY, width, height);
+            // text
             int x = posX + padLeft;
             int y = posY + padTop + lineHeight;
             for (int i = 0; i < lines.size(); i++) {

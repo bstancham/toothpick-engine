@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import static java.awt.event.KeyEvent.*;
 
-public class SwingFrame extends JFrame implements GameUI, KeyListener {
+public class SwingUI extends JFrame implements GameUI, KeyListener {
 
     private GameProgram program = null;
     private ATMenu menu = null;
@@ -22,7 +22,7 @@ public class SwingFrame extends JFrame implements GameUI, KeyListener {
     private int yDim = 430;
     private SwingPanel panel;
 
-    public SwingFrame(String title) {
+    public SwingUI(String title) {
         super(title);
         setBounds(50, 50, xDim, yDim);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,12 +83,14 @@ public class SwingFrame extends JFrame implements GameUI, KeyListener {
         int ck = e.getKeyCode();
         if (menu == null) {
             System.out.println("NO MENU PRESENT!");
-        } else {
-            if (ck == VK_ESCAPE) {
-                menu.setActive(!menu.isActive());
-                System.out.println("MENU ACTIVE = " + menu.isActive());
-            } else if (ck == VK_ENTER) {
+        } else if (ck == VK_ESCAPE) {
+            menu.setActive(!menu.isActive());
+            System.out.println("MENU ACTIVE = " + menu.isActive());
+        } else if (menu.isActive()) {
+            if (ck == VK_ENTER) {
                 menu.action(ATMenuItem.Code.RET);
+            } else if (ck == VK_BACK_SPACE) {
+                menu.action(ATMenuItem.Code.CANCEL);
             } else if (ck == VK_UP) {
                 menu.action(ATMenuItem.Code.UP);
             } else if (ck == VK_DOWN) {
@@ -98,6 +100,8 @@ public class SwingFrame extends JFrame implements GameUI, KeyListener {
             } else if (ck == VK_RIGHT) {
                 menu.action(ATMenuItem.Code.RIGHT);
             }
+        } else {
+            System.out.println("MENU NOT ACTIVE!");
         }
     }
 
