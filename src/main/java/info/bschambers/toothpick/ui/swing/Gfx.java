@@ -18,8 +18,8 @@ public class Gfx {
         box.paint(g);
         // mark selected item
         int sel = menu.getSelectedIndex() + 2;
-        int x = box.posX;
-        int y = box.posY + box.padTop + (sel * box.lineHeight);
+        int x = 6 + box.posX;
+        int y = 5 + box.posY + box.padTop + (sel * box.lineHeight);
         int w = box.textWidth;
         int h = box.lineHeight;
         g.setColor(Color.CYAN);
@@ -42,7 +42,7 @@ public class Gfx {
         public int padBot = 10;
         // guess at size of font
         public int charWidth = 8;
-        public int lineHeight = 18;
+        public int lineHeight = 20;
         public int textWidth = 0;
         public int textHeight = 0;
 
@@ -52,8 +52,8 @@ public class Gfx {
             if (str.length() > longestLine) {
                 longestLine = str.length();
                 textWidth = charWidth * longestLine;
-                textHeight = lineHeight * lines.size();
             }
+            textHeight = lineHeight * lines.size();
         }
 
         public void paint(Graphics g) {
@@ -72,7 +72,6 @@ public class Gfx {
                 y += lineHeight;
             }
         }
-
     }
 
 }
