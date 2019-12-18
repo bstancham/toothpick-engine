@@ -9,6 +9,7 @@ public class GameBase {
     private GameUI ui = null;
     private TPMenu menu = null;
     private boolean running = true;
+    private int fpsGoal = 10;
 
     public void setProgram(GameProgram program) {
         this.program = program;
@@ -50,5 +51,9 @@ public class GameBase {
             }
         }
     }
+
+    public int getFpsGoal() { return fpsGoal; }
+
+    public void setFpsGoal(int val) { fpsGoal = val; }
 
 }

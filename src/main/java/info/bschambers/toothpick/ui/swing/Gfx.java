@@ -51,8 +51,13 @@ public class Gfx {
         TextBox box = new TextBox();
         box.add(menu.text());
         box.add("");
-        for (int i = 0; i < menu.getNumItems(); i++)
-            box.add(menu.getItem(i).text());
+        for (int i = 0; i < menu.getNumItems(); i++) {
+            TPMenuItem item = menu.getItem(i);
+            String line = item.text();
+            if (item instanceof TPMenu)
+                line = ">>> " + line;
+            box.add(line);
+        }
         box.posX = posX;
         box.posY = posY;
         box.paint(g);

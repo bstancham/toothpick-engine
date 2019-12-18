@@ -41,7 +41,9 @@ public class TPMenu implements TPMenuItem {
         } else if (c == Code.DOWN) {
             incrSelected(1);
         } else if (c == Code.LEFT) {
+            getSelectedItem().action(c);
         } else if (c == Code.RIGHT) {
+            getSelectedItem().action(c);
         }
     }
 
