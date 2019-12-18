@@ -4,16 +4,16 @@ import info.bschambers.toothpick.game.GameBase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ATMenu implements ATMenuItem {
+public class TPMenu implements TPMenuItem {
 
     private String title;
-    private ATMenu parent = null;
+    private TPMenu parent = null;
     private boolean active = false;
     private boolean delegating = false;
-    private List<ATMenuItem> options = new ArrayList<>();
+    private List<TPMenuItem> options = new ArrayList<>();
     private int selected = 0;
 
-    public ATMenu(String title) {
+    public TPMenu(String title) {
         this.title = title;
     }
 
@@ -22,14 +22,14 @@ public class ATMenu implements ATMenuItem {
 
     @Override
     public void action(Code c) {
-        ATMenuItem item = getSelectedItem();
-        if (delegating && item instanceof ATMenu) {
+        TPMenuItem item = getSelectedItem();
+        if (delegating && item instanceof TPMenu) {
             item.action(c);
         } else if (delegating) {
             System.out.println("ERROR - can't delegate to menu-item type: "
                                + item.getClass());
         } else if (c == Code.RET) {
-            if (item instanceof ATMenu) {
+            if (item instanceof TPMenu) {
                 setDelegating(true);
             } else {
                 getSelectedItem().action(c);
@@ -57,10 +57,10 @@ public class ATMenu implements ATMenuItem {
     public boolean isDelegating() { return delegating; }
     public void setDelegating(boolean val) { delegating = val; }
 
-    public void add(ATMenuItem item) {
+    public void add(TPMenuItem item) {
         options.add(item);
-        if (item instanceof ATMenu) {
-            ((ATMenu) item).parent = this;
+        if (item instanceof TPMenu) {
+            ((TPMenu) item).parent = this;
         }
     }
 
@@ -71,7 +71,7 @@ public class ATMenu implements ATMenuItem {
         return options.size();
     }
 
-    public ATMenuItem getItem(int index) {
+    public TPMenuItem getItem(int index) {
         return options.get(index);
     }
 
@@ -85,7 +85,7 @@ public class ATMenu implements ATMenuItem {
             selected = options.size() - 1;
     }
 
-    public ATMenuItem getSelectedItem() {
+    public TPMenuItem getSelectedItem() {
         return options.get(selected);
     }
 

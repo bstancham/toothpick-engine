@@ -15,6 +15,10 @@ public class SlideShowProgram extends GameProgram {
     private int delay = 20;
     private int counter = 0;
 
+    public SlideShowProgram(String title) {
+        super(title);
+    }
+
     public void addImage(String filename) {
         try {
 

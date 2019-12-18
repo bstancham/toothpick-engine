@@ -1,11 +1,11 @@
 package info.bschambers.toothpick.ui;
 
-public class ATMenuItemSimple implements ATMenuItem {
+public class TPMenuItemSimple implements TPMenuItem {
 
     private String text;
     private Runnable action;
 
-    public ATMenuItemSimple(String text, Runnable action) {
+    public TPMenuItemSimple(String text, Runnable action) {
         this.text = text;
         this.action = action;
     }

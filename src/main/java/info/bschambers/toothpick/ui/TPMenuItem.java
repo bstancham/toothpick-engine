@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.ui;
 
-public interface ATMenuItem {
+public interface TPMenuItem {
 
     enum Code { RET, CANCEL, UP, DOWN, LEFT, RIGHT }
 
@@ -21,7 +21,7 @@ public interface ATMenuItem {
      */
     void action(Code c);
 
-    static final ATMenuItem SPACER = new ATMenuItem() {
+    static final TPMenuItem SPACER = new TPMenuItem() {
             @Override
             public String text() { return ""; }
             @Override

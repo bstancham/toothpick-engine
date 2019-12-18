@@ -1,13 +1,13 @@
 package info.bschambers.toothpick.game;
 
-import info.bschambers.toothpick.ui.ATMenu;
+import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.GameUI;
 
 public class GameBase {
 
     private GameProgram program = null;
     private GameUI ui = null;
-    private ATMenu menu = null;
+    private TPMenu menu = null;
     private boolean running = true;
 
     public void setProgram(GameProgram program) {
@@ -24,7 +24,7 @@ public class GameBase {
         System.out.println("GameBase.setUI() --> " + ui.getClass());
     }
 
-    public void setMenu(ATMenu menu) {
+    public void setMenu(TPMenu menu) {
         this.menu = menu;
         if (ui != null)
             ui.setMenu(menu);

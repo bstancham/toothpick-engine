@@ -1,9 +1,9 @@
 package info.bschambers.toothpick.ui.swing;
 
 import info.bschambers.toothpick.game.GameProgram;
-import info.bschambers.toothpick.ui.ATMenu;
-import info.bschambers.toothpick.ui.ATMenuItem;
 import info.bschambers.toothpick.ui.GameUI;
+import info.bschambers.toothpick.ui.TPMenu;
+import info.bschambers.toothpick.ui.TPMenuItem;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -17,7 +17,7 @@ import static java.awt.event.KeyEvent.*;
 public class SwingUI extends JFrame implements GameUI, KeyListener {
 
     private GameProgram program = null;
-    private ATMenu menu = null;
+    private TPMenu menu = null;
     private int xDim = 640;
     private int yDim = 430;
     private SwingPanel panel;
@@ -44,7 +44,7 @@ public class SwingUI extends JFrame implements GameUI, KeyListener {
     }
 
     @Override
-    public void setMenu(ATMenu menu) {
+    public void setMenu(TPMenu menu) {
         this.menu = menu;
     }
 
@@ -60,6 +60,7 @@ public class SwingUI extends JFrame implements GameUI, KeyListener {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             paintBackground(g);
+            paintActors(g);
             paintMenu(g);
         }
 
@@ -67,6 +68,14 @@ public class SwingUI extends JFrame implements GameUI, KeyListener {
             if (program != null) {
                 if (program.getBGImage() != null)
                     g.drawImage(program.getBGImage(), 0, 0, null);
+            }
+        }
+
+        private void paintActors(Graphics g) {
+            if (program != null) {
+                for (int i = 0; i < program.numActors(); i++) {
+                    Gfx.paintActor(g, program.getActor(i));
+                }
             }
         }
 
@@ -88,17 +97,17 @@ public class SwingUI extends JFrame implements GameUI, KeyListener {
             System.out.println("MENU ACTIVE = " + menu.isActive());
         } else if (menu.isActive()) {
             if (ck == VK_ENTER) {
-                menu.action(ATMenuItem.Code.RET);
+                menu.action(TPMenuItem.Code.RET);
             } else if (ck == VK_BACK_SPACE) {
-                menu.action(ATMenuItem.Code.CANCEL);
+                menu.action(TPMenuItem.Code.CANCEL);
             } else if (ck == VK_UP) {
-                menu.action(ATMenuItem.Code.UP);
+                menu.action(TPMenuItem.Code.UP);
             } else if (ck == VK_DOWN) {
-                menu.action(ATMenuItem.Code.DOWN);
+                menu.action(TPMenuItem.Code.DOWN);
             } else if (ck == VK_LEFT) {
-                menu.action(ATMenuItem.Code.LEFT);
+                menu.action(TPMenuItem.Code.LEFT);
             } else if (ck == VK_RIGHT) {
-                menu.action(ATMenuItem.Code.RIGHT);
+                menu.action(TPMenuItem.Code.RIGHT);
             }
         } else {
             System.out.println("MENU NOT ACTIVE!");

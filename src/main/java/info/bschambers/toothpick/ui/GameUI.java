@@ -22,6 +22,6 @@ public interface GameUI {
 
     void setProgram(GameProgram program);
 
-    void setMenu(ATMenu menu);
+    void setMenu(TPMenu menu);
 
 }
