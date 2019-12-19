@@ -18,5 +18,6 @@ public class Actor {
     public ActorForm getForm() { return form; }
 
     public ActorController getController() { return controller; }
+    public void setController(ActorController ac) { controller = ac; }
 
 }

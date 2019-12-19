@@ -20,7 +20,10 @@ public class ToothpickProgram extends GameProgram {
         housekeeping();
     }
 
-    private void action() {}
+    private void action() {
+        for (Actor a : actors)
+            a.getController().update();
+    }
 
     private void housekeeping() {
         // garbage collection
@@ -29,6 +32,7 @@ public class ToothpickProgram extends GameProgram {
         // add new actors
         for (Actor a : toAdd)
             actors.add(a);
+        // clear lists
         toRemove.clear();
         toAdd.clear();
     }

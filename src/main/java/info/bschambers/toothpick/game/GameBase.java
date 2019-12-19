@@ -5,7 +5,7 @@ import info.bschambers.toothpick.ui.GameUI;
 
 public class GameBase {
 
-    private GameProgram program = null;
+    private GameProgram program = GameProgram.NULL;
     private GameUI ui = null;
     private TPMenu menu = null;
     private boolean running = true;
