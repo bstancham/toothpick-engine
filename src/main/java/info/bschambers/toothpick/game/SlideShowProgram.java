@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.game;
 
-import info.bschambers.toothpick.ui.GameUI;
+import info.bschambers.toothpick.ui.TPUI;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class SlideShowProgram extends GameProgram {
+public class SlideShowProgram extends TPProgram {
 
     private List<Image> images = new ArrayList<>();
     private int index = 0;

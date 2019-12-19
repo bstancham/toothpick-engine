@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.ui;
 
-import info.bschambers.toothpick.game.GameBase;
+import info.bschambers.toothpick.game.TPBase;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,7 +2,7 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.geom.Pt;
 
-public class ActorController {
+public class TPController {
 
     protected Pt pos = Pt.ZERO;
     protected double angle = 0.0;

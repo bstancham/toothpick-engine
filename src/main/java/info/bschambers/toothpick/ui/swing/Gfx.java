@@ -1,10 +1,6 @@
 package info.bschambers.toothpick.ui.swing;
 
-import info.bschambers.toothpick.actor.Actor;
-import info.bschambers.toothpick.actor.ActorForm;
-import info.bschambers.toothpick.actor.LinesForm;
-import info.bschambers.toothpick.actor.ImageForm;
-import info.bschambers.toothpick.actor.TextForm;
+import info.bschambers.toothpick.actor.*;
 import info.bschambers.toothpick.geom.Line;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.ui.TPMenu;
@@ -20,7 +16,7 @@ public class Gfx {
         g.drawLine((int) ln.start.x, (int) ln.start.y, (int) ln.end.x, (int) ln.end.y);
     }
 
-    public static void paintActor(Graphics g, Actor a) {
+    public static void paintActor(Graphics g, TPActor a) {
         Pt pos = a.getController().position();
         if (a.getForm() instanceof LinesForm) {
             paintLinesForm(g, (LinesForm) a.getForm(), pos);

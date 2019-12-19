@@ -3,7 +3,7 @@ package info.bschambers.toothpick.actor;
 import java.util.List;
 import java.util.ArrayList;
 
-public class LinesForm extends ActorForm {
+public class LinesForm extends TPForm {
 
     private List<TPLine> lines = new ArrayList<>();
 

@@ -1,5 +1,5 @@
 package info.bschambers.toothpick.actor;
 
-public class TextForm extends ActorForm {
+public class TextForm extends TPForm {
 
 }

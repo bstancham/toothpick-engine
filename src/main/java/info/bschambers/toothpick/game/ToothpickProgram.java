@@ -1,14 +1,14 @@
 package info.bschambers.toothpick.game;
 
-import info.bschambers.toothpick.actor.Actor;
-import info.bschambers.toothpick.ui.GameUI;
+import info.bschambers.toothpick.actor.TPActor;
+import info.bschambers.toothpick.ui.TPUI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToothpickProgram extends GameProgram {
+public class ToothpickProgram extends TPProgram {
 
-    private List<Actor> toAdd = new ArrayList<>();
-    private List<Actor> toRemove = new ArrayList<>();
+    private List<TPActor> toAdd = new ArrayList<>();
+    private List<TPActor> toRemove = new ArrayList<>();
 
     public ToothpickProgram(String title) {
         super(title);
@@ -21,23 +21,23 @@ public class ToothpickProgram extends GameProgram {
     }
 
     private void action() {
-        for (Actor a : actors)
+        for (TPActor a : actors)
             a.getController().update();
     }
 
     private void housekeeping() {
         // garbage collection
-        for (Actor a : toRemove)
+        for (TPActor a : toRemove)
             actors.remove(a);
         // add new actors
-        for (Actor a : toAdd)
+        for (TPActor a : toAdd)
             actors.add(a);
         // clear lists
         toRemove.clear();
         toAdd.clear();
     }
 
-    public void addActor(Actor a) {
+    public void addActor(TPActor a) {
         toAdd.add(a);
     }
 

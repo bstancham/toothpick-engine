@@ -1,7 +1,7 @@
 package info.bschambers.toothpick.ui.swing;
 
-import info.bschambers.toothpick.game.GameProgram;
-import info.bschambers.toothpick.ui.GameUI;
+import info.bschambers.toothpick.game.TPProgram;
+import info.bschambers.toothpick.ui.TPUI;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
 import java.awt.Color;
@@ -14,9 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import static java.awt.event.KeyEvent.*;
 
-public class SwingUI extends JFrame implements GameUI, KeyListener {
+public class SwingUI extends JFrame implements TPUI, KeyListener {
 
-    private GameProgram program = GameProgram.NULL;
+    private TPProgram program = TPProgram.NULL;
     private TPMenu menu = new TPMenu("EMPTY MENU");
     private int xDim = 640;
     private int yDim = 430;
@@ -39,7 +39,7 @@ public class SwingUI extends JFrame implements GameUI, KeyListener {
     }
 
     @Override
-    public void setProgram(GameProgram program) {
+    public void setProgram(TPProgram program) {
         this.program = program;
     }
 

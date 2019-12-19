@@ -2,7 +2,7 @@ package info.bschambers.toothpick.actor;
 
 import java.util.HashMap;
 
-public abstract class PlayerController extends ActorController {
+public abstract class PlayerController extends TPController {
 
     public static final PlayerController NULL = new PlayerController() {};
 
