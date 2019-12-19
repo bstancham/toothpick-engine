@@ -1,0 +1,41 @@
+* About
+
+The Toothpick Engine is a game engine baseded on the 2D geometry of intersecting
+lines.
+
+** History
+
+The original concept and earliest version of this game date back to the year 200?
+
+At some quite early stage of my Java programming, I was able to draw graphics,
+but had not fully got my head around doing double-buffering yet - so I had this
+idea for a game where the screen is never cleared.
+
+This new version is a complete rewrite. Most of the concepts and game mechanics
+were present since fairly early days but the architecture has (hopefully) been
+improved, especially with relation to separation of the UI and logic.
+
+* Build
+
+#+BEGIN_SRC
+gradlew all
+#+END_SRC
+
+NOTE: build.gradle contain a task 'copyToLib', which copys the final jar file to
+~/lib. This is a convenience for me when I am developing programs which depend
+on this library - if you don't want this to happen then use:
+
+#+BEGIN_SRC
+gradlew jar
+#+END_SRC
+
+* Dependencies
+
+- Java 8
+- JUnit
+
+* License
+
+Copyright 2019-present B. S. Chambers.
+
+Distributed under GPL, version 3.
