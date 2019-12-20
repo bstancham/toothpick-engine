@@ -1,7 +1,8 @@
 package info.bschambers.toothpick.actor;
 
-import java.util.List;
+import info.bschambers.toothpick.geom.Pt;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LinesForm extends TPForm {
 
@@ -18,7 +19,18 @@ public class LinesForm extends TPForm {
     }
 
     public int numLines() { return lines.size(); }
-
     public TPLine getLine(int index) { return lines.get(index); }
+
+    @Override
+    public void setRotation(double angle) {
+        for (TPLine ln : lines)
+            ln.setRotation(angle);
+    }
+
+    @Override
+    public void setPosition(Pt p) {
+        for (TPLine ln : lines)
+            ln.setPosition(p);
+    }
 
 }

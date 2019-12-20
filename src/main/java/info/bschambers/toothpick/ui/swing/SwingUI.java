@@ -1,9 +1,11 @@
 package info.bschambers.toothpick.ui.swing;
 
 import info.bschambers.toothpick.game.TPProgram;
-import info.bschambers.toothpick.ui.TPUI;
+import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
+import info.bschambers.toothpick.ui.TPUI;
+import info.bschambers.toothpick.ui.swing.Gfx.TextBox;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -62,6 +64,8 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
             super.paintComponent(g);
             paintBackground(g);
             paintActors(g);
+            paintIntersectionPoints(g);
+            paintInfo(g);
             paintMenu(g);
         }
 
@@ -73,6 +77,21 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
         private void paintActors(Graphics g) {
             for (int i = 0; i < program.numActors(); i++)
                 Gfx.paintActor(g, program.getActor(i));
+        }
+
+        private void paintIntersectionPoints(Graphics g) {
+            g.setColor(Color.YELLOW);
+            for (Pt p : program.getIntersectionPoints())
+                Gfx.paintCrosshairs(g, p, 10);
+        }
+
+        private void paintInfo(Graphics g) {
+            Gfx.TextBox box = new Gfx.TextBox(null, Color.WHITE, null);
+            box.posX = 500;
+            box.posY = 30;
+            for (String line : program.getInfoLines())
+                box.add(line);
+            box.paint(g);
         }
 
         private void paintMenu(Graphics g) {

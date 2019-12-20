@@ -16,27 +16,34 @@ public class Gfx {
         g.drawLine((int) ln.start.x, (int) ln.start.y, (int) ln.end.x, (int) ln.end.y);
     }
 
+    public static void paintCrosshairs(Graphics g, Pt p, int size) {
+        int x = (int) p.x;
+        int y = (int) p.y;
+        int s = size / 2;
+        g.drawLine(x - s, y, x + s, y);
+        g.drawLine(x, y - s, x, y + s);
+    }
+
     public static void paintActor(Graphics g, TPActor a) {
-        Pt pos = a.getController().position();
         if (a.getForm() instanceof LinesForm) {
-            paintLinesForm(g, (LinesForm) a.getForm(), pos);
+            paintLinesForm(g, (LinesForm) a.getForm());
         } else if (a.getForm() instanceof ImageForm) {
-            paintImageForm(g, (ImageForm) a.getForm(), pos);
+            paintImageForm(g, (ImageForm) a.getForm());
         } else if (a.getForm() instanceof TextForm) {
-            paintTextForm(g, (TextForm) a.getForm(), pos);
+            paintTextForm(g, (TextForm) a.getForm());
         }
     }
 
-    public static void paintLinesForm(Graphics g, LinesForm form, Pt pos) {
+    public static void paintLinesForm(Graphics g, LinesForm form) {
         g.setColor(Color.PINK);
         for (int i = 0; i < form.numLines(); i++)
-            paintLine(g, form.getLine(i).getLine().shift(pos));
+            paintLine(g, form.getLine(i).getLine());
     }
 
-    public static void paintImageForm(Graphics g, ImageForm form, Pt pos) {
+    public static void paintImageForm(Graphics g, ImageForm form) {
     }
 
-    public static void paintTextForm(Graphics g, TextForm form, Pt pos) {
+    public static void paintTextForm(Graphics g, TextForm form) {
     }
 
     public static void paintMenu(Graphics g, TPMenu menu) {
@@ -80,10 +87,12 @@ public class Gfx {
         private List<Color> colors = new ArrayList<>();
         private int longestLine = 0;
 
+        public Color bgColor;
+        public Color defaultColor;
+        public Color borderColor;
+
         public int posX = 30;
         public int posY = 30;
-        public Color bgColor = Color.BLUE;
-        public Color defaultColor = Color.WHITE;
         public int padLeft = 10;
         public int padRight = 10;
         public int padTop = 10;
@@ -93,6 +102,16 @@ public class Gfx {
         public int lineHeight = 20;
         public int textWidth = 0;
         public int textHeight = 0;
+
+        public TextBox() {
+            this(Color.BLUE, Color.WHITE, Color.WHITE);
+        }
+
+        public TextBox(Color bgColor, Color defaultColor, Color borderColor) {
+            this.bgColor = bgColor;
+            this.defaultColor = defaultColor;
+            this.borderColor = borderColor;
+        }
 
         public void add(String str) {
             lines.add(str);
@@ -109,10 +128,14 @@ public class Gfx {
             int height = textHeight + padTop + padBot;
             int width = textWidth + padLeft + padRight;
             // box
-            g.setColor(bgColor);
-            g.fillRect(posX, posY, width, height);
-            g.setColor(defaultColor);
-            g.drawRect(posX, posY, width, height);
+            if (bgColor != null) {
+                g.setColor(bgColor);
+                g.fillRect(posX, posY, width, height);
+            }
+            if (borderColor != null) {
+                g.setColor(defaultColor);
+                g.drawRect(posX, posY, width, height);
+            }
             // text
             int x = posX + padLeft;
             int y = posY + padTop + lineHeight;

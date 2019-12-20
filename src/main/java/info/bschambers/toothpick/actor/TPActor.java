@@ -20,4 +20,13 @@ public class TPActor {
     public TPController getController() { return controller; }
     public void setController(TPController ac) { controller = ac; }
 
+    public int numChildren() { return children.size(); }
+    public TPActor getChild(int index) { return children.get(index); }
+
+    public void update() {
+        controller.update();
+        form.setRotation(controller.angle());
+        form.setPosition(controller.pos());
+    }
+
 }
