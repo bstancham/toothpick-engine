@@ -14,4 +14,10 @@ public class Rect {
         this.y2 = y2;
     }
 
+    public Pt center() {
+        int xLen = x2 - x1;
+        int yLen = y2 - y1;
+        return new Pt(x1 + (xLen / 2), y1 + (yLen / 2));
+    }
+
 }

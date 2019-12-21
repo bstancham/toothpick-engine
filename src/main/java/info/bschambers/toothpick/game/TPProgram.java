@@ -44,6 +44,8 @@ public abstract class TPProgram {
     public Image getBGImage() { return bgImage; }
     public void setBGImage(Image val) { bgImage = val; }
 
+    public Rect getBounds() { return bounds; }
+
     public int numActors() { return actors.size(); }
     public TPActor getActor(int index) { return actors.get(index); }
 
