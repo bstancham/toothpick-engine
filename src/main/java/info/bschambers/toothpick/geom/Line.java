@@ -47,6 +47,15 @@ public final class Line {
         return new Line(start.add(amt), end.add(amt));
     }
 
+    public Line rotate(double amount) {
+        return rotate(amount, Pt.ZERO);
+    }
+
+    public Line rotate(double amount, Pt center) {
+        return new Line(Geom.rotate(start, amount, center),
+                        Geom.rotate(end, amount, center));
+    }
+
     public Pt center() { return Geom.midPoint(this); }
 
     /** May return a negative number. */

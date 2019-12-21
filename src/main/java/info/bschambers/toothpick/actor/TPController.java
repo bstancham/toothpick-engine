@@ -14,6 +14,8 @@ public class TPController {
 
     public double angle() { return angle; }
 
+    public void setAngle(double val) { angle = val; }
+
     public void update() {}
 
     public void boundaryCheck(Rect bounds) {

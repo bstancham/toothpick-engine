@@ -19,16 +19,14 @@ public class TPLine {
         this.line = tpl.line;
     }
 
+    public Line getArchetype() { return archetype; }
+
     public Line getLine() { return line; }
 
+    public void setLine(Line ln) { line = ln; }
+
     public void collisionWon(TPLine loser, Pt p) {
-        System.out.println("TPLine.collisionWon() at " + p);
-    }
-
-    public void setRotation(double angle) {}
-
-    public void setPosition(Pt p) {
-        line = archetype.shift(p);
+        // System.out.println("TPLine.collisionWon() at " + p);
     }
 
 }

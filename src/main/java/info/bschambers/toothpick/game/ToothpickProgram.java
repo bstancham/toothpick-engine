@@ -10,9 +10,6 @@ import java.util.List;
 
 public class ToothpickProgram extends TPProgram {
 
-    private List<TPActor> toAdd = new ArrayList<>();
-    private List<TPActor> toRemove = new ArrayList<>();
-
     public ToothpickProgram(String title) {
         super(title);
     }
@@ -22,32 +19,15 @@ public class ToothpickProgram extends TPProgram {
         List<String> lines = new ArrayList<>();
         lines.add("score: ");
         lines.add("fps: ");
+        lines.add("num actors: " + actors.size());
         return lines;
-    }
-
-    @Override
-    public void update() {
-        action();
-        boundaryCheck();
-        interactions();
-        housekeeping();
-    }
-
-    private void action() {
-        for (TPActor a : actors)
-            a.update();
-    }
-
-    /** Wrap-around screen edges */
-    private void boundaryCheck() {
-        for (TPActor a : actors)
-            a.getController().boundaryCheck(bounds);
     }
 
     /**
      * Do collision detection - store intersection points for further use.
      */
-    private void interactions() {
+    @Override
+    protected void interactions() {
         intersectionPoints.clear();
         for (TPActor a : actors)
             for (TPActor b : actors)
@@ -111,22 +91,6 @@ public class ToothpickProgram extends TPProgram {
         }
 
         return iPt;
-    }
-
-    private void housekeeping() {
-        // garbage collection
-        for (TPActor a : toRemove)
-            actors.remove(a);
-        // add new actors
-        for (TPActor a : toAdd)
-            actors.add(a);
-        // clear lists
-        toRemove.clear();
-        toAdd.clear();
-    }
-
-    public void addActor(TPActor a) {
-        toAdd.add(a);
     }
 
 }

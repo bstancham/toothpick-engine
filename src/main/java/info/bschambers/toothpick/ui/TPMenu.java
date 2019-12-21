@@ -3,10 +3,11 @@ package info.bschambers.toothpick.ui;
 import info.bschambers.toothpick.game.TPBase;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class TPMenu implements TPMenuItem {
 
-    private String title;
+    private Supplier<String> titleSupplier;
     private TPMenu parent = null;
     private boolean active = false;
     private boolean delegating = false;
@@ -14,11 +15,15 @@ public class TPMenu implements TPMenuItem {
     private int selected = 0;
 
     public TPMenu(String title) {
-        this.title = title;
+        this(() -> title);
+    }
+
+    public TPMenu(Supplier<String> titleSupplier) {
+        this.titleSupplier = titleSupplier;
     }
 
     @Override
-    public String text() { return title; }
+    public String text() { return titleSupplier.get(); }
 
     @Override
     public void action(Code c) {

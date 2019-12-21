@@ -89,4 +89,23 @@ public final class Geom {
         return ptLength / halfLength;
     }
 
+    public static Pt rotate(Pt p, double amount, Pt center) {
+	// get x & y lengths
+	double xLen = p.x - center.x;
+	double yLen = p.y - center.y;
+	// get h length (hypotenuse)
+	// Pythagoras' theroem ---> a2 + b2 = c2
+	double hLen = Math.sqrt((xLen * xLen) + (yLen * yLen));
+	// negative y direction compensation!!!!
+	if (yLen < 0)
+            hLen = -hLen;
+	// get angle and increment
+	double angle = Math.acos(xLen / hLen);
+	angle += Math.PI * amount;
+	// calculate new position
+	double x = center.x + (hLen * (Math.cos(angle)));
+	double y = center.y + (hLen * (Math.sin(angle)));
+        return new Pt(x, y);
+    }
+
 }

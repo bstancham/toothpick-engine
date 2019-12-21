@@ -146,11 +146,11 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
     }
 
     private void keyPressedGame(KeyEvent e) {
-        program.getPlayer().setKeyPressed(e.getKeyCode(), true);
+        program.getPlayerController().setKeyPressed(e.getKeyCode(), true);
     }
 
     private void keyReleasedGame(KeyEvent e) {
-        program.getPlayer().setKeyPressed(e.getKeyCode(), false);
+        program.getPlayerController().setKeyPressed(e.getKeyCode(), false);
     }
 
 }
