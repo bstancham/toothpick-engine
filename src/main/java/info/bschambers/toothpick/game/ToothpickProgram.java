@@ -12,6 +12,7 @@ public class ToothpickProgram extends TPProgram {
 
     public ToothpickProgram(String title) {
         super(title);
+        setPauseForMenu(true);
     }
 
     @Override

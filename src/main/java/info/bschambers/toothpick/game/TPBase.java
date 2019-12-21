@@ -38,6 +38,11 @@ public class TPBase {
         System.out.println("TPBase.setMenu() --> " + menu.getClass());
     }
 
+    public void hideMenu() {
+        if (menu != null)
+            menu.setActive(false);
+    }
+
     /**
      * Runs the main-loop.<br/>
      *
@@ -50,7 +55,9 @@ public class TPBase {
         } else {
             while (running) {
 
-                program.update();
+                if (!menu.isActive() || !program.getPauseForMenu())
+                    program.update();
+
                 ui.repaintUI();
 
                 long thisIter = System.currentTimeMillis() - iterTime;

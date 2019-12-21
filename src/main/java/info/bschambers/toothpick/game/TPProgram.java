@@ -31,6 +31,7 @@ public abstract class TPProgram {
     private List<TPActor> toRemove = new ArrayList<>();
     protected boolean keepIntersectionPoints = true;
     protected List<Pt> intersectionPoints = new ArrayList<>();
+    private boolean pauseForMenu = false;
 
     public TPProgram(String title) {
         this.title = title;
@@ -43,6 +44,9 @@ public abstract class TPProgram {
 
     public Image getBGImage() { return bgImage; }
     public void setBGImage(Image val) { bgImage = val; }
+
+    public boolean getPauseForMenu() { return pauseForMenu; }
+    public void setPauseForMenu(boolean val) { pauseForMenu = val; }
 
     public Rect getBounds() { return bounds; }
 
