@@ -1,6 +1,7 @@
 package info.bschambers.toothpick.ui;
 
 import info.bschambers.toothpick.game.TPProgram;
+import java.util.function.Supplier;
 
 /**
  * Any TPUI implementation will need to store a reference to it's associated TPProgram
@@ -23,5 +24,7 @@ public interface TPUI {
     void setProgram(TPProgram program);
 
     void setMenu(TPMenu menu);
+
+    void addInfoGetter(Supplier<String> getter);
 
 }

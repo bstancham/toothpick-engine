@@ -9,7 +9,11 @@ public class TPBase {
     private TPUI ui = null;
     private TPMenu menu = null;
     private boolean running = true;
-    private int fpsGoal = 10;
+    private long iterGoal = 10;
+    private int fpsGoal = 20;
+    private long fps = 0;
+
+    private long iterTime = 0;
 
     public void setProgram(TPProgram program) {
         this.program = program;
@@ -20,8 +24,10 @@ public class TPBase {
 
     public void setUI(TPUI ui) {
         this.ui = ui;
-        if (program != null)
+        if (program != null) {
             ui.setProgram(program);
+            ui.addInfoGetter(() -> "fps: " + getFps());
+        }
         System.out.println("TPBase.setUI() --> " + ui.getClass());
     }
 
@@ -43,17 +49,32 @@ public class TPBase {
             System.out.println("can't run: no program loaded");
         } else {
             while (running) {
+
                 program.update();
                 ui.repaintUI();
+
+                long thisIter = System.currentTimeMillis() - iterTime;
+                iterTime = System.currentTimeMillis();
+
+                fps = (thisIter > 0 ? 1000L / thisIter : 0);
+
+                long thisSleep = iterGoal - thisIter;
+                thisSleep = Math.max(0, thisSleep);
+
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(thisSleep);
                 } catch (Exception ex) {}
             }
         }
     }
 
+    public long getFps() { return fps; }
+
     public int getFpsGoal() { return fpsGoal; }
 
-    public void setFpsGoal(int val) { fpsGoal = val; }
+    public void setFpsGoal(int val) {
+        fpsGoal = val;
+        iterGoal = (long) 1000 / fpsGoal;
+    }
 
 }

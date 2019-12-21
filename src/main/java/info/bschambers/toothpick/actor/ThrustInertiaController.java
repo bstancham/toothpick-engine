@@ -4,8 +4,8 @@ public class ThrustInertiaController extends PlayerController {
 
     private double xInertia = 0;
     private double yInertia = 0;
-    private double inertiaStep = 0.2;
-    private double rotStep = 0.03;
+    private double inertiaStep = 0.01;
+    private double rotStep = 0.005;
 
     @Override
     public void update() {

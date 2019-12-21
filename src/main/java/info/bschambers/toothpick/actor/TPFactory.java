@@ -9,6 +9,10 @@ public final class TPFactory {
 
     /*---------------------------- players -----------------------------*/
 
+    public static TPActor playerLine() {
+        return playerLine(70);
+    }
+
     public static TPActor playerLine(double length) {
         return new TPActor(singleLineForm(length), new ThrustInertiaController());
     }
@@ -38,7 +42,7 @@ public final class TPFactory {
     /*-------------------------- controllers ---------------------------*/
 
     public static Pt randHeading() {
-        return randHeading(1, 7);
+        return randHeading(0.02, 1);
     }
 
     public static Pt randHeading(double min, double max) {
@@ -49,7 +53,7 @@ public final class TPFactory {
     }
 
     public static double randSpin() {
-        return randSpin(0.1);
+        return randSpin(0.01);
     }
 
     public static double randSpin(double max) {

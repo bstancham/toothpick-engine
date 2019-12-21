@@ -12,6 +12,9 @@ import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import static java.awt.event.KeyEvent.*;
@@ -23,6 +26,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
     private int xDim = 640;
     private int yDim = 430;
     private SwingPanel panel;
+    private List<Supplier<String>> infoGetters = new ArrayList<>();
 
     public SwingUI(String title) {
         super(title);
@@ -37,7 +41,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
 
     @Override
     public void repaintUI() {
-        panel.repaint();
+        panel.paintImmediately(0, 0, xDim, yDim);
     }
 
     @Override
@@ -48,6 +52,11 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
     @Override
     public void setMenu(TPMenu menu) {
         this.menu = menu;
+    }
+
+    @Override
+    public void addInfoGetter(Supplier<String> getter) {
+        infoGetters.add(getter);
     }
 
     public void exit() {
@@ -91,6 +100,8 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
             box.posY = 15;
             for (String line : program.getInfoLines())
                 box.add(line);
+            for (Supplier<String> getter : infoGetters)
+                box.add(getter.get());
             box.paint(g);
         }
 

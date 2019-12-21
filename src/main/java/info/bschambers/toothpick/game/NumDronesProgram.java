@@ -14,17 +14,21 @@ import java.util.List;
  */
 public class NumDronesProgram extends ToothpickProgram {
 
-    private int targetNum = 3;
+    private int dronesGoal = 3;
     private int spawnDelay = 0;
 
     private Supplier<TPActor> droneSupplier = () -> TPFactory.randSingleLineEdgePos(getBounds());
 
     public NumDronesProgram(String title) {
         super(title);
-        TPActor player = TPFactory.playerLine(100);
+        TPActor player = TPFactory.playerLine();
         player.getController().setPos(getBounds().center());
         setPlayer(player);
     }
+
+    public int getDronesGoal() { return dronesGoal; }
+
+    public void setDronesGoal(int val) { dronesGoal = val; }
 
     @Override
     public void update() {
@@ -33,11 +37,11 @@ public class NumDronesProgram extends ToothpickProgram {
     }
 
     private void doSpawning() {
-        if (numDrones() < targetNum) {
+        if (numDrones() < dronesGoal) {
             if (spawnDelay < 1) {
                 TPActor drone = droneSupplier.get();
                 addActor(drone);
-                spawnDelay = (int) (Math.random() * 200);
+                spawnDelay = (int) (Math.random() * 600);
             } else {
                 spawnDelay--;
             }
@@ -47,7 +51,7 @@ public class NumDronesProgram extends ToothpickProgram {
     @Override
     public List<String> getInfoLines() {
         List<String> lines = super.getInfoLines();
-        lines.add("drone-num target: " + targetNum);
+        lines.add("drone-num goal: " + dronesGoal);
         lines.add("spawn-delay: " + spawnDelay);
         return lines;
     }

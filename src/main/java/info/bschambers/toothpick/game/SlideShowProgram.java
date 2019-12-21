@@ -12,7 +12,7 @@ public class SlideShowProgram extends TPProgram {
 
     private List<Image> images = new ArrayList<>();
     private int index = 0;
-    private int delay = 20;
+    private int delay = 80; // 4 seconds at 20 fps
     private int counter = 0;
 
     public SlideShowProgram(String title) {
