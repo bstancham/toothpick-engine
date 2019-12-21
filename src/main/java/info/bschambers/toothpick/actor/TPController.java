@@ -5,6 +5,10 @@ import info.bschambers.toothpick.geom.Rect;
 
 public class TPController {
 
+    // controller stats
+    private int statsNumDeaths = 0;
+    private int statsNumKills = 0;
+
     protected Pt pos = Pt.ZERO;
     protected double angle = 0.0;
 
@@ -28,6 +32,18 @@ public class TPController {
             pos = pos.setY(bounds.y2);
         else if (pos.y > bounds.y2)
             pos = pos.setY(bounds.y1);
+    }
+
+    public int getNumKills() { return statsNumKills; }
+
+    public int getNumDeaths() { return statsNumDeaths; }
+
+    public void killEvent(Object victim, Pt p) {
+        statsNumKills++;
+    }
+
+    public void deathEvent(Object killer, Pt p) {
+        statsNumDeaths++;
     }
 
 }

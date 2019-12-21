@@ -125,6 +125,9 @@ public abstract class TPProgram {
 
     protected void housekeeping() {
         // garbage collection
+        for (TPActor a : actors)
+            if (!a.isAlive())
+                toRemove.add(a);
         for (TPActor a : toRemove)
             actors.remove(a);
         // add new actors

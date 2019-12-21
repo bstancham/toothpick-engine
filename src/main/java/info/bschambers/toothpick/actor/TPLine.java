@@ -7,6 +7,8 @@ public class TPLine {
 
     private Line archetype;
     private Line line;
+    private TPActor actor = null;
+    private boolean alive = true;
 
     public TPLine(Line line) {
         this.archetype = line;
@@ -25,8 +27,20 @@ public class TPLine {
 
     public void setLine(Line ln) { line = ln; }
 
+    public boolean isAlive() { return alive; }
+
+    public void setActor(TPActor a) { actor = a; }
+
     public void collisionWon(TPLine loser, Pt p) {
-        // System.out.println("TPLine.collisionWon() at " + p);
+        loser.kill(this, p);
+    }
+
+    public void kill(TPLine killer, Pt p) {
+        alive = false;
+        if (actor != null)
+            actor.getController().deathEvent(killer, p);
+        if (killer.actor != null)
+            killer.actor.getController().killEvent(killer, p);
     }
 
 }

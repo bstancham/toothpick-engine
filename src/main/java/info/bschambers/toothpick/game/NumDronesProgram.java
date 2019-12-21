@@ -1,6 +1,7 @@
 package info.bschambers.toothpick.game;
 
 import info.bschambers.toothpick.actor.TPActor;
+import info.bschambers.toothpick.actor.TPFactory;
 import info.bschambers.toothpick.actor.PlayerController;
 import java.util.function.Supplier;
 import java.util.List;

@@ -6,11 +6,6 @@ public abstract class PlayerController extends TPController {
 
     public static final PlayerController NULL = new PlayerController() {};
 
-    // player stats
-    private int statsNumDeaths = 0;
-    private int statsNumKills = 0;
-    private int statsScore = 0;
-
     protected Binding bindUp      = new Binding(81); // q
     protected Binding bindDown    = new Binding(65); // a
     protected Binding bindLeft    = new Binding(87); // w

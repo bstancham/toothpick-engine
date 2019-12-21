@@ -87,8 +87,8 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
 
         private void paintInfo(Graphics g) {
             Gfx.TextBox box = new Gfx.TextBox(null, Color.WHITE, null);
-            box.posX = 500;
-            box.posY = 30;
+            box.posX = 490;
+            box.posY = 15;
             for (String line : program.getInfoLines())
                 box.add(line);
             box.paint(g);

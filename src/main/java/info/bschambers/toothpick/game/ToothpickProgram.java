@@ -17,8 +17,8 @@ public class ToothpickProgram extends TPProgram {
     @Override
     public List<String> getInfoLines() {
         List<String> lines = super.getInfoLines();
-        lines.add("num kills: ");
-        lines.add("num deaths: ");
+        lines.add("num kills: " + getPlayerController().getNumKills());
+        lines.add("num deaths: " + getPlayerController().getNumDeaths());
         lines.add("fps: ");
         lines.add("num actors: " + actors.size());
         return lines;

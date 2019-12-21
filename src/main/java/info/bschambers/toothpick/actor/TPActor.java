@@ -13,6 +13,7 @@ public class TPActor {
     public TPActor(TPForm form, TPController controller) {
         this.form = form;
         this.controller = controller;
+        this.form.setActor(this);
     }
 
     public TPForm getForm() { return form; }
@@ -30,6 +31,8 @@ public class TPActor {
         }
         controller = ac;
     }
+
+    public boolean isAlive() { return form.isAlive(); }
 
     public int numChildren() { return children.size(); }
 
