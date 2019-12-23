@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TPActor {
 
-    public static final TPActor NULL = new TPActor(TPForm.NULL);
+    public static final TPActor NULL = new TPActor(new TPForm(new TPPart[0]));
 
     private TPForm form;
     private TPActor parent = null;
@@ -33,7 +33,9 @@ public class TPActor {
         s.append("position: x=" + x + " y=" + y + "\n");
         s.append("inertia: x=" + xInertia + " y=" + yInertia + "\n");
         s.append("angle: " + angle + " (angle-inertia=" + angleInertia + ")\n");
-        s.append("form type: " + form.getClass().getSimpleName() + "\n");
+        s.append("FORM: (" + form.numParts() + " parts)\n");
+        for (int i = 0; i < form.numParts(); i++)
+            s.append("... " + form.getPart(i) + "\n");
         s.append("parent: " + parent + "\n");
         s.append("num-children: " + children.size() + "\n");
         s.append("stats: deaths=" + statsNumDeaths + " kills=" + statsNumKills + "\n");
@@ -55,6 +57,9 @@ public class TPActor {
         tp.statsNumKills = statsNumKills;
         for (TPBehaviour cb : behaviours)
             tp.behaviours.add(cb);
+
+        tp.form.housekeeping();
+
         return tp;
     }
 

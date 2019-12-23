@@ -47,17 +47,17 @@ public class ToothpickProgram extends TPProgram {
     }
 
     private void interact(TPForm formA, TPForm formB) {
-	// can only perform collision detection with LinesForm
-	if (formA instanceof LinesForm && formB instanceof LinesForm) {
-            LinesForm linesA = (LinesForm) formA;
-            LinesForm linesB = (LinesForm) formB;
-	    // Compare every line of form A with every line of form B.
-            for (int a = 0; a < linesA.numLines(); a++) {
-                for (int b = 0; b < linesB.numLines(); b++) {
-                    collisionDetection(linesA.getLine(a), linesB.getLine(b));
+        // Compare every line of form A with every line of form B.
+        for (int a = 0; a < formA.numParts(); a++) {
+            if (formA.getPart(a) instanceof TPLine) {
+                TPLine lineA = (TPLine) formA.getPart(a);
+                for (int b = 0; b < formB.numParts(); b++) {
+                    if (formB.getPart(b) instanceof TPLine) {
+                        collisionDetection(lineA, (TPLine) formB.getPart(b));
+                    }
                 }
             }
-	}
+        }
     }
 
     /**

@@ -21,6 +21,11 @@ public class NumDronesProgram extends ToothpickProgram {
 
     public NumDronesProgram(String title) {
         super(title);
+    }
+
+    @Override
+    public void init() {
+        super.init();
         setPlayer(TPFactory.playerLine(getBounds().center()));
     }
 

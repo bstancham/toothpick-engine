@@ -25,25 +25,17 @@ public class Gfx {
     }
 
     public static void paintActor(Graphics g, TPActor a) {
-        if (a.getForm() instanceof LinesForm) {
-            paintLinesForm(g, (LinesForm) a.getForm());
-        } else if (a.getForm() instanceof ImageForm) {
-            paintImageForm(g, (ImageForm) a.getForm());
-        } else if (a.getForm() instanceof TextForm) {
-            paintTextForm(g, (TextForm) a.getForm());
-        }
+        paintForm(g, a.getForm());
     }
 
-    public static void paintLinesForm(Graphics g, LinesForm form) {
+    public static void paintForm(Graphics g, TPForm form) {
         g.setColor(Color.PINK);
-        for (int i = 0; i < form.numLines(); i++)
-            paintLine(g, form.getLine(i).getLine());
-    }
-
-    public static void paintImageForm(Graphics g, ImageForm form) {
-    }
-
-    public static void paintTextForm(Graphics g, TextForm form) {
+        for (int i = 0; i < form.numParts(); i++) {
+            TPPart part = form.getPart(i);
+            if (part instanceof TPLine) {
+                paintLine(g, ((TPLine) part).getLine());
+            }
+        }
     }
 
     public static void paintMenu(Graphics g, TPMenu menu) {

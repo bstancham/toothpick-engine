@@ -38,11 +38,12 @@ public final class TPFactory {
 
     /*--------------------------- line-forms ---------------------------*/
 
-    public static LinesForm singleLineForm(double length) {
+    public static TPForm singleLineForm(double length) {
         double half = length / 2;
         Pt start = new Pt(-half, 0);
         Pt end = new Pt(half, 0);
-        return new LinesForm(new TPLine(new Line(start, end)));
+        TPForm form = new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
+        return form;
     }
 
     public static double randLineLength() {
