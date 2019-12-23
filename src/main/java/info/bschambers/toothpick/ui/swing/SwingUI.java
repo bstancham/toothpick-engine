@@ -23,8 +23,8 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
 
     private TPProgram program = TPProgram.NULL;
     private TPMenu menu = new TPMenu("EMPTY MENU");
-    private int xDim = 640;
-    private int yDim = 430;
+    private int xDim = 1000;
+    private int yDim = 800;
     private SwingPanel panel;
     private List<Supplier<String>> infoGetters = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
 
         private void paintInfo(Graphics g) {
             Gfx.TextBox box = new Gfx.TextBox(null, Color.WHITE, null);
-            box.posX = 490;
+            box.posX = getWidth() - 150;
             box.posY = 15;
             for (String line : program.getInfoLines())
                 box.add(line);

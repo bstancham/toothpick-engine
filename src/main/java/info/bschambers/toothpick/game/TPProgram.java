@@ -24,12 +24,12 @@ public abstract class TPProgram {
     private String title;
     private Color bgColor = Color.BLACK;
     private Image bgImage = null;
-    protected Rect bounds = new Rect(0, 0, 640, 430);
+    protected Rect bounds = new Rect(0, 0, 1000, 800);
     private TPPlayer player = TPPlayer.NULL;
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
-    protected boolean keepIntersectionPoints = true;
+    protected boolean keepIntersectionPoints = false;
     protected List<Pt> intersectionPoints = new ArrayList<>();
     private boolean pauseForMenu = false;
 
