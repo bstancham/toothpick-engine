@@ -47,11 +47,15 @@ public class TPForm {
         toAdd.add(p);
     }
 
+    /**
+     * Schedule part to be removed on next update.
+     */
+    public void removePart(TPPart p) {
+        toRemove.add(p);
+    }
+
     public void housekeeping() {
         // remove dead parts
-        for (TPPart p : parts)
-            if (!p.isAlive())
-                toRemove.add(p);
         for (TPPart p : toRemove)
             parts.remove(p);
         // add new parts
@@ -69,7 +73,7 @@ public class TPForm {
         housekeeping();
         // update position
         for (TPPart p : parts)
-            p.setState(a.x, a.y, a.angle);
+            p.update(a.x, a.y, a.angle);
     }
 
 }

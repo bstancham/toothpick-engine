@@ -14,7 +14,7 @@ public class TPLine extends TPPart {
     }
 
     @Override
-    public void setState(double x, double y, double angle) {
+    public void update(double x, double y, double angle) {
         Line temp = getArchetype();
         temp = temp.rotate(angle);
         temp = temp.shift(x, y);
@@ -24,7 +24,6 @@ public class TPLine extends TPPart {
     @Override
     public TPLine copy() {
         TPLine ln = new TPLine(archetype);
-        ln.alive = alive;
         return ln;
     }
 
@@ -47,7 +46,12 @@ public class TPLine extends TPPart {
      * TODO: add more params to enable physics simulation - magnitude/direction/sharpness
      */
     public void forceApplied(Pt p, TPLine protagonist) {
-        alive = false;
+        // die with an explosion
+        if (form != null) {
+            form.removePart(this);
+            form.addPart(new TPExplosion(p));
+        }
+        // send messages so that stats can be updated
         if (getActor() != null)
             getActor().deathEvent(protagonist, p);
         if (protagonist.getActor() != null)

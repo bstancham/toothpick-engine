@@ -34,8 +34,20 @@ public class Gfx {
             TPPart part = form.getPart(i);
             if (part instanceof TPLine) {
                 paintLine(g, ((TPLine) part).getLine());
+            } else if (part instanceof TPExplosion) {
+                paintExplosion(g, (TPExplosion) part);
             }
         }
+    }
+
+    public static void paintExplosion(Graphics g, TPExplosion ex) {
+        double scale = 70;
+        double mag = Math.sin(Math.PI * ex.getMagnitude());
+        int size = (int) (mag * scale);
+        int half = size / 2;
+        int x = (int) (ex.getPos().x) - half;
+        int y = (int) (ex.getPos().y) - half;
+        g.fillOval(x, y, size, size);
     }
 
     public static void paintMenu(Graphics g, TPMenu menu) {
