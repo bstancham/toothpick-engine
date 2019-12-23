@@ -19,8 +19,9 @@ public class SlideShowProgram extends TPProgram {
         super(title);
     }
 
-    /** Set image index to zero. */
-    public void reset() {
+    /** Sets image index to zero. */
+    @Override
+    public void init() {
         index = 0;
     }
 

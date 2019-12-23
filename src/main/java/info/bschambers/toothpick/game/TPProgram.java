@@ -19,10 +19,7 @@ import java.util.List;
  */
 public abstract class TPProgram {
 
-    public static final TPProgram NULL = new TPProgram("NULL PROGRAM") {
-            @Override
-            public void reset() {}
-        };
+    public static final TPProgram NULL = new TPProgram("NULL PROGRAM") {};
 
     private String title;
     private Color bgColor = Color.BLACK;
@@ -38,11 +35,22 @@ public abstract class TPProgram {
 
     public TPProgram(String title) {
         this.title = title;
+        init();
     }
 
-    /** Return the program to it's starting state. */
-    public void reset() {
-        System.out.println("TPProgram.reset()");
+    /**
+     * <p>Initialise the program - if already running, then return the program to it's
+     * starting state.</p>
+     *
+     * <p>Child classes should override this method to do setup - the default
+     * implemetation simply resets the player and clears the actors lists.</p>
+     */
+    public void init() {
+        actors.clear();
+        toAdd.clear();
+        toRemove.clear();
+        player.reset();
+        addActor(player.getActor());
     }
 
     public String getTitle() { return title; }
@@ -69,9 +77,9 @@ public abstract class TPProgram {
             actors.add(player.getActor());
     }
 
-    public void revivePlayer() {
+    public void revivePlayer(boolean retainStats) {
         System.out.println("TPProgram.revivePlayer()");
-        player.reset();
+        player.reset(retainStats);
         if (!actors.contains(player.getActor()))
             toAdd.add(player.getActor());
     }

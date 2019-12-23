@@ -19,7 +19,14 @@ public class TPPlayer {
     }
 
     public void reset() {
+        reset(false);
+    }
+
+    public void reset(boolean retainStats) {
+        TPActor old = actor;
         actor = archetype.copy();
+        if (retainStats)
+            actor.copyStats(old);
     }
 
     public TPActor getArchetype() {

@@ -58,6 +58,11 @@ public class TPActor {
         return tp;
     }
 
+    public void copyStats(TPActor tp) {
+        statsNumDeaths = tp.statsNumDeaths;
+        statsNumKills = tp.statsNumKills;
+    }
+
     public TPForm getForm() { return form; }
 
     public boolean isAlive() { return form.isAlive(); }
