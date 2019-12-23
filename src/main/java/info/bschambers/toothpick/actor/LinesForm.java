@@ -17,7 +17,11 @@ public class LinesForm extends TPForm {
     public LinesForm(TPLine[] lines) {
         // make defensive copy of lines
         for (TPLine tpl : lines)
-            this.lines.add(new TPLine(tpl));
+            this.lines.add(tpl.weakCopy());
+    }
+
+    public LinesForm copy() {
+        return new LinesForm(lines.toArray(new TPLine[lines.size()]));
     }
 
     @Override
@@ -32,7 +36,7 @@ public class LinesForm extends TPForm {
     public TPLine getLine(int index) { return lines.get(index); }
 
     @Override
-    public void update(TPController ctrl) {
+    public void update(TPActor a) {
         // remove dead lines
         toRemove.clear();
         for (TPLine ln : lines)
@@ -46,8 +50,8 @@ public class LinesForm extends TPForm {
         // update position
         for (TPLine ln : lines) {
             Line temp = ln.getArchetype();
-            temp = temp.rotate(ctrl.angle());
-            temp = temp.shift(ctrl.pos());
+            temp = temp.rotate(a.angle);
+            temp = temp.shift(a.x, a.y);
             ln.setLine(temp);
         }
     }

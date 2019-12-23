@@ -1,10 +1,16 @@
 package info.bschambers.toothpick.actor;
 
-import java.util.HashMap;
+import info.bschambers.toothpick.game.TPProgram;
 
-public abstract class PlayerController extends TPController {
+public abstract class KeyInputHandler implements TPBehaviour {
 
-    public static final PlayerController NULL = new PlayerController() {};
+    public static final KeyInputHandler NULL = new KeyInputHandler() {
+            @Override
+            public void update(TPProgram prog, TPActor a) {}
+        };
+
+    protected double xyStep = 1;
+    protected double angleStep = 0.005;
 
     protected Binding bindUp      = new Binding(81); // q
     protected Binding bindDown    = new Binding(65); // a
@@ -22,8 +28,9 @@ public abstract class PlayerController extends TPController {
                                                  bindZoomIn,
                                                  bindZoomOut };
 
-    public void setKeyPressed(int keyCode, boolean val) {
-        // System.out.println("keyCode=" + keyCode + " value=" + val);
+    public void setKey(int keyCode, boolean val) {
+        // System.out.println(getClass().getSimpleName() + ".setKey() --> "
+        //                    + "keyCode=" + keyCode + " value=" + val);
         for (Binding b : bindings)
             if (keyCode == b.code())
                 b.setValue(val);

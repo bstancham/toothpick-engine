@@ -43,6 +43,10 @@ public final class Line {
         return start.x != end.x && start.y == end.y;
     }
 
+    public Line shift(double x, double y) {
+        return new Line(start.add(x, y), end.add(x, y));
+    }
+
     public Line shift(Pt amt) {
         return new Line(start.add(amt), end.add(amt));
     }

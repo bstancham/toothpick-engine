@@ -7,23 +7,33 @@ import info.bschambers.toothpick.geom.*;
  */
 public final class TPFactory {
 
+    public static final WrapAtBounds WRAP_AT_BOUNDS = new WrapAtBounds();
+
     /*---------------------------- players -----------------------------*/
 
-    public static TPActor playerLine() {
-        return playerLine(70);
+    public static TPPlayer playerLine(Pt pos) {
+        return playerLine(70, pos);
     }
 
-    public static TPActor playerLine(double length) {
-        return new TPActor(singleLineForm(length), new ThrustInertiaController());
+    public static TPPlayer playerLine(double length, Pt pos) {
+        TPActor actor = new TPActor(singleLineForm(length));
+        actor.setPos(pos);
+        actor.addBehaviour(WRAP_AT_BOUNDS);
+        TPPlayer player = new TPPlayer(actor);
+        player.setInputHandler(new ThrustInertiaInput());
+        return player;
     }
 
     /*----------------------------- drones -----------------------------*/
 
     public static TPActor randSingleLineEdgePos(Rect bounds) {
         TPForm form = singleLineForm(randLineLength());
-        TPController ctrl = new SimpleController(randHeading(), randSpin());
-        ctrl.setPos(randBoundaryPos(bounds));
-        return new TPActor(form, ctrl);
+        TPActor actor = new TPActor(form);
+        actor.addBehaviour(WRAP_AT_BOUNDS);
+        setRandHeading(actor);
+        actor.angleInertia = randAngleInertia();
+        actor.setPos(randBoundaryPos(bounds));
+        return actor;
     }
 
     /*--------------------------- line-forms ---------------------------*/
@@ -41,22 +51,22 @@ public final class TPFactory {
 
     /*-------------------------- controllers ---------------------------*/
 
-    public static Pt randHeading() {
-        return randHeading(0.02, 1);
+    public static void setRandHeading(TPActor actor) {
+        setRandHeading(actor, 0.02, 1);
     }
 
-    public static Pt randHeading(double min, double max) {
+    public static void setRandHeading(TPActor actor, double min, double max) {
         double magnitude = rand(min, max);
         double angle = rand(Math.PI * 2);
-        return new Pt(Math.sin(angle) * magnitude,
-                      Math.cos(angle) * magnitude);
+        actor.xInertia = Math.sin(angle) * magnitude;
+        actor.yInertia = Math.cos(angle) * magnitude;
     }
 
-    public static double randSpin() {
-        return randSpin(0.01);
+    public static double randAngleInertia() {
+        return randAngleInertia(0.01);
     }
 
-    public static double randSpin(double max) {
+    public static double randAngleInertia(double max) {
         return Math.random() * max;
     }
 

@@ -2,9 +2,8 @@ package info.bschambers.toothpick.game;
 
 import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.actor.TPFactory;
-import info.bschambers.toothpick.actor.PlayerController;
-import java.util.function.Supplier;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * <p>Program maintains a set number of drones, spawning a new one after a drone is
@@ -17,13 +16,12 @@ public class NumDronesProgram extends ToothpickProgram {
     private int dronesGoal = 3;
     private int spawnDelay = 0;
 
-    private Supplier<TPActor> droneSupplier = () -> TPFactory.randSingleLineEdgePos(getBounds());
+    private Supplier<TPActor> droneSupplier
+        = () -> TPFactory.randSingleLineEdgePos(getBounds());
 
     public NumDronesProgram(String title) {
         super(title);
-        TPActor player = TPFactory.playerLine();
-        player.getController().setPos(getBounds().center());
-        setPlayer(player);
+        setPlayer(TPFactory.playerLine(getBounds().center()));
     }
 
     public int getDronesGoal() { return dronesGoal; }
@@ -58,11 +56,9 @@ public class NumDronesProgram extends ToothpickProgram {
 
     private int numDrones() {
         int n = 0;
-        for (TPActor a : actors) {
-            if (!(a.getController() instanceof PlayerController)) {
+        for (TPActor a : actors)
+            if (a != getPlayer().getActor())
                 n++;
-            }
-        }
         return n;
     }
 

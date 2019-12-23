@@ -19,6 +19,11 @@ public class SlideShowProgram extends TPProgram {
         super(title);
     }
 
+    /** Set image index to zero. */
+    public void reset() {
+        index = 0;
+    }
+
     public void addImage(String filename) {
         try {
 

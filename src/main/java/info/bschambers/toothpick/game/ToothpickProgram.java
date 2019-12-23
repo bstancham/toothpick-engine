@@ -18,9 +18,8 @@ public class ToothpickProgram extends TPProgram {
     @Override
     public List<String> getInfoLines() {
         List<String> lines = super.getInfoLines();
-        lines.add("num kills: " + getPlayerController().getNumKills());
-        lines.add("num deaths: " + getPlayerController().getNumDeaths());
-        lines.add("fps: ");
+        lines.add("num kills: " + getPlayer().getActor().statsNumKills);
+        lines.add("num deaths: " + getPlayer().getActor().statsNumDeaths);
         lines.add("num actors: " + actors.size());
         return lines;
     }
@@ -85,10 +84,10 @@ public class ToothpickProgram extends TPProgram {
         if (dist1 < 1.0 && dist2 < 1.0) {
             if (dist1 > dist2) {
                 // line A is the winner!
-                a.collisionWon(b, iPt);
+                b.forceApplied(iPt, a);
             } else {
                 // line B is the winner!
-                b.collisionWon(a, iPt);
+                a.forceApplied(iPt, b);
             }
         }
 

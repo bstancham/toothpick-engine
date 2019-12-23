@@ -15,10 +15,13 @@ public class TPLine {
         this.line = line;
     }
 
-    /** Copy constructor. */
-    public TPLine(TPLine tpl) {
-        this.archetype = tpl.line;
-        this.line = tpl.line;
+    /**
+     * Makes a copy of the line and line-archetype, but doesn't copy other parameters.
+     */
+    public TPLine weakCopy() {
+        TPLine ln = new TPLine(archetype);
+        ln.line = line;
+        return ln;
     }
 
     public Line getArchetype() { return archetype; }
@@ -31,16 +34,15 @@ public class TPLine {
 
     public void setActor(TPActor a) { actor = a; }
 
-    public void collisionWon(TPLine loser, Pt p) {
-        loser.kill(this, p);
-    }
-
-    public void kill(TPLine killer, Pt p) {
+    /**
+     * TODO: add more params to enable physics simulation - magnitude/direction/sharpness
+     */
+    public void forceApplied(Pt p, TPLine protagonist) {
         alive = false;
         if (actor != null)
-            actor.getController().deathEvent(killer, p);
-        if (killer.actor != null)
-            killer.actor.getController().killEvent(killer, p);
+            actor.deathEvent(protagonist, p);
+        if (protagonist.actor != null)
+            protagonist.actor.killEvent(this, p);
     }
 
 }
