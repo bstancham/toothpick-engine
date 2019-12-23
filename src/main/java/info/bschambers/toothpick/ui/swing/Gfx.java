@@ -25,11 +25,11 @@ public class Gfx {
     }
 
     public static void paintActor(Graphics g, TPActor a) {
+        g.setColor(a.getColor());
         paintForm(g, a.getForm());
     }
 
     public static void paintForm(Graphics g, TPForm form) {
-        g.setColor(Color.PINK);
         for (int i = 0; i < form.numParts(); i++) {
             TPPart part = form.getPart(i);
             if (part instanceof TPLine) {

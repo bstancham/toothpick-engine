@@ -103,6 +103,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
             if (bgColor != program.getBGColor()) {
                 bgColor = program.getBGColor();
                 setBackground(bgColor);
+                firstSmear = true;
             }
 
             super.paintComponent(g);

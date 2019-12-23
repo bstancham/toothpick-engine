@@ -2,6 +2,7 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.game.TPProgram;
 import info.bschambers.toothpick.geom.Pt;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class TPActor {
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
     private List<TPBehaviour> behaviours = new ArrayList<>();
+    private ColorGetter color = () -> Color.PINK;
     public double x = 0;
     public double y = 0;
     public double angle = 0;
@@ -69,6 +71,10 @@ public class TPActor {
     }
 
     public TPForm getForm() { return form; }
+
+    public Color getColor() { return color.get(); }
+
+    public void setColorGetter(ColorGetter cg) { color = cg; }
 
     public boolean isAlive() { return form.isAlive(); }
 

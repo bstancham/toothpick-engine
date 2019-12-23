@@ -1,6 +1,7 @@
 package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.geom.*;
+import java.awt.Color;
 
 /**
  * Static methods for making TPActors.
@@ -19,6 +20,7 @@ public final class TPFactory {
         TPActor actor = new TPActor(singleLineForm(length));
         actor.setPos(pos);
         actor.addBehaviour(WRAP_AT_BOUNDS);
+        actor.setColorGetter(randColorGetter());
         TPPlayer player = new TPPlayer(actor);
         player.setInputHandler(new ThrustInertiaInput());
         return player;
@@ -29,6 +31,7 @@ public final class TPFactory {
     public static TPActor randSingleLineEdgePos(Rect bounds) {
         TPForm form = singleLineForm(randLineLength());
         TPActor actor = new TPActor(form);
+        actor.setColorGetter(randColorGetter());
         actor.addBehaviour(WRAP_AT_BOUNDS);
         setRandHeading(actor);
         actor.angleInertia = randAngleInertia();
@@ -36,7 +39,7 @@ public final class TPFactory {
         return actor;
     }
 
-    /*--------------------------- line-forms ---------------------------*/
+    /*------------------------------ form ------------------------------*/
 
     public static TPForm singleLineForm(double length) {
         double half = length / 2;
@@ -49,6 +52,28 @@ public final class TPFactory {
     public static double randLineLength() {
         return 20 + (Math.random() * 200);
     }
+
+    /*----------------------------- color ------------------------------*/
+
+    public static ColorGetter randColorGetter() {
+        if (Math.random() < 0.25)
+            return randColor();
+        else
+            return flatColor();
+    }
+
+    public static ColorGetter flatColor() {
+        return flatColor(getRandomColor());
+    }
+
+    public static ColorGetter flatColor(Color c) {
+        return () -> c;
+    }
+
+    public static ColorGetter randColor() {
+        return () -> getRandomColor();
+    }
+
 
     /*-------------------------- controllers ---------------------------*/
 
@@ -92,6 +117,14 @@ public final class TPFactory {
     private static double rand(double min, double max) {
         double dist = max - min;
         return min + (Math.random() * dist);
+    }
+
+    public static int rand255() {
+        return (int) (Math.random() * 256);
+    }
+
+    public static Color getRandomColor() {
+        return new Color(rand255(), rand255(), rand255());
     }
 
 }
