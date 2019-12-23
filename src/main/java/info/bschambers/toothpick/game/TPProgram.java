@@ -29,9 +29,10 @@ public abstract class TPProgram {
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
+    private boolean pauseForMenu = false;
     protected boolean keepIntersectionPoints = false;
     protected List<Pt> intersectionPoints = new ArrayList<>();
-    private boolean pauseForMenu = false;
+    private boolean smearMode = false;
 
     public TPProgram(String title) {
         this.title = title;
@@ -64,8 +65,11 @@ public abstract class TPProgram {
     public boolean getPauseForMenu() { return pauseForMenu; }
     public void setPauseForMenu(boolean val) { pauseForMenu = val; }
 
-    public boolean getShowIntersections() { return keepIntersectionPoints; }
+    public boolean isShowIntersections() { return keepIntersectionPoints; }
     public void setShowIntersections(boolean val) { keepIntersectionPoints = val; }
+
+    public boolean isSmearMode() { return smearMode; }
+    public void setSmearMode(boolean val) { smearMode = val; }
 
     public Rect getBounds() { return bounds; }
 

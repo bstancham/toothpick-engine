@@ -7,14 +7,18 @@ import info.bschambers.toothpick.ui.TPMenuItem;
 import info.bschambers.toothpick.ui.TPUI;
 import info.bschambers.toothpick.ui.swing.Gfx.TextBox;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import static java.awt.event.KeyEvent.*;
@@ -25,16 +29,16 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
     private TPMenu menu = new TPMenu("EMPTY MENU");
     private int xDim = 1000;
     private int yDim = 800;
-    private SwingPanel panel;
+    private TPSwingPanel panel;
     private List<Supplier<String>> infoGetters = new ArrayList<>();
+    private Color bgColor = Color.BLUE;
 
     public SwingUI(String title) {
         super(title);
         setBounds(50, 50, xDim, yDim);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
-        panel = new SwingPanel();
-        panel.setBackground(Color.BLUE);
+        panel = new TPSwingPanel();
         setContentPane(panel);
         addKeyListener(this);
     }
@@ -65,52 +69,92 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
         System.exit(0);
     }
 
-    private class SwingPanel extends JPanel {
+    private class TPSmearImage extends BufferedImage {
 
-        @Override
-        public void paintComponent(Graphics g) {
-            setBackground(program.getBGColor());
-            super.paintComponent(g);
+        public TPSmearImage() {
+            super(xDim, yDim, BufferedImage.TYPE_INT_RGB);
+        }
+
+        public void updateImage(boolean paintBG) {
+            Graphics2D g = createGraphics();
+            if (paintBG) {
+                g.setColor(bgColor);
+                g.fillRect(0, 0, xDim, yDim);
+            }
             paintBackground(g);
             paintActors(g);
             paintIntersectionPoints(g);
+        }
+    }
+
+    private class TPSwingPanel extends JPanel {
+
+        private TPSmearImage img;
+        private boolean firstSmear = true;
+
+        public TPSwingPanel() {
+            img = new TPSmearImage();
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+
+            // check whether background color has changed
+            if (bgColor != program.getBGColor()) {
+                bgColor = program.getBGColor();
+                setBackground(bgColor);
+            }
+
+            super.paintComponent(g);
+
+            if (program.isSmearMode()) {
+                img.updateImage(firstSmear);
+                g.drawImage(img, 0, 0, null);
+                firstSmear = false;
+            } else {
+                firstSmear = true;
+                paintBackground(g);
+                paintActors(g);
+                paintIntersectionPoints(g);
+            }
+
             paintInfo(g);
             paintMenu(g);
         }
+    }
 
-        private void paintBackground(Graphics g) {
-            if (program.getBGImage() != null)
-                g.drawImage(program.getBGImage(), 0, 0, null);
-        }
+    private void paintBackground(Graphics g) {
+        if (program.getBGImage() != null)
+            g.drawImage(program.getBGImage(), 0, 0, null);
+    }
 
-        private void paintActors(Graphics g) {
-            for (int i = 0; i < program.numActors(); i++)
-                Gfx.paintActor(g, program.getActor(i));
-        }
+    private void paintActors(Graphics g) {
+        for (int i = 0; i < program.numActors(); i++)
+            Gfx.paintActor(g, program.getActor(i));
+    }
 
-        private void paintIntersectionPoints(Graphics g) {
-            if (program.getShowIntersections()) {
-                g.setColor(Color.YELLOW);
-                for (Pt p : program.getIntersectionPoints())
-                    Gfx.paintCrosshairs(g, p, 10);
-            }
+    private void paintIntersectionPoints(Graphics g) {
+        if (program.isShowIntersections()) {
+            g.setColor(Color.YELLOW);
+            for (Pt p : program.getIntersectionPoints())
+                Gfx.paintCrosshairs(g, p, 10);
         }
+    }
 
-        private void paintInfo(Graphics g) {
-            Gfx.TextBox box = new Gfx.TextBox(null, Color.WHITE, null);
-            box.posX = getWidth() - 150;
-            box.posY = 15;
-            for (String line : program.getInfoLines())
-                box.add(line);
-            for (Supplier<String> getter : infoGetters)
-                box.add(getter.get());
-            box.paint(g);
-        }
+    private void paintInfo(Graphics g) {
+        Gfx.TextBox box = new Gfx.TextBox(null, Color.WHITE, null);
+        box.posX = getWidth() - 150;
+        box.posY = 15;
+        for (String line : program.getInfoLines())
+            box.add(line);
+        for (Supplier<String> getter : infoGetters)
+            box.add(getter.get());
+        box.paint(g);
+    }
 
-        private void paintMenu(Graphics g) {
-            if (menu.isActive())
-                Gfx.paintMenu(g, menu);
-        }
+    private void paintMenu(Graphics g) {
+        if (menu.isActive())
+            Gfx.paintMenu(g, menu);
     }
 
     /*---------------------- KeyListener methods -----------------------*/
