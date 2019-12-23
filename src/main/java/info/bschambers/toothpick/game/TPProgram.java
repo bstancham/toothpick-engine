@@ -64,6 +64,9 @@ public abstract class TPProgram {
     public boolean getPauseForMenu() { return pauseForMenu; }
     public void setPauseForMenu(boolean val) { pauseForMenu = val; }
 
+    public boolean getShowIntersections() { return keepIntersectionPoints; }
+    public void setShowIntersections(boolean val) { keepIntersectionPoints = val; }
+
     public Rect getBounds() { return bounds; }
 
     public int numActors() { return actors.size(); }

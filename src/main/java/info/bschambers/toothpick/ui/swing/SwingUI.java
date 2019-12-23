@@ -89,9 +89,11 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
         }
 
         private void paintIntersectionPoints(Graphics g) {
-            g.setColor(Color.YELLOW);
-            for (Pt p : program.getIntersectionPoints())
-                Gfx.paintCrosshairs(g, p, 10);
+            if (program.getShowIntersections()) {
+                g.setColor(Color.YELLOW);
+                for (Pt p : program.getIntersectionPoints())
+                    Gfx.paintCrosshairs(g, p, 10);
+            }
         }
 
         private void paintInfo(Graphics g) {
