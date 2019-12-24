@@ -28,8 +28,26 @@ public final class TPFactory {
 
     /*----------------------------- drones -----------------------------*/
 
-    public static TPActor randSingleLineEdgePos(Rect bounds) {
+    public static TPActor lineActor(Rect bounds) {
         TPForm form = singleLineForm(randLineLength());
+        return droneActor(form, bounds);
+    }
+
+    public static TPActor regularPolygonActor(Rect bounds) {
+        double size = rand(20, 100);
+        int numSides = randInt(3, 8);
+        TPForm form = regularPolygonForm(size, numSides);
+        return droneActor(form, bounds);
+    }
+
+    public static TPActor regularThistleActor(Rect bounds) {
+        double size = rand(20, 100);
+        int numSides = randInt(3, 16);
+        TPForm form = regularThistleForm(size, numSides);
+        return droneActor(form, bounds);
+    }
+
+    public static TPActor droneActor(TPForm form, Rect bounds) {
         TPActor actor = new TPActor(form);
         actor.setColorGetter(randColorGetter());
         actor.addBehaviour(WRAP_AT_BOUNDS);
@@ -51,6 +69,35 @@ public final class TPFactory {
 
     public static double randLineLength() {
         return 20 + (Math.random() * 200);
+    }
+
+    public static TPForm regularPolygonForm(double size, int numSides) {
+        Pt[] points = regularPolygonPoints(size, numSides);
+        TPLine[] lines = new TPLine[points.length - 1];
+        for (int i = 0; i < (lines.length - 1); i++)
+            lines[i] = new TPLine(new Line(points[i], points[i + 1]));
+        lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
+        return new TPForm(lines);
+    }
+
+    public static TPForm regularThistleForm(double size, int numSides) {
+        Pt zero = new Pt(0.000001, 0.000001);
+        Pt[] points = regularPolygonPoints(size, numSides);
+        TPLine[] lines = new TPLine[points.length];
+        for (int i = 0; i < lines.length; i++)
+            lines[i] = new TPLine(new Line(zero, points[i]));
+        return new TPForm(lines);
+    }
+
+    public static Pt[] regularPolygonPoints(double size, int numSides) {
+        Pt[] points = new Pt[numSides];
+        for (int i = 0; i < points.length; i++) {
+            double amt = (double) i / (double) numSides;
+            double angle = amt * (2 * Math.PI);
+            points[i] = new Pt(Math.sin(angle) * size,
+                               Math.cos(angle) * size);
+        }
+        return points;
     }
 
     /*----------------------------- color ------------------------------*/
@@ -109,6 +156,15 @@ public final class TPFactory {
     private static double rand(double min, double max) {
         double dist = max - min;
         return min + (Math.random() * dist);
+    }
+
+    private static int randInt(int max) {
+        return (int) (Math.random() * max);
+    }
+
+    private static int randInt(int min, int max) {
+        double dist = max - min;
+        return (int) (min + (Math.random() * dist));
     }
 
 }
