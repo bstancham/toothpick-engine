@@ -14,7 +14,7 @@ public class TPActor {
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
     private List<TPBehaviour> behaviours = new ArrayList<>();
-    private ColorGetter color = () -> Color.PINK;
+    private ColorGetter color = new ColorMono(Color.PINK);
     public double x = 0;
     public double y = 0;
     public double angle = 0;

@@ -56,24 +56,16 @@ public final class TPFactory {
     /*----------------------------- color ------------------------------*/
 
     public static ColorGetter randColorGetter() {
-        if (Math.random() < 0.25)
-            return randColor();
-        else
-            return flatColor();
+        ColorGetter[] items = new ColorGetter[] {
+            new ColorMono(),
+            new ColorRandom(),
+            new ColorRandomMono(),
+            new ColorSmoothMono(),
+            new ColorSmoothColor(),
+        };
+        int index = (int) (Math.random() * items.length);
+        return items[index];
     }
-
-    public static ColorGetter flatColor() {
-        return flatColor(getRandomColor());
-    }
-
-    public static ColorGetter flatColor(Color c) {
-        return () -> c;
-    }
-
-    public static ColorGetter randColor() {
-        return () -> getRandomColor();
-    }
-
 
     /*-------------------------- controllers ---------------------------*/
 
@@ -117,14 +109,6 @@ public final class TPFactory {
     private static double rand(double min, double max) {
         double dist = max - min;
         return min + (Math.random() * dist);
-    }
-
-    public static int rand255() {
-        return (int) (Math.random() * 256);
-    }
-
-    public static Color getRandomColor() {
-        return new Color(rand255(), rand255(), rand255());
     }
 
 }
