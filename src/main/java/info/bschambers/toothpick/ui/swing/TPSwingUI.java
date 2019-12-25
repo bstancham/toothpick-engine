@@ -87,7 +87,6 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
             }
             paintBackground(g);
             paintActors(g);
-            paintOverlay(g);
         }
     }
 
@@ -120,9 +119,9 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
                 firstSmear = true;
                 paintBackground(g);
                 paintActors(g);
-                paintOverlay(g);
             }
 
+            paintOverlay(g);
             paintInfo(g);
             paintMenu(g);
         }
