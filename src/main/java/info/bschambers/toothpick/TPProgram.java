@@ -33,6 +33,7 @@ public abstract class TPProgram {
     protected boolean keepIntersectionPoints = false;
     protected List<Pt> intersectionPoints = new ArrayList<>();
     private boolean smearMode = false;
+    private int stopAfter = -1;
 
     public TPProgram(String title) {
         this.title = title;
@@ -64,6 +65,19 @@ public abstract class TPProgram {
 
     public boolean getPauseForMenu() { return pauseForMenu; }
     public void setPauseForMenu(boolean val) { pauseForMenu = val; }
+
+    public int stopAfter() {
+        return stopAfter;
+    }
+
+    /**
+     * <p>Request that the program stop iterating after specified number of frames.</p>
+     *
+     * <p>If val is a negative number then the program will iterate indefinitely.</p>
+     */
+    public void setStopAfter(int val) {
+        stopAfter = val;
+    }
 
     public boolean isShowIntersections() { return keepIntersectionPoints; }
     public void setShowIntersections(boolean val) { keepIntersectionPoints = val; }

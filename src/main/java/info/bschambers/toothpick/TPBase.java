@@ -55,8 +55,12 @@ public class TPBase {
         } else {
             while (running) {
 
-                if (!menu.isActive() || !program.getPauseForMenu())
+                if (!menu.isActive() || !program.getPauseForMenu() ||
+                    (!(program.stopAfter() < 0) &&program.stopAfter() > 0)) {
                     program.update();
+                    if (program.stopAfter() > 0)
+                        program.setStopAfter(program.stopAfter() - 1);
+                }
 
                 ui.updateUI();
 
