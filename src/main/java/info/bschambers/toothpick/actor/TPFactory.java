@@ -73,7 +73,7 @@ public final class TPFactory {
 
     public static TPForm regularPolygonForm(double size, int numSides) {
         Pt[] points = regularPolygonPoints(size, numSides);
-        TPLine[] lines = new TPLine[points.length - 1];
+        TPLine[] lines = new TPLine[points.length];
         for (int i = 0; i < (lines.length - 1); i++)
             lines[i] = new TPLine(new Line(points[i], points[i + 1]));
         lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
