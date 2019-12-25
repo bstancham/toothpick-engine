@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.actor;
 
-import info.bschambers.toothpick.game.TPProgram;
+import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.Pt;
 import java.awt.Color;
 import java.util.ArrayList;

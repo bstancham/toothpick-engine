@@ -1,4 +1,4 @@
-package info.bschambers.toothpick.game;
+package info.bschambers.toothpick;
 
 import info.bschambers.toothpick.actor.*;
 import info.bschambers.toothpick.geom.Geom;

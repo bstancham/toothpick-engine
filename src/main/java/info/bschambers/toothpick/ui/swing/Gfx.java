@@ -24,6 +24,12 @@ public class Gfx {
         g.drawLine(x, y - s, x, y + s);
     }
 
+    public static void centeredSquare(Graphics g, int x, int y, int size) {
+        x = x - (size / 2);
+        y = y - (size / 2);
+        g.drawRect(x, y, size, size);
+    }
+
     public static void paintActor(Graphics g, TPActor a) {
         g.setColor(a.getColor());
         paintForm(g, a.getForm());

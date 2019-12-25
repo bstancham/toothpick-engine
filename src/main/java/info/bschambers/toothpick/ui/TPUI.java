@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.ui;
 
-import info.bschambers.toothpick.game.TPProgram;
+import info.bschambers.toothpick.TPProgram;
 import java.util.function.Supplier;
 
 /**

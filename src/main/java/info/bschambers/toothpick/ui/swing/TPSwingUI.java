@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.ui.swing;
 
-import info.bschambers.toothpick.game.TPProgram;
+import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
@@ -23,7 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import static java.awt.event.KeyEvent.*;
 
-public class SwingUI extends JFrame implements TPUI, KeyListener {
+public class TPSwingUI extends JFrame implements TPUI, KeyListener {
 
     private TPProgram program = TPProgram.NULL;
     private TPMenu menu = new TPMenu("EMPTY MENU");
@@ -33,7 +33,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
     private List<Supplier<String>> infoGetters = new ArrayList<>();
     private Color bgColor = Color.BLUE;
 
-    public SwingUI(String title) {
+    public TPSwingUI(String title) {
         super(title);
         setBounds(50, 50, xDim, yDim);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,6 +46,10 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
     @Override
     public void repaintUI() {
         panel.paintImmediately(0, 0, xDim, yDim);
+    }
+
+    public TPProgram getProgram() {
+        return program;
     }
 
     @Override
@@ -83,7 +87,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
             }
             paintBackground(g);
             paintActors(g);
-            paintIntersectionPoints(g);
+            paintOverlay(g);
         }
     }
 
@@ -116,7 +120,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
                 firstSmear = true;
                 paintBackground(g);
                 paintActors(g);
-                paintIntersectionPoints(g);
+                paintOverlay(g);
             }
 
             paintInfo(g);
@@ -124,17 +128,17 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
         }
     }
 
-    private void paintBackground(Graphics g) {
+    protected void paintBackground(Graphics g) {
         if (program.getBGImage() != null)
             g.drawImage(program.getBGImage(), 0, 0, null);
     }
 
-    private void paintActors(Graphics g) {
+    protected void paintActors(Graphics g) {
         for (int i = 0; i < program.numActors(); i++)
             Gfx.paintActor(g, program.getActor(i));
     }
 
-    private void paintIntersectionPoints(Graphics g) {
+    protected void paintOverlay(Graphics g) {
         if (program.isShowIntersections()) {
             g.setColor(Color.YELLOW);
             for (Pt p : program.getIntersectionPoints())
@@ -142,7 +146,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
         }
     }
 
-    private void paintInfo(Graphics g) {
+    protected void paintInfo(Graphics g) {
         Gfx.TextBox box = new Gfx.TextBox(null, Color.WHITE, null);
         box.posX = getWidth() - 150;
         box.posY = 15;
@@ -153,7 +157,7 @@ public class SwingUI extends JFrame implements TPUI, KeyListener {
         box.paint(g);
     }
 
-    private void paintMenu(Graphics g) {
+    protected void paintMenu(Graphics g) {
         if (menu.isActive())
             Gfx.paintMenu(g, menu);
     }

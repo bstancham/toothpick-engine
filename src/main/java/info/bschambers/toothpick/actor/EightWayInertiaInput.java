@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.actor;
 
-import info.bschambers.toothpick.game.TPProgram;
+import info.bschambers.toothpick.TPProgram;
 
 public class EightWayInertiaInput extends KeyInputHandler {
 

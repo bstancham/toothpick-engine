@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.ui;
 
-import info.bschambers.toothpick.game.TPBase;
+import info.bschambers.toothpick.TPBase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -23,7 +23,9 @@ public class TPMenu implements TPMenuItem {
     }
 
     @Override
-    public String text() { return titleSupplier.get(); }
+    public String text() {
+        return titleSupplier.get();
+    }
 
     @Override
     public void action(Code c) {

@@ -1,17 +1,25 @@
 package info.bschambers.toothpick.ui;
 
+import java.util.function.Supplier;
+
 public class TPMenuItemSimple implements TPMenuItem {
 
-    private String text;
+    private Supplier<String> textSupplier;
     private Runnable action;
 
     public TPMenuItemSimple(String text, Runnable action) {
-        this.text = text;
+        this(() -> text, action);
+    }
+
+    public TPMenuItemSimple(Supplier<String> textSupplier, Runnable action) {
+        this.textSupplier = textSupplier;
         this.action = action;
     }
 
     @Override
-    public String text() { return text; }
+    public String text() {
+        return textSupplier.get();
+    }
 
     @Override
     public void action(Code c) {
