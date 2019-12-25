@@ -44,7 +44,7 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
     }
 
     @Override
-    public void repaintUI() {
+    public void updateUI() {
         panel.paintImmediately(0, 0, xDim, yDim);
     }
 
@@ -135,14 +135,14 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
 
     protected void paintActors(Graphics g) {
         for (int i = 0; i < program.numActors(); i++)
-            Gfx.paintActor(g, program.getActor(i));
+            Gfx.actor(g, program.getActor(i));
     }
 
     protected void paintOverlay(Graphics g) {
         if (program.isShowIntersections()) {
             g.setColor(Color.YELLOW);
             for (Pt p : program.getIntersectionPoints())
-                Gfx.paintCrosshairs(g, p, 10);
+                Gfx.crosshairs(g, p, 10);
         }
     }
 
@@ -159,7 +159,7 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
 
     protected void paintMenu(Graphics g) {
         if (menu.isActive())
-            Gfx.paintMenu(g, menu);
+            Gfx.menu(g, menu);
     }
 
     /*---------------------- KeyListener methods -----------------------*/

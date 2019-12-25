@@ -130,4 +130,11 @@ public abstract class TPProgram {
         toAdd.add(a);
     }
 
+    public boolean contains(TPActor a) {
+        for (TPActor b : actors)
+            if (a == b)
+                return true;
+        return false;
+    }
+
 }

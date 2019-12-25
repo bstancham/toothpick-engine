@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 
 /**
  * Any TPUI implementation will need to store a reference to it's associated TPProgram
- * instance, then when {@link repaintUI} is called it can retrieve the relevent game
- * assets for display.<br/>
+ * instance, then when {@link updateUI} is called it can retrieve the relevent game assets
+ * for display.<br/>
  *
  * The display routine implementation will be different for different UI systems but these
  * are the steps which need to be present in order to display a TPProgram properly:<br/>
@@ -19,7 +19,10 @@ import java.util.function.Supplier;
  */
 public interface TPUI {
 
-    void repaintUI();
+    /**
+     * Update the user interface.
+     */
+    void updateUI();
 
     void setProgram(TPProgram program);
 

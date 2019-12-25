@@ -58,7 +58,7 @@ public class TPBase {
                 if (!menu.isActive() || !program.getPauseForMenu())
                     program.update();
 
-                ui.repaintUI();
+                ui.updateUI();
 
                 long thisIter = System.currentTimeMillis() - iterTime;
                 iterTime = System.currentTimeMillis();

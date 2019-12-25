@@ -7,16 +7,25 @@ import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Gfx {
 
-    public static void paintLine(Graphics g, Line ln) {
-        g.drawLine((int) ln.start.x, (int) ln.start.y, (int) ln.end.x, (int) ln.end.y);
+    public static void line(Graphics g, Line ln) {
+        line(g, ln.start, ln.end);
     }
 
-    public static void paintCrosshairs(Graphics g, Pt p, int size) {
+    public static void line(Graphics g, Pt start, Pt end) {
+        g.drawLine((int) start.x, (int) start.y, (int) end.x, (int) end.y);
+    }
+
+    public static void rectangle(Graphics g, Rectangle r) {
+        g.drawRect(r.x, r.y, r.width, r.height);
+    }
+
+    public static void crosshairs(Graphics g, Pt p, int size) {
         int x = (int) p.x;
         int y = (int) p.y;
         int s = size / 2;
@@ -30,23 +39,23 @@ public class Gfx {
         g.drawRect(x, y, size, size);
     }
 
-    public static void paintActor(Graphics g, TPActor a) {
+    public static void actor(Graphics g, TPActor a) {
         g.setColor(a.getColor());
-        paintForm(g, a.getForm());
+        form(g, a.getForm());
     }
 
-    public static void paintForm(Graphics g, TPForm form) {
+    public static void form(Graphics g, TPForm form) {
         for (int i = 0; i < form.numParts(); i++) {
             TPPart part = form.getPart(i);
             if (part instanceof TPLine) {
-                paintLine(g, ((TPLine) part).getLine());
+                line(g, ((TPLine) part).getLine());
             } else if (part instanceof TPExplosion) {
-                paintExplosion(g, (TPExplosion) part);
+                explosion(g, (TPExplosion) part);
             }
         }
     }
 
-    public static void paintExplosion(Graphics g, TPExplosion ex) {
+    public static void explosion(Graphics g, TPExplosion ex) {
         double scale = 70;
         double mag = Math.sin(Math.PI * ex.getMagnitude());
         int size = (int) (mag * scale);
@@ -56,11 +65,11 @@ public class Gfx {
         g.fillOval(x, y, size, size);
     }
 
-    public static void paintMenu(Graphics g, TPMenu menu) {
-        paintMenu(g, menu, 30, 30);
+    public static void menu(Graphics g, TPMenu menu) {
+        menu(g, menu, 30, 30);
     }
 
-    public static void paintMenu(Graphics g, TPMenu menu, int posX, int posY) {
+    public static void menu(Graphics g, TPMenu menu, int posX, int posY) {
         TextBox box = new TextBox();
         box.add(menu.text());
         box.add("");
@@ -86,7 +95,7 @@ public class Gfx {
         if (menu.isDelegating()) {
             TPMenuItem item = menu.getSelectedItem();
             if (item instanceof TPMenu) {
-                paintMenu(g, (TPMenu) item, posX + 30, posY + 30);
+                menu(g, (TPMenu) item, posX + 30, posY + 30);
             }
         }
     }
