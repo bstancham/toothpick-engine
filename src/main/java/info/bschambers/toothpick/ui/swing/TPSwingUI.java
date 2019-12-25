@@ -14,6 +14,9 @@ import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import static java.awt.event.KeyEvent.*;
 
-public class TPSwingUI extends JFrame implements TPUI, KeyListener {
+public class TPSwingUI extends JFrame
+    implements TPUI, KeyListener, MouseListener, MouseMotionListener {
 
     private TPProgram program = TPProgram.NULL;
     private TPMenu menu = new TPMenu("EMPTY MENU");
@@ -41,6 +45,8 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
         panel = new TPSwingPanel();
         setContentPane(panel);
         addKeyListener(this);
+        addMouseListener(this);
+        addMouseMotionListener(this);
     }
 
     @Override
@@ -161,7 +167,7 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
             Gfx.menu(g, menu);
     }
 
-    /*---------------------- KeyListener methods -----------------------*/
+    /*------------------------- Keyboard Input -------------------------*/
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -213,5 +219,28 @@ public class TPSwingUI extends JFrame implements TPUI, KeyListener {
     private void keyReleasedGame(KeyEvent e) {
         program.getPlayer().getInputHandler().setKey(e.getKeyCode(), false);
     }
+
+    /*--------------------------- MouseInput ---------------------------*/
+
+    @Override
+    public void mouseClicked(MouseEvent e) {}
+
+    @Override
+    public void mousePressed(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void mouseMoved(MouseEvent e) {}
+
+    @Override
+    public void mouseDragged(MouseEvent e) {}
 
 }
