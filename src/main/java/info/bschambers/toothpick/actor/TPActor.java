@@ -105,6 +105,13 @@ public class TPActor {
         angle += angleInertia;
         for (TPBehaviour b : behaviours)
             b.update(prog, this);
+        updateForm();
+    }
+
+    /**
+     * Updates form in accordance with current angle and position.
+     */
+    public void updateForm() {
         form.update(this);
     }
 
