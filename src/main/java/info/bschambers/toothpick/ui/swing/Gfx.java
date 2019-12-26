@@ -39,6 +39,11 @@ public class Gfx {
         g.drawRect(x, y, size, size);
     }
 
+    public static void arc(Graphics g, int x, int y, int size,
+                           int startAngle, int arcAngle) {
+	g.drawArc(x, y, size, size, startAngle, arcAngle);
+    }
+
     public static void actor(Graphics g, TPActor a) {
         g.setColor(a.getColor());
         form(g, a.getForm());

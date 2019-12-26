@@ -108,4 +108,24 @@ public final class Geom {
         return new Pt(x, y);
     }
 
+    /**
+     * Calculates the angle going clockwise starting from the line heading
+     * vertically upwards from the 'home' point.
+     */
+    public static double angle(double x1, double y1, double x2, double y2) {
+	// get x & y lengths
+	double xLen = x2 - x1;
+        double yLen = y2 - y1;
+	// get hypotenuse length: Pythagoras' theroem ---> a2 + b2 = c2
+	double hLen = Math.sqrt((xLen * xLen) + (yLen * yLen));
+	// negative y direction compensation!
+	if (yLen < 0)
+            hLen = -hLen;
+        // calculate angle
+	double angle = Math.acos(xLen / hLen);
+	if (yLen < 0)
+            angle += Math.PI;
+	return angle;
+    }
+
 }

@@ -20,10 +20,13 @@ public class ThrustInertiaInput extends KeyInputHandler {
             tp.yInertia += Math.cos(Math.PI * tp.angle) * xyStep;
         }
         if (bindLeft.value()) {
-            tp.angle -= angleStep;
+            tp.angleInertia = -angleStep;
         }
         if (bindRight.value()) {
-            tp.angle += angleStep;
+            tp.angleInertia = angleStep;
+        }
+        if (!bindLeft.value() && !bindRight.value()){
+            tp.angleInertia = 0;
         }
     }
 
