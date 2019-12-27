@@ -10,11 +10,11 @@ public class TPActor {
 
     public static final TPActor NULL = new TPActor(new TPForm(new TPPart[0]));
 
-    private TPForm form;
+    private transient TPForm form;
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
     private List<TPBehaviour> behaviours = new ArrayList<>();
-    private ColorGetter color = new ColorMono(Color.PINK);
+    private transient ColorGetter color = new ColorSmoothMono(Color.PINK);
     public double x = 0;
     public double y = 0;
     public double angle = 0;

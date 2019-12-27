@@ -76,6 +76,7 @@ public class TPMenu implements TPMenuItem {
         this.parent = parent;
     }
 
+    /** @return True, if this menu is delegating to a sub-menu. */
     public boolean isDelegating() {
         return delegating;
     }
@@ -128,7 +129,7 @@ public class TPMenu implements TPMenuItem {
     }
 
     /**
-     * Facilitates dynamic menus.
+     * Facilitates dynamic menu items.
      */
     private class TPMenuOption {
 

@@ -10,7 +10,11 @@ public class ColorSmoothMono extends ColorMono {
     protected double changeFreq = 0.01;
 
     public ColorSmoothMono() {
-        super();
+        this(ColorGetter.randColor());
+    }
+
+    public ColorSmoothMono(Color c) {
+        super(c);
         bright = Math.random();
         dir = (Math.random() < 0.5 ? -1 : 1);
     }
