@@ -1,5 +1,6 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.*;
 import java.awt.Color;
 
@@ -28,23 +29,23 @@ public final class TPFactory {
 
     /*----------------------------- drones -----------------------------*/
 
-    public static TPActor lineActor(Rect bounds) {
+    public static TPActor lineActor(TPProgram prog) {
         TPForm form = singleLineForm(randLineLength());
-        return droneActor(form, bounds);
+        return droneActor(form, prog.getBounds());
     }
 
-    public static TPActor regularPolygonActor(Rect bounds) {
+    public static TPActor regularPolygonActor(TPProgram prog) {
         double size = rand(20, 100);
         int numSides = randInt(3, 8);
         TPForm form = regularPolygonForm(size, numSides);
-        return droneActor(form, bounds);
+        return droneActor(form, prog.getBounds());
     }
 
-    public static TPActor regularThistleActor(Rect bounds) {
+    public static TPActor regularThistleActor(TPProgram prog) {
         double size = rand(20, 100);
         int numSides = randInt(3, 16);
         TPForm form = regularThistleForm(size, numSides);
-        return droneActor(form, bounds);
+        return droneActor(form, prog.getBounds());
     }
 
     public static TPActor droneActor(TPForm form, Rect bounds) {

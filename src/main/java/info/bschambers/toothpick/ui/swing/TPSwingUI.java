@@ -29,7 +29,7 @@ import static java.awt.event.KeyEvent.*;
 public class TPSwingUI extends JFrame
     implements TPUI, KeyListener, MouseListener, MouseMotionListener {
 
-    private TPProgram program = TPProgram.NULL;
+    private TPProgram program = new TPProgram();
     private TPMenu menu = new TPMenu("EMPTY MENU");
     private int xDim = 1000;
     private int yDim = 800;

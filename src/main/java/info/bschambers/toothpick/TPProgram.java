@@ -7,6 +7,7 @@ import info.bschambers.toothpick.geom.Rect;
 import java.awt.Color;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,15 +18,14 @@ import java.util.List;
  * TPUI uses the various accessor methods to get game assets for display - NOTE: that
  * some of these may return null, so they always need to be checked!
  */
-public abstract class TPProgram {
-
-    public static final TPProgram NULL = new TPProgram("NULL PROGRAM") {};
+public class TPProgram implements Iterable<TPActor> {
 
     private String title;
     private Color bgColor = Color.BLACK;
     private Image bgImage = null;
     protected Rect bounds = new Rect(0, 0, 1000, 800);
-    private TPPlayer player = TPPlayer.NULL;
+    private List<ProgramBehaviour> behaviours;
+    private TPPlayer player;
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
@@ -35,8 +35,16 @@ public abstract class TPProgram {
     private boolean smearMode = false;
     private int stopAfter = -1;
 
+    public TPProgram() {
+        this("UNTITLED PROGRAM");
+    }
+
     public TPProgram(String title) {
         this.title = title;
+        // initialize transient fields
+        behaviours = new ArrayList<ProgramBehaviour>();
+        player = TPPlayer.NULL;
+
         init();
     }
 
@@ -56,6 +64,7 @@ public abstract class TPProgram {
     }
 
     public String getTitle() { return title; }
+    public void setTitle(String val) { title = val; }
 
     public Color getBGColor() { return bgColor; }
     public void setBGColor(Color val) { bgColor = val; }
@@ -87,6 +96,10 @@ public abstract class TPProgram {
 
     public Rect getBounds() { return bounds; }
 
+    public void addBehaviour(ProgramBehaviour pb) {
+        behaviours.add(pb);
+    }
+
     public int numActors() { return actors.size(); }
     public TPActor getActor(int index) { return actors.get(index); }
 
@@ -107,25 +120,37 @@ public abstract class TPProgram {
 
     public List<Pt> getIntersectionPoints() { return intersectionPoints; }
 
-    public List<String> getInfoLines() { return new ArrayList<String>(); }
+    public void addIntersectionPoint(Pt p) {
+        intersectionPoints.add(p);
+    }
+
+    public List<String> getInfoLines() {
+        List<String> lines = new ArrayList<String>();
+        lines.add("num kills: " + getPlayer().getActor().statsNumKills);
+        lines.add("num deaths: " + getPlayer().getActor().statsNumDeaths);
+        lines.add("num actors: " + actors.size());
+        for (ProgramBehaviour pb : behaviours)
+            for (String pbLine : pb.getInfoLines())
+                lines.add(pbLine);
+        return lines;
+    }
 
     /**
      * Update and move the action on by one step.
      */
     public void update() {
-        action();
-        interactions();
+        intersectionPoints.clear();
+        for (TPActor a : actors)
+            a.update(this);
+        for (ProgramBehaviour pb : behaviours)
+            pb.update(this);
         housekeeping();
     }
 
-    protected void action() {
-        for (TPActor a : actors)
-            a.update(this);
-    }
-
-    protected void interactions() {}
-
-    protected void housekeeping() {
+    /**
+     * Add and remove actors as appropriate.
+     */
+    private void housekeeping() {
         // garbage collection
         for (TPActor a : actors)
             if (!a.isAlive())
@@ -150,5 +175,8 @@ public abstract class TPProgram {
                 return true;
         return false;
     }
+
+    @Override
+    public Iterator<TPActor> iterator() { return actors.iterator(); }
 
 }

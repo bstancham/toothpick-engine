@@ -5,7 +5,7 @@ import info.bschambers.toothpick.ui.TPUI;
 
 public class TPBase {
 
-    private TPProgram program = TPProgram.NULL;
+    private TPProgram program = new TPProgram();
     private TPUI ui = null;
     private TPMenu menu = null;
     private boolean running = true;

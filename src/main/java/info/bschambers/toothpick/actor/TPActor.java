@@ -24,9 +24,15 @@ public class TPActor {
     public int statsNumDeaths = 0;
     public int statsNumKills = 0;
 
+    public TPActor() {
+        this(TPForm.NULL);
+    }
+
     public TPActor(TPForm form) {
         this.form = form;
         this.form.setActor(this);
+        // initialize transient fields
+        behaviours = new ArrayList<TPBehaviour>();
     }
 
     public String infoString() {

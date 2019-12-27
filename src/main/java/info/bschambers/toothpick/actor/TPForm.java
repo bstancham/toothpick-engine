@@ -6,11 +6,15 @@ import java.util.List;
 
 public class TPForm {
 
+    public static final TPForm NULL = new TPForm();
+
     private TPActor actor = null;
     protected boolean alive = true;
     private List<TPPart> parts = new ArrayList<>();
     private List<TPPart> toAdd = new ArrayList<>();
     private List<TPPart> toRemove = new ArrayList<>();
+
+    public TPForm() {}
 
     public TPForm(TPPart[] parts) {
         for (TPPart p : parts) {
