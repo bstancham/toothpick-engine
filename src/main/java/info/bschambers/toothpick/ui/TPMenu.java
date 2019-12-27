@@ -11,7 +11,7 @@ public class TPMenu implements TPMenuItem {
     private TPMenu parent = null;
     private boolean active = false;
     private boolean delegating = false;
-    private List<TPMenuItem> options = new ArrayList<>();
+    private List<TPMenuOption> options = new ArrayList<>();
     private int selected = 0;
 
     public TPMenu(String title) {
@@ -29,7 +29,8 @@ public class TPMenu implements TPMenuItem {
 
     @Override
     public void action(Code c) {
-        TPMenuItem item = getSelectedItem();
+        TPMenuOption opt = getSelectedOption();
+        TPMenuItem item = opt.get();
         if (delegating && item instanceof TPMenu) {
             item.action(c);
         } else if (delegating) {
@@ -38,8 +39,11 @@ public class TPMenu implements TPMenuItem {
         } else if (c == Code.RET) {
             if (item instanceof TPMenu) {
                 setDelegating(true);
+                opt.update();
+                item = opt.get();
+                ((TPMenu) item).setParent(this);
             } else {
-                getSelectedItem().action(c);
+                getSelectedOption().get().action(c);
             }
         } else if (c == Code.CANCEL) {
             cancel();
@@ -48,14 +52,19 @@ public class TPMenu implements TPMenuItem {
         } else if (c == Code.DOWN) {
             incrSelected(1);
         } else if (c == Code.LEFT) {
-            getSelectedItem().action(c);
+            getSelectedOption().get().action(c);
         } else if (c == Code.RIGHT) {
-            getSelectedItem().action(c);
+            getSelectedOption().get().action(c);
         }
     }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean val) { active = val; }
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean val) {
+        active = val;
+    }
 
     public void cancel() {
         if (parent != null) {
@@ -63,14 +72,28 @@ public class TPMenu implements TPMenuItem {
         }
     }
 
-    public boolean isDelegating() { return delegating; }
-    public void setDelegating(boolean val) { delegating = val; }
+    public void setParent(TPMenu parent) {
+        this.parent = parent;
+    }
+
+    public boolean isDelegating() {
+        return delegating;
+    }
+
+    public void setDelegating(boolean val) {
+        delegating = val;
+    }
 
     public void add(TPMenuItem item) {
-        options.add(item);
-        if (item instanceof TPMenu) {
-            ((TPMenu) item).parent = this;
-        }
+        options.add(new TPMenuOption(item));
+    }
+
+    /**
+     * Add a dynamic menu item - the menu item will be fetched anew at the time when it is
+     * selected.
+     */
+    public void add(Supplier<TPMenuItem> itemSupplier) {
+        options.add(new TPMenuOption(itemSupplier));
     }
 
     /**
@@ -81,10 +104,12 @@ public class TPMenu implements TPMenuItem {
     }
 
     public TPMenuItem getItem(int index) {
-        return options.get(index);
+        return options.get(index).get();
     }
 
-    public int getSelectedIndex() { return selected; }
+    public int getSelectedIndex() {
+        return selected;
+    }
 
     private void incrSelected(int amt) {
         selected += amt;
@@ -94,8 +119,38 @@ public class TPMenu implements TPMenuItem {
             selected = options.size() - 1;
     }
 
-    public TPMenuItem getSelectedItem() {
+    public TPMenuOption getSelectedOption() {
         return options.get(selected);
+    }
+
+    public TPMenuItem getSelectedItem() {
+        return options.get(selected).get();
+    }
+
+    /**
+     * Facilitates dynamic menus.
+     */
+    private class TPMenuOption {
+
+        private TPMenuItem item = null;
+        private Supplier<TPMenuItem> itemSupplier;
+
+        public TPMenuOption(TPMenuItem item) {
+            this(() -> item);
+        }
+
+        public TPMenuOption(Supplier<TPMenuItem> itemSupplier) {
+            this.itemSupplier = itemSupplier;
+            update();
+        }
+
+        public void update() {
+            item = itemSupplier.get();
+        }
+
+        public TPMenuItem get() {
+            return item;
+        }
     }
 
 }
