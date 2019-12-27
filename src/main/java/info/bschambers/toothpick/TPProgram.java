@@ -59,7 +59,29 @@ public class TPProgram implements Iterable<TPActor> {
         actors.clear();
         toAdd.clear();
         toRemove.clear();
+        initPlayer();
+    }
+
+    public void initPlayer() {
+        removeActor(player.getActor());
         player.reset();
+        addActor(player.getActor());
+    }
+
+    public TPPlayer getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(TPPlayer newPlayer) {
+        removeActor(player.getActor());
+        player = newPlayer;
+        initPlayer();
+    }
+
+    public void revivePlayer(boolean retainStats) {
+        System.out.println("TPProgram.revivePlayer()");
+        removeActor(player.getActor());
+        player.reset(retainStats);
         addActor(player.getActor());
     }
 
@@ -103,21 +125,6 @@ public class TPProgram implements Iterable<TPActor> {
     public int numActors() { return actors.size(); }
     public TPActor getActor(int index) { return actors.get(index); }
 
-    public TPPlayer getPlayer() { return player; }
-
-    public void setPlayer(TPPlayer player) {
-        this.player = player;
-        if (!actors.contains(player.getActor()))
-            actors.add(player.getActor());
-    }
-
-    public void revivePlayer(boolean retainStats) {
-        System.out.println("TPProgram.revivePlayer()");
-        player.reset(retainStats);
-        if (!actors.contains(player.getActor()))
-            toAdd.add(player.getActor());
-    }
-
     public List<Pt> getIntersectionPoints() { return intersectionPoints; }
 
     public void addIntersectionPoint(Pt p) {
@@ -151,18 +158,22 @@ public class TPProgram implements Iterable<TPActor> {
      * Add and remove actors as appropriate.
      */
     private void housekeeping() {
-        // garbage collection
+        // remove
         for (TPActor a : actors)
             if (!a.isAlive())
                 toRemove.add(a);
         for (TPActor a : toRemove)
             actors.remove(a);
-        // add new actors
-        for (TPActor a : toAdd)
-            actors.add(a);
-        // clear lists
         toRemove.clear();
+        // add
+        for (TPActor a : toAdd)
+            if (!actors.contains(a))
+                actors.add(a);
         toAdd.clear();
+    }
+
+    public void removeActor(TPActor a) {
+        toRemove.add(a);
     }
 
     public void addActor(TPActor a) {
@@ -170,13 +181,12 @@ public class TPProgram implements Iterable<TPActor> {
     }
 
     public boolean contains(TPActor a) {
-        for (TPActor b : actors)
-            if (a == b)
-                return true;
-        return false;
+        return actors.contains(a);
     }
 
     @Override
-    public Iterator<TPActor> iterator() { return actors.iterator(); }
+    public Iterator<TPActor> iterator() {
+        return actors.iterator();
+    }
 
 }

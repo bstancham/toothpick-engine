@@ -21,7 +21,7 @@ public final class TPFactory {
         TPActor actor = new TPActor(singleLineForm(length));
         actor.setPos(pos);
         actor.addBehaviour(WRAP_AT_BOUNDS);
-        actor.setColorGetter(randColorGetter());
+        actor.setColorGetter(new ColorMono(Color.PINK));
         TPPlayer player = new TPPlayer(actor);
         player.setInputHandler(new ThrustInertiaInput());
         return player;

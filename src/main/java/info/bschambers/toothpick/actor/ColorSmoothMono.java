@@ -21,12 +21,9 @@ public class ColorSmoothMono extends ColorMono {
 
     @Override
     public Color get() {
-
         if (Math.random() < changeFreq)
             dir = -dir;
-
         bright += step * dir;
-
         if (bright > 1.0) {
             bright = 1.0;
             dir = -1;
@@ -34,7 +31,6 @@ public class ColorSmoothMono extends ColorMono {
             bright = 0.0;
             dir = 1;
         }
-
         return ColorGetter.setBrightness(col, bright);
     }
 
@@ -47,9 +43,7 @@ public class ColorSmoothMono extends ColorMono {
     }
 
     public ColorGetter copy() {
-	ColorMono cm = new ColorSmoothMono();
-	cm.col = col;
-	return cm;
+        return new ColorSmoothMono(col);
     }
 
 }

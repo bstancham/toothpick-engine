@@ -14,7 +14,7 @@ public class TPActor {
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
     private List<TPBehaviour> behaviours = new ArrayList<>();
-    private transient ColorGetter color = new ColorSmoothMono(Color.PINK);
+    private transient ColorGetter color = new ColorMono(Color.PINK);
     public double x = 0;
     public double y = 0;
     public double angle = 0;
@@ -63,6 +63,7 @@ public class TPActor {
         tp.angleInertia = angleInertia;
         tp.statsNumDeaths = statsNumDeaths;
         tp.statsNumKills = statsNumKills;
+        tp.color = color.copy();
         for (TPBehaviour cb : behaviours)
             tp.behaviours.add(cb);
 
