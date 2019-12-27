@@ -13,6 +13,7 @@ public class TPMenu implements TPMenuItem {
     private boolean delegating = false;
     private List<TPMenuOption> options = new ArrayList<>();
     private int selected = 0;
+    private Runnable initAction = () -> {};
 
     public TPMenu(String title) {
         this(() -> title);
@@ -40,8 +41,9 @@ public class TPMenu implements TPMenuItem {
             if (item instanceof TPMenu) {
                 setDelegating(true);
                 opt.update();
-                item = opt.get();
-                ((TPMenu) item).setParent(this);
+                TPMenu m = (TPMenu) opt.get();
+                m.setParent(this);
+                m.runInitAction();
             } else {
                 getSelectedOption().get().action(c);
             }
@@ -56,6 +58,20 @@ public class TPMenu implements TPMenuItem {
         } else if (c == Code.RIGHT) {
             getSelectedOption().get().action(c);
         }
+    }
+
+    /**
+     * <p>Sets an action to be run when this menu is selected from it's parent menu. Note
+     * that this action is called by the parent on selecting this menu, therefore if this
+     * is the root menu this action will never be called.</p>
+     */
+    public void setInitAction(Runnable initAction) {
+        this.initAction = initAction;
+    }
+
+    public void runInitAction() {
+        System.out.println("TPMenu.runInitAction()");
+        initAction.run();
     }
 
     public boolean isActive() {
