@@ -135,7 +135,8 @@ public class TPSwingUI extends JFrame
 
     protected void paintBackground(Graphics g) {
         if (program.getBGImage() != null)
-            g.drawImage(program.getBGImage(), 0, 0, null);
+            g.drawImage(program.getBGImage(), 0, 0,
+                        panel.getWidth(), panel.getHeight(), null);
     }
 
     protected void paintActors(Graphics g) {

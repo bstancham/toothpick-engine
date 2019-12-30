@@ -24,7 +24,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private Color bgColor = Color.BLACK;
     private Image bgImage = null;
     protected Rect bounds = new Rect(0, 0, 1000, 800);
-    private List<ProgramBehaviour> behaviours;
+    private List<ProgramBehaviour> behaviours = new ArrayList<>();;
     private TPPlayer player = TPPlayer.NULL;
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
