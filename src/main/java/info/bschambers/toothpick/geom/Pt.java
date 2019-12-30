@@ -9,6 +9,7 @@ package info.bschambers.toothpick.geom;
 public final class Pt {
 
     public static final Pt ZERO = new Pt(0.0, 0.0);
+    public static final Pt ONE = new Pt(1.0, 1.0);
 
     public final double x;
     public final double y;

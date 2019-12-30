@@ -1,5 +1,7 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPEncoding;
+
 public class TPText extends TPPart {
 
     @Override
@@ -10,6 +12,14 @@ public class TPText extends TPPart {
     @Override
     public TPText copy() {
         throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        return params;
     }
 
 }

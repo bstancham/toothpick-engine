@@ -1,9 +1,12 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPEncoding;
+import info.bschambers.toothpick.TPEncodingHelper;
+
 /**
  * Wraps a TPActor and a KeyInputHandler.
  */
-public class TPPlayer {
+public class TPPlayer implements TPEncodingHelper {
 
     public static final TPPlayer NULL = new TPPlayer();
 
@@ -32,6 +35,10 @@ public class TPPlayer {
         return actor;
     }
 
+    public void setActor(TPActor a) {
+        actor = a;
+    }
+
     public KeyInputHandler getInputHandler() {
         return input;
     }
@@ -51,6 +58,17 @@ public class TPPlayer {
         actor = archetype.copy();
         if (retainStats)
             actor.copyStats(old);
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        params.addMethod(TPActor.class, getArchetype(), "setArchetype");
+        params.addMethod(TPActor.class, getActor(), "setActor");
+        params.addMethod(KeyInputHandler.class, getInputHandler(), "setInputHandler");
+        return params;
     }
 
 }

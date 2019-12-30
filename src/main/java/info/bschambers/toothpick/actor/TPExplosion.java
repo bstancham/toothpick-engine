@@ -1,18 +1,27 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPEncoding;
 import info.bschambers.toothpick.geom.Pt;
 
 public class TPExplosion extends TPPart {
 
-    private Pt pos;
+    private Pt pos = Pt.ZERO;
     private int lifetime = 50;
     private int count = 1;
+
+    public TPExplosion() {}
 
     public TPExplosion(Pt pos) {
         this.pos = pos;
     }
 
-    public Pt getPos() { return pos; }
+    public Pt getPos() {
+        return pos;
+    }
+
+    public void setPos(Pt pos) {
+        this.pos = pos;
+    }
 
     public double getMagnitude() {
         return (double) lifetime / (double) count;
@@ -20,7 +29,10 @@ public class TPExplosion extends TPPart {
 
     @Override
     public TPExplosion copy() {
-        return new TPExplosion(pos);
+        TPExplosion e = new TPExplosion(pos);
+        e.lifetime = lifetime;
+        e.count = count;
+        return e;
     }
 
     @Override
@@ -29,6 +41,15 @@ public class TPExplosion extends TPPart {
         if (count >= lifetime)
             if (getForm() != null)
                 getForm().removePart(this);
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        params.addMethod(Pt.class, getPos(), "setPos");
+        return params;
     }
 
 }

@@ -1,10 +1,12 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPEncoding;
+import info.bschambers.toothpick.TPEncodingHelper;
 import info.bschambers.toothpick.geom.Pt;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TPForm {
+public class TPForm implements TPEncodingHelper {
 
     public static final TPForm NULL = new TPForm();
 
@@ -33,15 +35,25 @@ public class TPForm {
         return form;
     }
 
-    public TPActor getActor() { return actor; }
+    public TPActor getActor() {
+        return actor;
+    }
 
-    public void setActor(TPActor a) { actor = a; }
+    public void setActor(TPActor a) {
+        actor = a;
+    }
 
-    public boolean isAlive() { return alive; }
+    public boolean isAlive() {
+        return alive;
+    }
 
-    public int numParts() { return parts.size(); }
+    public int numParts() {
+        return parts.size();
+    }
 
-    public TPPart getPart(int index) { return parts.get(index); }
+    public TPPart getPart(int index) {
+        return parts.get(index);
+    }
 
     /**
      * Schedule part to be added on next update.
@@ -62,22 +74,29 @@ public class TPForm {
         // remove dead parts
         for (TPPart p : toRemove)
             parts.remove(p);
+        toRemove.clear();
         // add new parts
         for (TPPart p : toAdd)
             parts.add(p);
+        toAdd.clear();
         // is form dead?
         if (parts.size() < 1)
             alive = false;
-
-        toRemove.clear();
-        toAdd.clear();
     }
 
     public void update(TPActor a) {
         housekeeping();
-        // update position
         for (TPPart p : parts)
             p.update(a.x, a.y, a.angle);
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        params.addListMethod(TPPart.class, parts, "addPart");
+        return params;
     }
 
 }

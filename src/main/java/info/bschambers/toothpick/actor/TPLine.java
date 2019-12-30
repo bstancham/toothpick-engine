@@ -1,12 +1,15 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPEncoding;
 import info.bschambers.toothpick.geom.Line;
 import info.bschambers.toothpick.geom.Pt;
 
 public class TPLine extends TPPart {
 
     private Line archetype;
-    private Line line;
+    private transient Line line;
+
+    public TPLine() {}
 
     public TPLine(Line line) {
         this.archetype = line;
@@ -36,11 +39,21 @@ public class TPLine extends TPPart {
         return ln;
     }
 
-    public Line getArchetype() { return archetype; }
+    public Line getArchetype() {
+        return archetype;
+    }
 
-    public Line getLine() { return line; }
+    public void setArchetype(Line ln) {
+        archetype = ln;
+    }
 
-    public void setLine(Line ln) { line = ln; }
+    public Line getLine() {
+        return line;
+    }
+
+    private void setLine(Line ln) {
+        line = ln;
+    }
 
     /**
      * TODO: add more params to enable physics simulation - magnitude/direction/sharpness
@@ -56,6 +69,15 @@ public class TPLine extends TPPart {
             getActor().deathEvent(protagonist, p);
         if (protagonist.getActor() != null)
             protagonist.getActor().killEvent(this, p);
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        params.addMethod(Line.class, getArchetype(), "setArchetype");
+        return params;
     }
 
 }

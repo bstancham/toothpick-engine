@@ -1,8 +1,9 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPEncodingHelper;
 import java.awt.Color;
 
-public interface ColorGetter {
+public interface ColorGetter extends TPEncodingHelper {
 
     Color get();
 

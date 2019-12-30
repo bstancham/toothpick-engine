@@ -18,14 +18,14 @@ import java.util.List;
  * TPUI uses the various accessor methods to get game assets for display - NOTE: that
  * some of these may return null, so they always need to be checked!
  */
-public class TPProgram implements Iterable<TPActor> {
+public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     private String title;
     private Color bgColor = Color.BLACK;
     private Image bgImage = null;
     protected Rect bounds = new Rect(0, 0, 1000, 800);
-    private transient List<ProgramBehaviour> behaviours;
-    private TPPlayer player;
+    private List<ProgramBehaviour> behaviours;
+    private TPPlayer player = TPPlayer.NULL;
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
@@ -41,10 +41,6 @@ public class TPProgram implements Iterable<TPActor> {
 
     public TPProgram(String title) {
         this.title = title;
-        // initialize transient fields
-        behaviours = new ArrayList<ProgramBehaviour>();
-        player = TPPlayer.NULL;
-
         init();
     }
 
@@ -117,6 +113,7 @@ public class TPProgram implements Iterable<TPActor> {
     public void setSmearMode(boolean val) { smearMode = val; }
 
     public Rect getBounds() { return bounds; }
+    public void setBounds(Rect bounds) { this.bounds = bounds; }
 
     public void addBehaviour(ProgramBehaviour pb) {
         behaviours.add(pb);
@@ -187,6 +184,30 @@ public class TPProgram implements Iterable<TPActor> {
     @Override
     public Iterator<TPActor> iterator() {
         return actors.iterator();
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        params.addMethod(String.class, getTitle(), "setTitle");
+        params.addMethod(Boolean.class, getPauseForMenu(), "setPauseForMenu");
+        params.addMethod(Boolean.class, isShowIntersections(), "setShowIntersections");
+        params.addMethod(Boolean.class, isSmearMode(), "setSmearMode");
+        params.addMethod(Color.class, getBGColor(), "setBGColor");
+        // params.addMethod(Image.class, getBGImage(), "setBGImage");
+        params.addMethod(Rect.class, getBounds(), "setBounds");
+        params.addMethod(TPPlayer.class, getPlayer(), "setPlayer");
+        List<ProgramBehaviour> pbs = new ArrayList<>();
+        for (ProgramBehaviour pb : behaviours)
+            pbs.add(pb);
+        params.addListMethod(ProgramBehaviour.class, pbs, "addBehaviour");
+        List<TPActor> allActors = new ArrayList<>();
+        for (TPActor a : actors)
+            allActors.add(a);
+        params.addListMethod(TPActor.class, allActors, "addActor");
+        return params;
     }
 
 }

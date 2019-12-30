@@ -1,20 +1,22 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.TPEncoding;
+import info.bschambers.toothpick.TPEncodingHelper;
 import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.Pt;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TPActor {
+public class TPActor implements TPEncodingHelper {
 
     public static final TPActor NULL = new TPActor(new TPForm(new TPPart[0]));
 
-    private transient TPForm form;
+    private TPForm form;
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
     private List<TPBehaviour> behaviours = new ArrayList<>();
-    private transient ColorGetter color = new ColorMono(Color.PINK);
+    private ColorGetter color = new ColorMono(Color.PINK);
     public double x = 0;
     public double y = 0;
     public double angle = 0;
@@ -29,10 +31,7 @@ public class TPActor {
     }
 
     public TPActor(TPForm form) {
-        this.form = form;
-        this.form.setActor(this);
-        // initialize transient fields
-        behaviours = new ArrayList<TPBehaviour>();
+        setForm(form);
     }
 
     public String infoString() {
@@ -77,7 +76,14 @@ public class TPActor {
         statsNumKills = tp.statsNumKills;
     }
 
-    public TPForm getForm() { return form; }
+    public TPForm getForm() {
+        return form;
+    }
+
+    public void setForm(TPForm form) {
+        this.form = form;
+        this.form.setActor(this);
+    }
 
     public Color getColor() { return color.get(); }
 
@@ -133,6 +139,26 @@ public class TPActor {
 
     public void killEvent(TPLine victim, Pt p) {
         statsNumKills++;
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        params.addField(Double.class, x, "x");
+        params.addField(Double.class, y, "y");
+        params.addField(Double.class, angle, "angle");
+        params.addField(Double.class, xInertia, "xInertia");
+        params.addField(Double.class, yInertia, "yInertia");
+        params.addField(Double.class, angleInertia, "angleInertia");
+        params.addField(Integer.class, statsNumDeaths, "statsNumDeaths");
+        params.addField(Integer.class, statsNumKills, "statsNumKills");
+        params.addMethod(ColorGetter.class, color, "setColorGetter");
+        params.addMethod(TPForm.class, getForm(), "setForm");
+        params.addListMethod(TPBehaviour.class, behaviours, "addBehaviour");
+        params.addListMethod(TPActor.class, children, "addChild");
+        return params;
     }
 
 }

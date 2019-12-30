@@ -1,12 +1,18 @@
 package info.bschambers.toothpick.actor;
 
-public abstract class TPPart {
+import info.bschambers.toothpick.TPEncodingHelper;
+
+public abstract class TPPart implements TPEncodingHelper {
 
     protected TPForm form = null;
 
-    public TPForm getForm() { return form; }
+    public TPForm getForm() {
+        return form;
+    }
 
-    public void setForm(TPForm form) { this.form = form; }
+    public void setForm(TPForm form) {
+        this.form = form;
+    }
 
     public TPActor getActor() {
         if (form == null)

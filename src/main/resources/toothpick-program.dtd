@@ -1,0 +1,55 @@
+<!-- toothpick-program.dtd -->
+
+<!-- AN OBJECT INSTANCE
+
+     NOTE: object class must have a no-args contructor -->
+<!ELEMENT instance (field*, method*)>
+<!ATTLIST instance class CDATA #REQUIRED>
+
+<!-- SETTING UP OBJECT STATE -->
+
+<!-- SET A PUBLIC FIELD -->
+<!ELEMENT field (instance|prim|point|line|rect|color)>
+<!ATTLIST field name CDATA #REQUIRED>
+<!ATTLIST field class CDATA #IMPLIED>
+
+<!-- INVOKE A PUBLIC METHOD
+
+     NOTE: method must take a single argument - if multiple child elements are
+  present, the method will be applied once for each child element using that
+  element as the argument -->
+<!ELEMENT method (instance*, prim*, point*, line*, rect*, color*)>
+<!ATTLIST method name CDATA #REQUIRED>
+<!ATTLIST method class CDATA #IMPLIED>
+
+<!-- SPECIAL TYPES - FOR FIELD AND METHOD ARGUMENTS -->
+
+<!-- PRIMITIVE VALUES (yes, I know that string is not a java primitive) -->
+<!ELEMENT prim EMPTY>
+<!ATTLIST prim type (byte|boolean|char|double|float|int|long|short|string) #REQUIRED>
+<!ATTLIST prim value CDATA #REQUIRED>
+
+<!-- A 2D POINT (x & y co-ordinate values are double) -->
+<!ELEMENT point EMPTY>
+<!ATTLIST point x CDATA #REQUIRED>
+<!ATTLIST point y CDATA #REQUIRED>
+
+<!-- A 2D LINE (co-ordinate values are double) -->
+<!ELEMENT line EMPTY>
+<!ATTLIST line x1 CDATA #REQUIRED>
+<!ATTLIST line y1 CDATA #REQUIRED>
+<!ATTLIST line x2 CDATA #REQUIRED>
+<!ATTLIST line y2 CDATA #REQUIRED>
+
+<!-- A 2D RECTANGLE (co-ordinate values are int) -->
+<!ELEMENT rect EMPTY>
+<!ATTLIST rect x1 CDATA #REQUIRED>
+<!ATTLIST rect y1 CDATA #REQUIRED>
+<!ATTLIST rect x2 CDATA #REQUIRED>
+<!ATTLIST rect y2 CDATA #REQUIRED>
+
+<!-- AN RGB COLOR OBJECT (rgb values are int (0-255)) -->
+<!ELEMENT color EMPTY>
+<!ATTLIST color r CDATA #REQUIRED>
+<!ATTLIST color g CDATA #REQUIRED>
+<!ATTLIST color b CDATA #REQUIRED>
