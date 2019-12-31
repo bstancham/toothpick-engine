@@ -31,30 +31,31 @@ public final class TPFactory {
 
     public static TPActor lineActor(TPProgram prog) {
         TPForm form = singleLineForm(randLineLength());
-        return droneActor(form, prog.getBounds());
+        return droneActor(form, prog);
     }
 
     public static TPActor regularPolygonActor(TPProgram prog) {
         double size = rand(20, 100);
         int numSides = randInt(3, 8);
         TPForm form = regularPolygonForm(size, numSides);
-        return droneActor(form, prog.getBounds());
+        return droneActor(form, prog);
     }
 
     public static TPActor regularThistleActor(TPProgram prog) {
         double size = rand(20, 100);
         int numSides = randInt(3, 16);
         TPForm form = regularThistleForm(size, numSides);
-        return droneActor(form, prog.getBounds());
+        return droneActor(form, prog);
     }
 
-    public static TPActor droneActor(TPForm form, Rect bounds) {
+    public static TPActor droneActor(TPForm form, TPProgram prog) {
         TPActor actor = new TPActor(form);
         actor.setColorGetter(randColorGetter());
         actor.addBehaviour(WRAP_AT_BOUNDS);
         setRandHeading(actor);
         actor.angleInertia = randAngleInertia();
-        actor.setPos(randBoundaryPos(bounds));
+        actor.setPos(randBoundaryPos(prog.getGeometry().getWidth(),
+                                     prog.getGeometry().getHeight()));
         return actor;
     }
 
@@ -136,15 +137,15 @@ public final class TPFactory {
         return Math.random() * max;
     }
 
-    public static Pt randBoundaryPos(Rect bounds) {
+    public static Pt randBoundaryPos(int width, int height) {
         if (Math.random() < 0.5) {
             // horizontal edges
-            return new Pt(rand(bounds.x1, bounds.x2),
-                          (Math.random() < 0.5 ? bounds.y1 : bounds.y2));
+            return new Pt(rand(0, width),
+                          (Math.random() < 0.5 ? 0 : height));
         } else {
             // vertical edges
-            return new Pt((Math.random() < 0.5 ? bounds.x1 : bounds.x2),
-                          rand(bounds.y1, bounds.y2));
+            return new Pt((Math.random() < 0.5 ? 0 : width),
+                          rand(0, height));
         }
     }
 

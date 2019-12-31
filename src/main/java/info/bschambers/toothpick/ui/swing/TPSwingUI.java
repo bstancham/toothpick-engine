@@ -1,5 +1,6 @@
 package info.bschambers.toothpick.ui.swing;
 
+import info.bschambers.toothpick.TPGeometry;
 import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.ui.TPMenu;
@@ -134,6 +135,11 @@ public class TPSwingUI extends JFrame
     }
 
     protected void paintBackground(Graphics g) {
+        // boundary rectangle
+        g.setColor(Color.GRAY);
+        TPGeometry geom = program.getGeometry();
+        Gfx.rectangle(g, geom, 0, 0, geom.getWidth(), geom.getHeight());
+        // background image
         if (program.getBGImage() != null)
             g.drawImage(program.getBGImage(), 0, 0,
                         panel.getWidth(), panel.getHeight(), null);
@@ -141,7 +147,7 @@ public class TPSwingUI extends JFrame
 
     protected void paintActors(Graphics g) {
         for (int i = 0; i < program.numActors(); i++)
-            Gfx.actor(g, program.getActor(i));
+            Gfx.actor(g, program.getGeometry(), program.getActor(i));
     }
 
     protected void paintOverlay(Graphics g) {

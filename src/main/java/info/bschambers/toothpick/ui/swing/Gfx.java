@@ -1,8 +1,10 @@
 package info.bschambers.toothpick.ui.swing;
 
+import info.bschambers.toothpick.TPGeometry;
 import info.bschambers.toothpick.actor.*;
 import info.bschambers.toothpick.geom.Line;
 import info.bschambers.toothpick.geom.Pt;
+import info.bschambers.toothpick.geom.Rect;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
 import java.awt.Color;
@@ -13,17 +15,61 @@ import java.util.List;
 
 public class Gfx {
 
+    private static final TPGeometry TPG = new TPGeometry();
+
     public static void line(Graphics g, Line ln) {
-        line(g, ln.start, ln.end);
+        line(g, TPG, ln);
+    }
+
+    public static void line(Graphics g, TPGeometry geom, Line ln) {
+        line(g, geom, ln.start, ln.end);
     }
 
     public static void line(Graphics g, Pt start, Pt end) {
-        g.drawLine((int) start.x, (int) start.y, (int) end.x, (int) end.y);
+        line(g, TPG, start, end);
+    }
+
+    public static void line(Graphics g, TPGeometry geom, Pt start, Pt end) {
+        line(g, geom, start.x, start.y, end.x, end.y);
+    }
+
+    public static void line(Graphics g, TPGeometry geom,
+                            double x1, double y1, double x2, double y2) {
+        g.drawLine((int) geom.getX(x1), (int) geom.getY(y1),
+                   (int) geom.getX(x2), (int) geom.getY(y2));
+    }
+
+    public static void rectangle(Graphics g, Rect r) {
+        rectangle(g, TPG, r);
+    }
+
+    public static void rectangle(Graphics g, TPGeometry geom, Rect r) {
+        int w = r.x2 - r.x1;
+        int h = r.y2 - r.y1;
+        rectangle(g, geom, r.x1, r.y1, w, h);
+    }
+
+    public static void rectangle(Graphics g, TPGeometry geom, int x, int y, int w, int h) {
+        int x2 = x + w;
+        int y2 = y + h;
+        // manually drawing the lines of the rectangle - for some reason I couldn't get
+        // g.drawRect to behave properly with scaling...
+        line(g, geom, x, y, x2, y);
+        line(g, geom, x, y2, x2, y2);
+        line(g, geom, x, y, x, y2);
+        line(g, geom, x2, y, x2, y2);
     }
 
     public static void rectangle(Graphics g, Rectangle r) {
-        g.drawRect(r.x, r.y, r.width, r.height);
+        rectangle(g, TPG, r);
     }
+
+    public static void rectangle(Graphics g, TPGeometry geom, Rectangle r) {
+        g.drawRect((int) geom.getX(r.x), (int) geom.getY(r.y),
+                   (int) geom.scale * r.width, (int) geom.scale * r.height);
+    }
+
+
 
     public static void crosshairs(Graphics g, Pt p, int size) {
         int x = (int) p.x;
@@ -44,30 +90,30 @@ public class Gfx {
 	g.drawArc(x, y, size, size, startAngle, arcAngle);
     }
 
-    public static void actor(Graphics g, TPActor a) {
+    public static void actor(Graphics g, TPGeometry geom, TPActor a) {
         g.setColor(a.getColor());
-        form(g, a.getForm());
+        form(g, geom, a.getForm());
     }
 
-    public static void form(Graphics g, TPForm form) {
+    public static void form(Graphics g, TPGeometry geom, TPForm form) {
         for (int i = 0; i < form.numParts(); i++) {
             TPPart part = form.getPart(i);
             if (part instanceof TPLine) {
-                line(g, ((TPLine) part).getLine());
+                line(g, geom, ((TPLine) part).getLine());
             } else if (part instanceof TPExplosion) {
-                explosion(g, (TPExplosion) part);
+                explosion(g, geom, (TPExplosion) part);
             }
         }
     }
 
-    public static void explosion(Graphics g, TPExplosion ex) {
+    public static void explosion(Graphics g, TPGeometry geom, TPExplosion ex) {
         double scale = 70;
         double mag = Math.sin(Math.PI * ex.getMagnitude());
         int size = (int) (mag * scale);
         int half = size / 2;
         int x = (int) (ex.getPos().x) - half;
         int y = (int) (ex.getPos().y) - half;
-        g.fillOval(x, y, size, size);
+        g.fillOval((int) geom.getX(x), (int) geom.getY(y), size, size);
     }
 
     public static void menu(Graphics g, TPMenu menu) {

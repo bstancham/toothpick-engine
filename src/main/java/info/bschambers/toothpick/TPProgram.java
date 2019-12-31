@@ -23,20 +23,21 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private String title;
     private Color bgColor = Color.BLACK;
     private Image bgImage = null;
-    protected Rect bounds = new Rect(0, 0, 1000, 800);
-    private List<ProgramBehaviour> behaviours = new ArrayList<>();;
-    private TPPlayer player = TPPlayer.NULL;
-    protected List<TPActor> actors = new ArrayList<>();
-    private List<TPActor> toAdd = new ArrayList<>();
-    private List<TPActor> toRemove = new ArrayList<>();
+    private TPGeometry geom = new TPGeometry();
     private boolean pauseForMenu = true;
     protected boolean keepIntersectionPoints = false;
     protected List<Pt> intersectionPoints = new ArrayList<>();
     private boolean smearMode = false;
+    private TPPlayer player = TPPlayer.NULL;
+    private List<ProgramBehaviour> behaviours = new ArrayList<>();;
+    protected List<TPActor> actors = new ArrayList<>();
+    private List<TPActor> toAdd = new ArrayList<>();
+    private List<TPActor> toRemove = new ArrayList<>();
     private int stopAfter = -1;
 
     public TPProgram() {
         this("UNTITLED PROGRAM");
+        geom.setupAndCenter(1000, 800);
     }
 
     public TPProgram(String title) {
@@ -112,8 +113,13 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     public boolean isSmearMode() { return smearMode; }
     public void setSmearMode(boolean val) { smearMode = val; }
 
-    public Rect getBounds() { return bounds; }
-    public void setBounds(Rect bounds) { this.bounds = bounds; }
+    public TPGeometry getGeometry() {
+        return geom;
+    }
+
+    public void setGeometry(TPGeometry val) {
+        geom = val;
+    }
 
     public void addBehaviour(ProgramBehaviour pb) {
         behaviours.add(pb);
@@ -192,21 +198,20 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     public TPEncoding getEncoding() {
         TPEncoding params = new TPEncoding();
         params.addMethod(String.class, getTitle(), "setTitle");
+        params.addMethod(Color.class, getBGColor(), "setBGColor");
+        // params.addMethod(Image.class, getBGImage(), "setBGImage");
+        params.addMethod(TPGeometry.class, getGeometry(), "setGeometry");
         params.addMethod(Boolean.class, getPauseForMenu(), "setPauseForMenu");
         params.addMethod(Boolean.class, isShowIntersections(), "setShowIntersections");
         params.addMethod(Boolean.class, isSmearMode(), "setSmearMode");
-        params.addMethod(Color.class, getBGColor(), "setBGColor");
-        // params.addMethod(Image.class, getBGImage(), "setBGImage");
-        params.addMethod(Rect.class, getBounds(), "setBounds");
         params.addMethod(TPPlayer.class, getPlayer(), "setPlayer");
-        List<ProgramBehaviour> pbs = new ArrayList<>();
-        for (ProgramBehaviour pb : behaviours)
-            pbs.add(pb);
-        params.addListMethod(ProgramBehaviour.class, pbs, "addBehaviour");
-        List<TPActor> allActors = new ArrayList<>();
+        params.addListMethod(ProgramBehaviour.class, behaviours, "addBehaviour");
+        List<TPActor> exceptPlayer = new ArrayList<>();
+        // don't add the player-actor twice
         for (TPActor a : actors)
-            allActors.add(a);
-        params.addListMethod(TPActor.class, allActors, "addActor");
+            if (a != player.getActor())
+                exceptPlayer.add(a);
+        params.addListMethod(TPActor.class, exceptPlayer, "addActor");
         return params;
     }
 
