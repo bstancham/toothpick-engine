@@ -1,6 +1,6 @@
 * About
 
-The Toothpick Engine is a game engine baseded on the 2D geometry of intersecting
+The Toothpick Engine is a game engine based on the 2D geometry of intersecting
 lines.
 
 ** History
@@ -15,7 +15,7 @@ This new version is a complete rewrite. Most of the concepts and game mechanics
 were present since fairly early days but the architecture has (hopefully) been
 improved, especially with relation to separation of the UI and logic.
 
-* Build
+* Building
 
 #+BEGIN_SRC
 gradlew all
@@ -33,6 +33,148 @@ gradlew jar
 
 - Java 8
 - JUnit
+
+* Toothpick Engine Architecture
+
+This is an overview of the architecture of the Toothpick Engine. Read the
+javadoc for more detailed information on classes.
+
+** Simple Examples
+
+Hello, World - opens a do-nothing window:
+
+#+BEGIN_SRC java :classname ToothpickEngineExample.java
+import info.bschambers.toothpick.*;
+import info.bschambers.toothpick.ui.swing.SwingUI;
+
+public class ToothpickEngineExample {
+
+    public static void main(String[] args) {
+        TPSwingUI ui = new TPSwingUI("Hello, World!");
+        TPBase base = new TPBase();
+        base.setUI(ui);
+        ui.setVisible(true);
+        base.run();
+    }
+}
+#+END_SRC
+
+With minimal setup we can make a simple toothpick game:
+
+#+BEGIN_SRC java
+// insert this before calling base.run()
+TPProgram prog = new TPProgram();
+prog.addBehaviour(new MantainDronesNum());
+prog.addBehaviour(new ToothpickPhysics());
+prog.setPlayer(new Player(TPFactory.playerLine(200, 200)));
+base.setProgram(prog);
+#+END_SRC
+
+To add a menu system (the menu will appear when you press ESC):
+
+#+BEGIN_SRC java
+// insert this before calling base.run()
+TPMenu menu = new TPMenu("Main Menu");
+base.setMenu(menu);
+#+END_SRC
+
+** Toothpick Engine Overview
+
+At the root is a TPBase instance which has reference to one of each:
+- TPProgram
+- TPUI
+- TPMenu
+
+TPBase provides main program-loop (inside the run method). The basic anatomy of
+the program-loop looks like this:
+- tell program to update
+- tell UI to repaint
+- regulate timing
+
+** TPProgram
+
+TPProgram defines all game logic.
+
+The TPProgram update function:
+- tell each TPActor to update
+- do collision detection
+- do garbage collection/housekeeping
+
+TPActor:
+- TPController
+- TPForm
+
+- ColorGetter
+- TPLine
+
+*** Behaviours-Driven Architecture
+
+** TPUI
+
+The UI interface is designed to be a plugin architecture.
+
+TPUI is a very simple interface which defines the user interface (SwingUI is a
+fully functional implementation using the java swing library).
+
+*** Implementing updateUI()
+
+The following things need to be done in order to achieve full implementation:
+- paint actors (with TPGeometry transformation)
+- paint bound (with TPGeometry transformation)
+- paint menus
+- paint line intersection points
+- handle smear-mode
+
+** TPMenu
+
+** TPSound
+
+Plugin architecture:
+
+#+BEGIN_SRC java :classname TPSound.java
+public interface TPSound {
+    void explosion();
+}
+#+END_SRC
+
+** Load & Save
+
+TPProgram state is loaded and saved using TPXml.
+
+In order to be loaded and saved properly, classes must implement
+TPEncodingHelper - this is used to specify which parameters need to be saved and
+how to re-set them after re-instantiation.
+
+#+BEGIN_SRC java :classname TPEncodingHelper.java
+public interface TPEncodingHelper {
+    TPEncoding getEncoding();
+}
+#+END_SRC
+
+TPEncodingHelper is designed as an intermediate layer between the classes and
+the encoding implementation. Encoding is currently done using XML and TPXml, but
+other systems could easily be implemeneted.
+
+Encoding requirements:
+- classes must have a no-args constructor
+
+...
+
+Certain objects are handled automatically by TPXml... presumably another
+encoding system would have to also implement these in order to maintains
+compatibility?
+
+** Game Installation
+
+*** Sound Module Plugins
+
+Put sound modules in the sound dir - the program will detect them at startup and
+you can switch between them via the settings menu.
+
+*** UI As Plugin
+
+The UI is also designed to be easily pluggable, however it must be specified in
+the config file and cannot be switched on-the-fly.
 
 * License
 
