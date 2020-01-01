@@ -15,18 +15,20 @@ import java.util.List;
 
 public class Gfx {
 
-    private static final TPGeometry TPG = new TPGeometry();
-
     public static void line(Graphics g, Line ln) {
-        line(g, TPG, ln);
+        line(g, ln);
+    }
+
+    public static void line(Graphics g, Pt start, Pt end) {
+        line(g, start, end);
+    }
+
+    public static void line(Graphics g, double x1, double y1, double x2, double y2) {
+        g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
     }
 
     public static void line(Graphics g, TPGeometry geom, Line ln) {
         line(g, geom, ln.start, ln.end);
-    }
-
-    public static void line(Graphics g, Pt start, Pt end) {
-        line(g, TPG, start, end);
     }
 
     public static void line(Graphics g, TPGeometry geom, Pt start, Pt end) {
@@ -35,12 +37,21 @@ public class Gfx {
 
     public static void line(Graphics g, TPGeometry geom,
                             double x1, double y1, double x2, double y2) {
-        g.drawLine((int) geom.getX(x1), (int) geom.getY(y1),
-                   (int) geom.getX(x2), (int) geom.getY(y2));
+        g.drawLine((int) geom.xToScreen(x1), (int) geom.yToScreen(y1),
+                   (int) geom.xToScreen(x2), (int) geom.yToScreen(y2));
     }
 
     public static void rectangle(Graphics g, Rect r) {
-        rectangle(g, TPG, r);
+        rectangle(g, r);
+    }
+
+    public static void rectangle(Graphics g, int x, int y, int w, int h) {
+        int x2 = x + w;
+        int y2 = y + h;
+        line(g, x, y, x2, y);
+        line(g, x, y2, x2, y2);
+        line(g, x, y, x, y2);
+        line(g, x2, y, x2, y2);
     }
 
     public static void rectangle(Graphics g, TPGeometry geom, Rect r) {
@@ -52,8 +63,6 @@ public class Gfx {
     public static void rectangle(Graphics g, TPGeometry geom, int x, int y, int w, int h) {
         int x2 = x + w;
         int y2 = y + h;
-        // manually drawing the lines of the rectangle - for some reason I couldn't get
-        // g.drawRect to behave properly with scaling...
         line(g, geom, x, y, x2, y);
         line(g, geom, x, y2, x2, y2);
         line(g, geom, x, y, x, y2);
@@ -61,22 +70,24 @@ public class Gfx {
     }
 
     public static void rectangle(Graphics g, Rectangle r) {
-        rectangle(g, TPG, r);
+        g.drawRect(r.x, r.y, r.width, r.height);
     }
 
     public static void rectangle(Graphics g, TPGeometry geom, Rectangle r) {
-        g.drawRect((int) geom.getX(r.x), (int) geom.getY(r.y),
+        g.drawRect((int) geom.xToScreen(r.x), (int) geom.yToScreen(r.y),
                    (int) geom.scale * r.width, (int) geom.scale * r.height);
     }
 
-
-
-    public static void crosshairs(Graphics g, Pt p, int size) {
-        int x = (int) p.x;
-        int y = (int) p.y;
+    public static void crosshairs(Graphics g, double x, double y, int size) {
         int s = size / 2;
-        g.drawLine(x - s, y, x + s, y);
-        g.drawLine(x, y - s, x, y + s);
+        line(g, x - s, y, x + s, y);
+        line(g, x, y - s, x, y + s);
+    }
+
+    public static void crosshairs(Graphics g, TPGeometry geom, double x, double y, int size) {
+        int s = size / 2;
+        line(g, geom, x - s, y, x + s, y);
+        line(g, geom, x, y - s, x, y + s);
     }
 
     public static void centeredSquare(Graphics g, int x, int y, int size) {
@@ -107,13 +118,13 @@ public class Gfx {
     }
 
     public static void explosion(Graphics g, TPGeometry geom, TPExplosion ex) {
-        double scale = 70;
+        double scale = geom.scale * 100;
         double mag = Math.sin(Math.PI * ex.getMagnitude());
         int size = (int) (mag * scale);
         int half = size / 2;
         int x = (int) (ex.getPos().x) - half;
         int y = (int) (ex.getPos().y) - half;
-        g.fillOval((int) geom.getX(x), (int) geom.getY(y), size, size);
+        g.fillOval((int) geom.xToScreen(x), (int) geom.yToScreen(y), size, size);
     }
 
     public static void menu(Graphics g, TPMenu menu) {

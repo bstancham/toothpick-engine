@@ -158,9 +158,12 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     }
 
     /**
-     * Add and remove actors as appropriate.
+     * <p>Add and remove actors as appropriate.</p>
+     *
+     * <p>This is called by {@link update}, however you may occasionally want to call it
+     * manually to update actors without advancing movement.</p>
      */
-    private void housekeeping() {
+    public void housekeeping() {
         // remove
         for (TPActor a : actors)
             if (!a.isAlive())

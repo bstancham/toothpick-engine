@@ -135,10 +135,6 @@ public class TPSwingUI extends JFrame
     }
 
     protected void paintBackground(Graphics g) {
-        // boundary rectangle
-        g.setColor(Color.GRAY);
-        TPGeometry geom = program.getGeometry();
-        Gfx.rectangle(g, geom, 0, 0, geom.getWidth(), geom.getHeight());
         // background image
         if (program.getBGImage() != null)
             g.drawImage(program.getBGImage(), 0, 0,
@@ -151,10 +147,15 @@ public class TPSwingUI extends JFrame
     }
 
     protected void paintOverlay(Graphics g) {
+        // boundary rectangle
+        g.setColor(Color.GRAY);
+        TPGeometry geom = program.getGeometry();
+        Gfx.rectangle(g, geom, 0, 0, geom.getWidth(), geom.getHeight());
+        // line intersection points
         if (program.isShowIntersections()) {
             g.setColor(Color.YELLOW);
             for (Pt p : program.getIntersectionPoints())
-                Gfx.crosshairs(g, p, 10);
+                Gfx.crosshairs(g, program.getGeometry(), (int) p.x, (int) p.y, 10);
         }
     }
 

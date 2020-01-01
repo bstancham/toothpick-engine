@@ -43,12 +43,26 @@ public class TPGeometry implements TPEncodingHelper {
         return yCenter;
     }
 
-    public double getX(double x) {
-        return xCenter + (x + xOffset) * scale;
+    public double xToScreen(double x) {
+        return xCenter + ((x + xOffset) * scale);
     }
 
-    public double getY(double y) {
-        return yCenter + (y + yOffset) * scale;
+    public double yToScreen(double y) {
+        return yCenter + ((y + yOffset) * scale);
+    }
+
+    public double xFromScreen(double x) {
+        if (scale == 0)
+            return xCenter;
+        double temp = -((xCenter + xOffset) - x);
+        return temp / scale;
+    }
+
+    public double yFromScreen(double y) {
+        if (scale == 0)
+            return yCenter;
+        double temp = -((yCenter + yOffset) - y);
+        return temp / scale;
     }
 
     /*---------------------------- Encoding ----------------------------*/
