@@ -34,12 +34,7 @@ gradlew jar
 - Java 8
 - JUnit
 
-* Toothpick Engine Architecture
-
-This is an overview of the architecture of the Toothpick Engine. Read the
-javadoc for more detailed information on classes.
-
-** Simple Examples
+* Simple Examples
 
 Hello, World - opens a do-nothing window:
 
@@ -78,7 +73,8 @@ TPMenu menu = new TPMenu("Main Menu");
 base.setMenu(menu);
 #+END_SRC
 
-** Toothpick Engine Overview
+* Toothpick Engine Architecture (read the javadoc for more detailed information)
+** Overview
 
 At the root is a TPBase instance which has reference to one of each:
 - TPProgram
@@ -175,6 +171,34 @@ you can switch between them via the settings menu.
 
 The UI is also designed to be easily pluggable, however it must be specified in
 the config file and cannot be switched on-the-fly.
+
+* Default Controls
+** Menu Navigation
+
+- ~ESC~: activate/deactivate menu
+- ~h~: hide/show menu without deactivating it
+- ~ENTER~: run menu item or enter sub-menu
+- ~BACKSPACE~: up to parent-menu
+- ~UP/DOWN~: select previous/next menu item
+- ~LEFT/RIGHT~: decrement/increment incrementable item or toggle boolean
+
+** Player 1
+
+- ~w~: left
+- ~e~: right
+- ~q~: up
+- ~a~: down
+- ~z~: action
+- ~1~: zoom in
+- ~2~: zoom out
+
+** Player 2
+
+- ~[~: left
+- ~]~: right
+- ~p~: up
+- ~;~: down
+- ~/~: action
 
 * License
 
