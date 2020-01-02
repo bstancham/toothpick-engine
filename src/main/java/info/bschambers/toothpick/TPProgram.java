@@ -74,6 +74,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         removeActor(player.getActor());
         player = newPlayer;
         addActor(player.getActor());
+        updateActorsInPlace();
     }
 
     public void revivePlayer(boolean retainStats) {
