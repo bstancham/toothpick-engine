@@ -1,4 +1,4 @@
-package info.bschambers.toothpick;
+package info.bschambers.toothpick.util;
 
 import java.util.Random;
 import java.util.ArrayList;
@@ -102,16 +102,23 @@ public class RandomChooser<T> implements Iterable<T> {
      * <p>Adds item with a weight of 1.</p>
      */
     public void add(T item) {
-        add(item, 1);
+        add(1, item);
     }
 
     /**
      * <p>Adds item with the specified weight.</p>
      */
-    public void add(T item, int weight) {
+    public void add(int weight, T item) {
+        add("", weight, item);
+    }
+
+    /**
+     * <p>Adds item with the specified weight.</p>
+     */
+    public void add(String description, int weight, T item) {
         if (weight < 0)
             weight = 0;
-        items.add(new ChooserItem(item, weight));
+        items.add(new ChooserItem(description, weight, item));
         combinedWeight += weight;
     }
 
@@ -171,11 +178,21 @@ public class RandomChooser<T> implements Iterable<T> {
     }
 
     public class ChooserItem {
+
+        private String description = "";
         public final T item;
-        public final int weight;
-        public ChooserItem(T item, int weight) {
-            this.item = item;
+        public int weight;
+
+        public ChooserItem(String description, int weight, T item) {
+            this.description = description;
             this.weight = weight;
+            this.item = item;
+        }
+
+        public String getDescription() {
+            if (description.isEmpty())
+                return item.getClass().getSimpleName();
+            return description;
         }
     }
 
@@ -196,6 +213,10 @@ public class RandomChooser<T> implements Iterable<T> {
             i++;
             return items.get(n).item;
         }
+    }
+
+    public List<ChooserItem> chooserItemList() {
+        return items;
     }
 
 }

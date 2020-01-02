@@ -48,6 +48,21 @@ public final class TPFactory {
         return droneActor(form, prog);
     }
 
+    public static TPActor zigzagActor(TPProgram prog) {
+        double width = rand(40, 160);
+        double sectionLength = rand(20, 80);
+        int numSections = randInt(4, 12);
+        TPForm form = zigzagForm(width, sectionLength, numSections);
+
+        TPActor actor = new TPActor(form);
+        actor.setColorGetter(randColorGetter());
+        actor.addBehaviour(WRAP_AT_BOUNDS);
+        // random angle and heading
+        actor.angle = Math.random() * Math.PI;
+        setRandHeading(actor);
+        return actor;
+    }
+
     public static TPActor droneActor(TPForm form, TPProgram prog) {
         TPActor actor = new TPActor(form);
         actor.setColorGetter(randColorGetter());
@@ -102,6 +117,28 @@ public final class TPFactory {
         return points;
     }
 
+    public static TPForm zigzagForm(double width, double sectionLength, int numSections) {
+        Pt[] points = zigzagPoints(width, sectionLength, numSections);
+        TPLine[] lines = new TPLine[points.length - 1];
+        for (int i = 0; i < (lines.length); i++)
+            lines[i] = new TPLine(new Line(points[i], points[i + 1]));
+        // lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
+        return new TPForm(lines);
+    }
+
+    public static Pt[] zigzagPoints(double width, double sectionLength, int numSections) {
+        double totalLength = numSections * sectionLength;
+        double x = -(totalLength / 2);
+        double y = width / 2;
+        Pt[] points = new Pt[numSections + 1];
+        for (int i = 0; i < points.length; i++) {
+            points[i] = new Pt(x, y);
+            x += sectionLength;
+            y = -y;
+        }
+        return points;
+    }
+
     /*----------------------------- color ------------------------------*/
 
     public static ColorGetter randColorGetter() {
@@ -130,7 +167,7 @@ public final class TPFactory {
     }
 
     public static double randAngleInertia() {
-        return randAngleInertia(0.01);
+        return randAngleInertia(0.007);
     }
 
     public static double randAngleInertia(double max) {
