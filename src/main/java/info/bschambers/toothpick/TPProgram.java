@@ -42,7 +42,6 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public TPProgram(String title) {
         this.title = title;
-        init();
     }
 
     /**
@@ -70,9 +69,11 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     }
 
     public void setPlayer(TPPlayer newPlayer) {
+        System.out.println("TPProgram.setPlayer() --> " + newPlayer);
+        // make sure that the old player-actor has been removed
         removeActor(player.getActor());
         player = newPlayer;
-        initPlayer();
+        addActor(player.getActor());
     }
 
     public void revivePlayer(boolean retainStats) {
@@ -80,19 +81,40 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         removeActor(player.getActor());
         player.reset(retainStats);
         addActor(player.getActor());
+        updateActorsInPlace();
     }
 
-    public String getTitle() { return title; }
-    public void setTitle(String val) { title = val; }
+    public String getTitle() {
+        return title;
+    }
 
-    public Color getBGColor() { return bgColor; }
-    public void setBGColor(Color val) { bgColor = val; }
+    public void setTitle(String val) {
+        title = val;
+    }
 
-    public Image getBGImage() { return bgImage; }
-    public void setBGImage(Image val) { bgImage = val; }
+    public Color getBGColor() {
+        return bgColor;
+    }
 
-    public boolean getPauseForMenu() { return pauseForMenu; }
-    public void setPauseForMenu(boolean val) { pauseForMenu = val; }
+    public void setBGColor(Color val) {
+        bgColor = val;
+    }
+
+    public Image getBGImage() {
+        return bgImage;
+    }
+
+    public void setBGImage(Image val) {
+        bgImage = val;
+    }
+
+    public boolean getPauseForMenu() {
+        return pauseForMenu;
+    }
+
+    public void setPauseForMenu(boolean val) {
+        pauseForMenu = val;
+    }
 
     public int stopAfter() {
         return stopAfter;
@@ -107,11 +129,21 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         stopAfter = val;
     }
 
-    public boolean isShowIntersections() { return keepIntersectionPoints; }
-    public void setShowIntersections(boolean val) { keepIntersectionPoints = val; }
+    public boolean isShowIntersections() {
+        return keepIntersectionPoints;
+    }
 
-    public boolean isSmearMode() { return smearMode; }
-    public void setSmearMode(boolean val) { smearMode = val; }
+    public void setShowIntersections(boolean val) {
+        keepIntersectionPoints = val;
+    }
+
+    public boolean isSmearMode() {
+        return smearMode;
+    }
+
+    public void setSmearMode(boolean val) {
+        smearMode = val;
+    }
 
     public TPGeometry getGeometry() {
         return geom;
@@ -125,10 +157,17 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         behaviours.add(pb);
     }
 
-    public int numActors() { return actors.size(); }
-    public TPActor getActor(int index) { return actors.get(index); }
+    public int numActors() {
+        return actors.size();
+    }
 
-    public List<Pt> getIntersectionPoints() { return intersectionPoints; }
+    public TPActor getActor(int index) {
+        return actors.get(index);
+    }
+
+    public List<Pt> getIntersectionPoints() {
+        return intersectionPoints;
+    }
 
     public void addIntersectionPoint(Pt p) {
         intersectionPoints.add(p);
@@ -158,12 +197,21 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     }
 
     /**
+     * Update without advancing the action.
+     */
+    public void updateActorsInPlace() {
+        housekeeping();
+        for (TPActor a : actors)
+            a.updateForm();
+    }
+
+    /**
      * <p>Add and remove actors as appropriate.</p>
      *
      * <p>This is called by {@link update}, however you may occasionally want to call it
      * manually to update actors without advancing movement.</p>
      */
-    public void housekeeping() {
+    private void housekeeping() {
         // remove
         for (TPActor a : actors)
             if (!a.isAlive())

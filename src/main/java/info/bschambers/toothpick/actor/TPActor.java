@@ -36,6 +36,7 @@ public class TPActor implements TPEncodingHelper {
 
     public String infoString() {
         StringBuffer s = new StringBuffer();
+        s.append("instance: " + super.toString() + "\n");
         s.append("alive: " + isAlive() + "\n");
         s.append("position: x=" + x + " y=" + y + "\n");
         s.append("inertia: x=" + xInertia + " y=" + yInertia + "\n");
@@ -85,15 +86,25 @@ public class TPActor implements TPEncodingHelper {
         this.form.setActor(this);
     }
 
-    public Color getColor() { return color.get(); }
+    public Color getColor() {
+        return color.get();
+    }
 
-    public void setColorGetter(ColorGetter cg) { color = cg; }
+    public void setColorGetter(ColorGetter cg) {
+        color = cg;
+    }
 
-    public boolean isAlive() { return form.isAlive(); }
+    public boolean isAlive() {
+        return form.isAlive();
+    }
 
-    public int numChildren() { return children.size(); }
+    public int numChildren() {
+        return children.size();
+    }
 
-    public TPActor getChild(int index) { return children.get(index); }
+    public TPActor getChild(int index) {
+        return children.get(index);
+    }
 
     public void addBehaviour(TPBehaviour tpb) {
         behaviours.add(tpb);
@@ -158,6 +169,7 @@ public class TPActor implements TPEncodingHelper {
         params.addMethod(TPForm.class, getForm(), "setForm");
         params.addListMethod(TPBehaviour.class, behaviours, "addBehaviour");
         params.addListMethod(TPActor.class, children, "addChild");
+        params.addVoidMethod("updateForm");
         return params;
     }
 

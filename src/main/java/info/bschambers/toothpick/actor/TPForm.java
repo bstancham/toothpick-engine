@@ -96,6 +96,7 @@ public class TPForm implements TPEncodingHelper {
     public TPEncoding getEncoding() {
         TPEncoding params = new TPEncoding();
         params.addListMethod(TPPart.class, parts, "addPart");
+        params.addVoidMethod("housekeeping");
         return params;
     }
 

@@ -29,8 +29,6 @@ public abstract class KeyInputHandler implements TPBehaviour {
                                                  bindZoomOut };
 
     public void setKey(int keyCode, boolean val) {
-        // System.out.println(getClass().getSimpleName() + ".setKey() --> "
-        //                    + "keyCode=" + keyCode + " value=" + val);
         for (Binding b : bindings)
             if (keyCode == b.code())
                 b.setValue(val);

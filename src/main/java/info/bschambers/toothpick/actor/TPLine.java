@@ -7,7 +7,7 @@ import info.bschambers.toothpick.geom.Pt;
 public class TPLine extends TPPart {
 
     private Line archetype;
-    private transient Line line;
+    private Line line;
 
     public TPLine() {}
 
@@ -48,6 +48,8 @@ public class TPLine extends TPPart {
     }
 
     public Line getLine() {
+        if (line == null)
+            return archetype;
         return line;
     }
 
