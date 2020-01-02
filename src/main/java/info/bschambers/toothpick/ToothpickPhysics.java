@@ -17,7 +17,7 @@ public class ToothpickPhysics implements ProgramBehaviour {
                     interact(prog, a, b);
     }
 
-    private void interact(TPProgram prog, TPActor a, TPActor b) {
+    protected void interact(TPProgram prog, TPActor a, TPActor b) {
         // interact forms
 	interact(prog, a.getForm(), b.getForm());
         // interact children

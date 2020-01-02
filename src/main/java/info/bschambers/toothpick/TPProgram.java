@@ -153,7 +153,24 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         geom = val;
     }
 
+    /**
+     * <p>Add a program-behaviour, in a few special cases removing incompatible
+     * behaviours.</p>
+     *
+     * <p>The special cases are as follows:</p>
+     *
+     * <ul>
+     * <li>ToothpickPhysics - only one instance is allowed.</li>
+     * </ul>
+     */
     public void addBehaviour(ProgramBehaviour pb) {
+        List<ProgramBehaviour> pbToRemove = new ArrayList<>();
+        if (pb instanceof ToothpickPhysics)
+            for (ProgramBehaviour pbx : behaviours)
+                if (pbx instanceof ToothpickPhysics)
+                    pbToRemove.add(pbx);
+        for (ProgramBehaviour pbx : pbToRemove)
+            behaviours.remove(pbx);
         behaviours.add(pb);
     }
 
