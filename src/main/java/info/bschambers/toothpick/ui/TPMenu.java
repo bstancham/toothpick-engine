@@ -10,6 +10,7 @@ public class TPMenu implements TPMenuItem {
     private Supplier<String> titleSupplier;
     private TPMenu parent = null;
     private boolean active = false;
+    private boolean hidden = false;
     private boolean delegating = false;
     private List<TPMenuOption> options = new ArrayList<>();
     private int selected = 0;
@@ -30,33 +31,37 @@ public class TPMenu implements TPMenuItem {
 
     @Override
     public void action(Code c) {
-        TPMenuOption opt = getSelectedOption();
-        TPMenuItem item = opt.get();
-        if (delegating && item instanceof TPMenu) {
-            item.action(c);
-        } else if (delegating) {
-            System.out.println("ERROR - can't delegate to menu-item type: "
-                               + item.getClass());
-        } else if (c == Code.RET) {
-            if (item instanceof TPMenu) {
-                setDelegating(true);
-                opt.update();
-                TPMenu m = (TPMenu) opt.get();
-                m.setParent(this);
-                m.runInitAction();
-            } else {
+        if (c == Code.HIDE) {
+            hidden = !hidden;
+        } else if (!hidden) {
+            TPMenuOption opt = getSelectedOption();
+            TPMenuItem item = opt.get();
+            if (delegating && item instanceof TPMenu) {
+                item.action(c);
+            } else if (delegating) {
+                System.out.println("ERROR - can't delegate to menu-item type: "
+                                   + item.getClass());
+            } else if (c == Code.RET) {
+                if (item instanceof TPMenu) {
+                    setDelegating(true);
+                    opt.update();
+                    TPMenu m = (TPMenu) opt.get();
+                    m.setParent(this);
+                    m.runInitAction();
+                } else {
+                    getSelectedOption().get().action(c);
+                }
+            } else if (c == Code.CANCEL) {
+                cancel();
+            } else if (c == Code.UP) {
+                incrSelected(-1);
+            } else if (c == Code.DOWN) {
+                incrSelected(1);
+            } else if (c == Code.LEFT) {
+                getSelectedOption().get().action(c);
+            } else if (c == Code.RIGHT) {
                 getSelectedOption().get().action(c);
             }
-        } else if (c == Code.CANCEL) {
-            cancel();
-        } else if (c == Code.UP) {
-            incrSelected(-1);
-        } else if (c == Code.DOWN) {
-            incrSelected(1);
-        } else if (c == Code.LEFT) {
-            getSelectedOption().get().action(c);
-        } else if (c == Code.RIGHT) {
-            getSelectedOption().get().action(c);
         }
     }
 
@@ -80,6 +85,10 @@ public class TPMenu implements TPMenuItem {
 
     public void setActive(boolean val) {
         active = val;
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 
     public void cancel() {

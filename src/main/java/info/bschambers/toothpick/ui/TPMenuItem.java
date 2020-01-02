@@ -2,7 +2,7 @@ package info.bschambers.toothpick.ui;
 
 public interface TPMenuItem {
 
-    enum Code { RET, CANCEL, UP, DOWN, LEFT, RIGHT }
+    enum Code { RET, CANCEL, HIDE, UP, DOWN, LEFT, RIGHT }
 
     /**
      * This is the text which will appear on the menu.<br/>

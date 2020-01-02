@@ -205,6 +205,9 @@ public class TPSwingUI extends JFrame
         case VK_BACK_SPACE:
             menu.action(TPMenuItem.Code.CANCEL);
             break;
+        case VK_H:
+            menu.action(TPMenuItem.Code.HIDE);
+            break;
         case VK_UP:
             menu.action(TPMenuItem.Code.UP);
             break;

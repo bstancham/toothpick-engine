@@ -133,31 +133,36 @@ public class Gfx {
 
     public static void menu(Graphics g, TPMenu menu, int posX, int posY) {
         TextBox box = new TextBox();
-        box.add(menu.text());
-        box.add("");
-        for (int i = 0; i < menu.getNumItems(); i++) {
-            TPMenuItem item = menu.getItem(i);
-            String line = item.text();
-            if (item instanceof TPMenu)
-                line = ">>> " + line;
-            box.add(line);
-        }
-        box.posX = posX;
-        box.posY = posY;
-        box.paint(g);
-        // mark selected item
-        int sel = menu.getSelectedIndex() + 2;
-        int x = 6 + box.posX;
-        int y = 5 + box.posY + box.padTop + (sel * box.lineHeight);
-        int w = box.textWidth;
-        int h = box.lineHeight;
-        g.setColor(Color.CYAN);
-        g.drawRect(x, y, w, h);
-        // sub-menu
-        if (menu.isDelegating()) {
-            TPMenuItem item = menu.getSelectedItem();
-            if (item instanceof TPMenu) {
-                menu(g, (TPMenu) item, posX + 30, posY + 30);
+        if (menu.isHidden()) {
+            box.add("press 'h' to show menu");
+            box.paint(g);
+        } else {
+            box.add(menu.text());
+            box.add("");
+            for (int i = 0; i < menu.getNumItems(); i++) {
+                TPMenuItem item = menu.getItem(i);
+                String line = item.text();
+                if (item instanceof TPMenu)
+                    line = ">>> " + line;
+                box.add(line);
+            }
+            box.posX = posX;
+            box.posY = posY;
+            box.paint(g);
+            // mark selected item
+            int sel = menu.getSelectedIndex() + 2;
+            int x = 6 + box.posX;
+            int y = 5 + box.posY + box.padTop + (sel * box.lineHeight);
+            int w = box.textWidth;
+            int h = box.lineHeight;
+            g.setColor(Color.CYAN);
+            g.drawRect(x, y, w, h);
+            // sub-menu
+            if (menu.isDelegating()) {
+                TPMenuItem item = menu.getSelectedItem();
+                if (item instanceof TPMenu) {
+                    menu(g, (TPMenu) item, posX + 30, posY + 30);
+                }
             }
         }
     }

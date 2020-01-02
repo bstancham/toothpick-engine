@@ -37,11 +37,11 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public TPProgram() {
         this("UNTITLED PROGRAM");
-        geom.setupAndCenter(1000, 800);
     }
 
     public TPProgram(String title) {
         this.title = title;
+        geom.setupAndCenter(1000, 800);
     }
 
     /**
