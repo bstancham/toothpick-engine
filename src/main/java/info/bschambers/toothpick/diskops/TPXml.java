@@ -170,11 +170,13 @@ public class TPXml {
      */
     private void addParam(Document doc, Element parent, TPEncoding.Param param) {
         if (param.getParamType() == TPEncoding.ParamType.FIELD)
-            addFieldParam(doc, parent, param.getTargetClass(), param.getValue(), param.getSetMethodName());
+            addFieldParam(doc, parent, param.getTargetClass(), param.getValue(), param.getMethodName());
         else if (param.getParamType() == TPEncoding.ParamType.METHOD)
-            addMethodParam(doc, parent, param.getTargetClass(), param.getValue(), param.getSetMethodName());
+            addMethodParam(doc, parent, param.getTargetClass(), param.getValue(), param.getMethodName());
         else if (param.getParamType() == TPEncoding.ParamType.LIST_METHOD)
-            addListMethodParam(doc, parent, param.getTargetClass(), param.getValueList(), param.getSetMethodName());
+            addListMethodParam(doc, parent, param.getTargetClass(), param.getValueList(), param.getMethodName());
+        else if (param.getParamType() == TPEncoding.ParamType.VOID_METHOD)
+            addVoidMethodParam(doc, parent, param.getMethodName());
         else
             addErrorMsg("param-type not recognised: " + param.getParamType());
     }
@@ -199,6 +201,12 @@ public class TPXml {
         for (Object obj : values)
             methodElem.appendChild(encodeObject(doc, obj));
         parent.appendChild(methodElem);
+    }
+
+    private void addVoidMethodParam(Document doc, Element parent, String methodName) {
+        Element elem = doc.createElement("void-method");
+        elem.setAttribute("name", methodName);
+        parent.appendChild(elem);
     }
 
     public Element makeFieldElement(Document doc, String fieldName, Class argClass) {
@@ -323,6 +331,8 @@ public class TPXml {
                     applyMethod(obj, childElem);
                 } else if (type.equals("list-method")) {
                     applyMethod(obj, childElem);
+                } else if (type.equals("void-method")) {
+                    evalVoidMethod(obj, childElem);
                 } else {
                     throw new UnsupportedException(type);
                 }
@@ -455,7 +465,6 @@ public class TPXml {
 		throw new UnsupportedException(argType);
 	    }
 	}
-
     }
 
     private void applyInstField(Object obj, String fieldName, Element instElem, String argClassName) {
@@ -548,6 +557,19 @@ public class TPXml {
 	applyMethod(obj, methodName, Rect.class, r);
     }
 
+    private void evalVoidMethod(Object obj, Element mElem) {
+	String methodName = getStringAttr(mElem, "name", DEFAULT_STR);
+	if (methodName.equals(DEFAULT_STR))
+	    throw new RuntimeException("!!! 'name' ATTRIBUTE NOT FOUND !!!");
+
+	try {
+	    Method m = obj.getClass().getMethod(methodName);
+	    m.invoke(obj);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+
     public String getStringAttr(Element elmt, String attr, String defaultVal) {
 	if (elmt.hasAttribute(attr)) {
 	    return elmt.getAttribute(attr);
@@ -612,7 +634,7 @@ public class TPXml {
     }
 
     public void applyMethod(Object obj, String methodName,
-				   Class argClass, Object arg) {
+                            Class argClass, Object arg) {
 	try {
 	    Method m = obj.getClass().getMethod(methodName, argClass);
 	    m.invoke(obj, arg);

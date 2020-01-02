@@ -6,7 +6,7 @@ import java.util.List;
 
 public class TPEncoding implements Iterable<TPEncoding.Param> {
 
-    public enum ParamType { FIELD, METHOD, LIST_METHOD }
+    public enum ParamType { FIELD, METHOD, LIST_METHOD, VOID_METHOD }
 
     private List<Param> params = new ArrayList<>();
 
@@ -16,14 +16,21 @@ public class TPEncoding implements Iterable<TPEncoding.Param> {
         params.add(new TPEncoding.Param(ParamType.FIELD, targetClass, values, fieldName));
     }
 
-    public void addMethod(Class targetClass, Object val, String setMethodName) {
+    public void addMethod(Class targetClass, Object val, String methodName) {
         List values = new ArrayList();
         values.add(val);
-        params.add(new TPEncoding.Param(ParamType.METHOD, targetClass, values, setMethodName));
+        params.add(new TPEncoding.Param(ParamType.METHOD, targetClass, values, methodName));
     }
 
-    public void addListMethod(Class targetClass, List values, String setMethodName) {
-        params.add(new TPEncoding.Param(ParamType.LIST_METHOD, targetClass, values, setMethodName));
+    public void addListMethod(Class targetClass, List values, String methodName) {
+        params.add(new TPEncoding.Param(ParamType.LIST_METHOD, targetClass, values, methodName));
+    }
+
+    /**
+     * Add instruction to call a setup method with no arguments and void return type.
+     */
+    public void addVoidMethod(String methodName) {
+        params.add(new TPEncoding.Param(ParamType.VOID_METHOD, null, null, methodName));
     }
 
     @Override
@@ -36,13 +43,13 @@ public class TPEncoding implements Iterable<TPEncoding.Param> {
         private ParamType t;
         private Class targetClass;
         private List values;
-        private String setMethodName;
+        private String methodName;
 
-        public Param(ParamType t, Class targetClass, List values, String setMethodName) {
+        public Param(ParamType t, Class targetClass, List values, String methodName) {
             this.t = t;
             this.targetClass = targetClass;
             this.values = values;
-            this.setMethodName = setMethodName;
+            this.methodName = methodName;
         }
 
         public ParamType getParamType() {
@@ -61,8 +68,8 @@ public class TPEncoding implements Iterable<TPEncoding.Param> {
             return values.get(0);
         }
 
-        public String getSetMethodName() {
-            return setMethodName;
+        public String getMethodName() {
+            return methodName;
         }
     }
 

@@ -8,19 +8,24 @@
 
 <!-- SETTING UP OBJECT STATE -->
 
-<!-- SET A PUBLIC FIELD -->
+<!-- SET A FIELD -->
 <!ELEMENT field (instance|prim|point|line|rect|color)>
 <!ATTLIST field name CDATA #REQUIRED>
 <!ATTLIST field class CDATA #IMPLIED>
 
-<!-- INVOKE A PUBLIC METHOD
-
-     NOTE: method must take a single argument - if multiple child elements are
-  present, the method will be applied once for each child element using that
-  element as the argument -->
+<!-- INVOKE A METHOD -->
 <!ELEMENT method (instance*, prim*, point*, line*, rect*, color*)>
 <!ATTLIST method name CDATA #REQUIRED>
 <!ATTLIST method class CDATA #IMPLIED>
+
+<!-- INVOKE A METHOD (for each of the child elements) -->
+<!ELEMENT list-method (instance*, prim*, point*, line*, rect*, color*)>
+<!ATTLIST method name CDATA #REQUIRED>
+<!ATTLIST method class CDATA #IMPLIED>
+
+<!-- INVOKE A VOID METHOD (with no args) -->
+<!ELEMENT void-method EMPTY>
+<!ATTLIST method name CDATA #REQUIRED>
 
 <!-- SPECIAL TYPES - FOR FIELD AND METHOD ARGUMENTS -->
 
