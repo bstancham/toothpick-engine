@@ -1,7 +1,7 @@
 * About
 
-The Toothpick Engine is a game engine based on the 2D geometry of intersecting
-lines.
+The Toothpick Engine is a game engine based on the geometry of 2D lines
+intersecting.
 
 ** History
 

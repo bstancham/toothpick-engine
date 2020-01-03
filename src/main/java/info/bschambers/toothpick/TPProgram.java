@@ -56,6 +56,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         toAdd.clear();
         toRemove.clear();
         initPlayer();
+        updateActorsInPlace();
     }
 
     public void initPlayer() {

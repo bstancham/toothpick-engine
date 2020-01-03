@@ -135,7 +135,6 @@ public class RandomChooser<T> implements Iterable<T> {
             return defaultItem;
         if (currentItem == null ||
             Math.random() < changeability) {
-            // choose a random item
             chooseRandom();
         }
         return currentItem;
@@ -163,9 +162,9 @@ public class RandomChooser<T> implements Iterable<T> {
     private void chooseRandom() {
         if (isEmpty())
             return;
-        int n = 1 + rand.nextInt(getCombinedWeight());
+        int n = rand.nextInt(getCombinedWeight());
         for (ChooserItem ci : items) {
-            if (n <= ci.weight) {
+            if (n < ci.weight) {
                 currentItem = ci.item;
                 return;
             }
@@ -173,8 +172,12 @@ public class RandomChooser<T> implements Iterable<T> {
         }
     }
 
-    public int getCombinedWeight() {
-        return combinedWeight;
+        public int getCombinedWeight() {
+        // return combinedWeight;
+        int weight = 0;
+        for (ChooserItem item : items)
+            weight += item.weight;
+        return weight;
     }
 
     public class ChooserItem {

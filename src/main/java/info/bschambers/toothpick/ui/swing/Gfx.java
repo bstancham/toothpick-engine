@@ -104,6 +104,8 @@ public class Gfx {
     public static void actor(Graphics g, TPGeometry geom, TPActor a) {
         g.setColor(a.getColor());
         form(g, geom, a.getForm());
+        for (int i = 0; i < a.numChildren(); i++)
+            actor(g, geom, a.getChild(i));
     }
 
     public static void form(Graphics g, TPGeometry geom, TPForm form) {

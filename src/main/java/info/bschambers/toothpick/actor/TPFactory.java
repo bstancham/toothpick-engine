@@ -74,6 +74,17 @@ public final class TPFactory {
         return actor;
     }
 
+    public static TPActor shooterActor(TPProgram prog) {
+        TPActor actor = lineActor(prog);
+        Spawning spawn = new Spawning();
+        spawn.setArchetype(new TPActor(singleLineForm(50)));
+        actor.addBehaviour(spawn);
+        spawn.setInterval(randInt(10, 500));
+        if (Math.random() < 0.5)
+            spawn.setRelativeAngle(0.5);
+        return actor;
+    }
+
     /*------------------------------ form ------------------------------*/
 
     public static TPForm singleLineForm(double length) {
@@ -85,7 +96,7 @@ public final class TPFactory {
     }
 
     public static double randLineLength() {
-        return 20 + (Math.random() * 200);
+        return 20 + (Math.random() * 150);
     }
 
     public static TPForm regularPolygonForm(double size, int numSides) {

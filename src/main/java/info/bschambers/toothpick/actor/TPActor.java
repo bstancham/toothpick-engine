@@ -15,6 +15,8 @@ public class TPActor implements TPEncodingHelper {
     private TPForm form;
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
+    private List<TPActor> childrenToAdd = new ArrayList<>();
+    private List<TPActor> childrenToRemove = new ArrayList<>();
     private List<TPBehaviour> behaviours = new ArrayList<>();
     private ColorGetter color = new ColorMono(Color.PINK);
     public double x = 0;
@@ -106,6 +108,10 @@ public class TPActor implements TPEncodingHelper {
         return children.get(index);
     }
 
+    public void addChild(TPActor child) {
+        childrenToAdd.add(child);
+    }
+
     public void addBehaviour(TPBehaviour tpb) {
         behaviours.add(tpb);
     }
@@ -130,6 +136,21 @@ public class TPActor implements TPEncodingHelper {
         for (TPBehaviour b : behaviours)
             b.update(prog, this);
         updateForm();
+
+        // add and remove children
+        for (TPActor child : children)
+            if (!child.isAlive())
+                childrenToRemove.add(child);
+        for (TPActor child : childrenToRemove)
+            children.remove(child);
+        childrenToRemove.clear();
+
+        for (TPActor child : childrenToAdd)
+            children.add(child);
+        childrenToAdd.clear();
+
+        for (TPActor child : children)
+            child.update(prog);
     }
 
     /**
