@@ -34,6 +34,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
     private int stopAfter = -1;
+    private boolean rescueChildActors = true;
 
     public TPProgram() {
         this("UNTITLED PROGRAM");
@@ -233,8 +234,12 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private void housekeeping() {
         // remove
         for (TPActor a : actors)
-            if (!a.isAlive())
+            if (!a.isAlive()) {
                 toRemove.add(a);
+                if (rescueChildActors)
+                    for (int i = 0; i < a.numChildren(); i++)
+                        addActor(a.getChild(i));
+            }
         for (TPActor a : toRemove)
             actors.remove(a);
         toRemove.clear();
