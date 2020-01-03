@@ -23,8 +23,8 @@ public class TPActor implements TPEncodingHelper {
     public double xInertia = 0;
     public double yInertia = 0;
     public double angleInertia = 0;
-    public int statsNumDeaths = 0;
-    public int statsNumKills = 0;
+    public int numDeaths = 0;
+    public int numKills = 0;
 
     public TPActor() {
         this(TPForm.NULL);
@@ -46,7 +46,7 @@ public class TPActor implements TPEncodingHelper {
             s.append("... " + form.getPart(i) + "\n");
         s.append("parent: " + parent + "\n");
         s.append("num-children: " + children.size() + "\n");
-        s.append("stats: deaths=" + statsNumDeaths + " kills=" + statsNumKills + "\n");
+        s.append("stats: deaths=" + numDeaths + " kills=" + numKills + "\n");
         s.append("BEHAVIOURS:\n");
         for (TPBehaviour b : behaviours)
             s.append("... " + b + "\n");
@@ -61,8 +61,8 @@ public class TPActor implements TPEncodingHelper {
         tp.xInertia = xInertia;
         tp.yInertia = yInertia;
         tp.angleInertia = angleInertia;
-        tp.statsNumDeaths = statsNumDeaths;
-        tp.statsNumKills = statsNumKills;
+        tp.numDeaths = numDeaths;
+        tp.numKills = numKills;
         tp.color = color.copy();
         for (TPBehaviour cb : behaviours)
             tp.behaviours.add(cb);
@@ -73,8 +73,8 @@ public class TPActor implements TPEncodingHelper {
     }
 
     public void copyStats(TPActor tp) {
-        statsNumDeaths = tp.statsNumDeaths;
-        statsNumKills = tp.statsNumKills;
+        numDeaths = tp.numDeaths;
+        numKills = tp.numKills;
     }
 
     public TPForm getForm() {
@@ -145,11 +145,11 @@ public class TPActor implements TPEncodingHelper {
     }
 
     public void deathEvent(TPLine protagonist, Pt p) {
-        statsNumDeaths++;
+        numDeaths++;
     }
 
     public void killEvent(TPLine victim, Pt p) {
-        statsNumKills++;
+        numKills++;
     }
 
     /*---------------------------- Encoding ----------------------------*/
@@ -163,8 +163,8 @@ public class TPActor implements TPEncodingHelper {
         params.addField(Double.class, xInertia, "xInertia");
         params.addField(Double.class, yInertia, "yInertia");
         params.addField(Double.class, angleInertia, "angleInertia");
-        params.addField(Integer.class, statsNumDeaths, "statsNumDeaths");
-        params.addField(Integer.class, statsNumKills, "statsNumKills");
+        params.addField(Integer.class, numDeaths, "numDeaths");
+        params.addField(Integer.class, numKills, "numKills");
         params.addMethod(ColorGetter.class, color, "setColorGetter");
         params.addMethod(TPForm.class, getForm(), "setForm");
         params.addListMethod(TPBehaviour.class, behaviours, "addBehaviour");

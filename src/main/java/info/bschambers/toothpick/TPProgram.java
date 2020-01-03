@@ -193,8 +193,8 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public List<String> getInfoLines() {
         List<String> lines = new ArrayList<String>();
-        lines.add("num kills: " + getPlayer().getActor().statsNumKills);
-        lines.add("num deaths: " + getPlayer().getActor().statsNumDeaths);
+        lines.add("num kills: " + getPlayer().getActor().numKills);
+        lines.add("num deaths: " + getPlayer().getActor().numDeaths);
         lines.add("num actors: " + actors.size());
         for (ProgramBehaviour pb : behaviours)
             for (String pbLine : pb.getInfoLines())

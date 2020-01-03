@@ -11,10 +11,10 @@ public class ToothpickPhysics implements ProgramBehaviour {
 
     @Override
     public void update(TPProgram prog) {
-        for (TPActor a : prog)
-            for (TPActor b : prog)
-                if (a != b)
-                    interact(prog, a, b);
+        // compare each pair or actors only once
+        for (int a = 0; a < prog.numActors() - 1; a++)
+            for (int b = a + 1; b < prog.numActors(); b++)
+                interact(prog, prog.getActor(a), prog.getActor(b));
     }
 
     protected void interact(TPProgram prog, TPActor a, TPActor b) {
