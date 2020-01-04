@@ -9,6 +9,16 @@ import info.bschambers.toothpick.geom.Pt;
 
 public class ToothpickPhysics implements ProgramBehaviour {
 
+    /**
+     * The singleton-group name for physics-models.
+     */
+    public static final String TOOTHPICK_PHYSICS_GROUP = "toothpick-physics-model";
+
+    @Override
+    public String getSingletonGroup() {
+        return TOOTHPICK_PHYSICS_GROUP;
+    }
+
     @Override
     public void update(TPProgram prog) {
         // compare each pair or actors only once

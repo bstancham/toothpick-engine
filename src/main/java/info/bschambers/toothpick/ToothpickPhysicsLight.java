@@ -9,6 +9,11 @@ import info.bschambers.toothpick.actor.TPActor;
 public class ToothpickPhysicsLight extends ToothpickPhysics {
 
     @Override
+    public String getSingletonGroup() {
+        return ToothpickPhysics.TOOTHPICK_PHYSICS_GROUP;
+    }
+
+    @Override
     public void update(TPProgram prog) {
         TPActor player = prog.getPlayer().getActor();
         if (player.isAlive())

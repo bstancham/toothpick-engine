@@ -4,7 +4,7 @@ import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.actor.TPFactory;
 import java.util.function.Function;
 
-public class MaintainDronesNum implements ProgramBehaviour {
+public class MaintainDronesNum implements ProgramBehaviour, TPEncodingHelper {
 
     private int dronesGoal = 5;
     private int spawnDelay = 0;
@@ -17,6 +17,11 @@ public class MaintainDronesNum implements ProgramBehaviour {
             "drone-num goal: " + dronesGoal,
             "spawn-delay: " + spawnDelay,
         };
+    }
+
+    @Override
+    public String getSingletonGroup() {
+        return "maintain-drones-num";
     }
 
     @Override
@@ -49,6 +54,15 @@ public class MaintainDronesNum implements ProgramBehaviour {
 
     public void setDroneFunc(Function<TPProgram, TPActor> func) {
         droneFunc = func;
+    }
+
+    /*---------------------------- Encoding ----------------------------*/
+
+    @Override
+    public TPEncoding getEncoding() {
+        TPEncoding params = new TPEncoding();
+        params.addMethod(Integer.class, getDronesGoal(), "setDronesGoal");
+        return params;
     }
 
 }

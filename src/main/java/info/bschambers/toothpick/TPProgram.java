@@ -175,23 +175,19 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     }
 
     /**
-     * <p>Add a program-behaviour, in a few special cases removing incompatible
-     * behaviours.</p>
-     *
-     * <p>The special cases are as follows:</p>
-     *
-     * <ul>
-     * <li>ToothpickPhysics - only one instance is allowed.</li>
-     * </ul>
+     * <p>Add a program-behaviour. If behaviour {@code pb} is a member of a
+     * singleton-group then any existing member of that group will be removed.</p>
      */
     public void addBehaviour(ProgramBehaviour pb) {
-        List<ProgramBehaviour> pbToRemove = new ArrayList<>();
-        if (pb instanceof ToothpickPhysics)
-            for (ProgramBehaviour pbx : behaviours)
-                if (pbx instanceof ToothpickPhysics)
-                    pbToRemove.add(pbx);
-        for (ProgramBehaviour pbx : pbToRemove)
-            behaviours.remove(pbx);
+        String group = pb.getSingletonGroup();
+        if (!group.isEmpty()) {
+            List<ProgramBehaviour> pbToRemove = new ArrayList<>();
+            for (ProgramBehaviour other : behaviours)
+                if (other.getSingletonGroup().equals(group))
+                    pbToRemove.add(other);
+            for (ProgramBehaviour other : pbToRemove)
+                behaviours.remove(other);
+        }
         behaviours.add(pb);
     }
 
