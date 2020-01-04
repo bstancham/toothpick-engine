@@ -13,6 +13,8 @@ import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MenuItem;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -28,19 +30,17 @@ import javax.swing.JPanel;
 import static java.awt.event.KeyEvent.*;
 
 public class TPSwingUI extends JFrame
-    implements TPUI, KeyListener, MouseListener, MouseMotionListener {
+    implements TPUI, KeyListener, MouseListener, MouseMotionListener, ComponentListener {
 
     private TPProgram program = new TPProgram();
     private TPMenu menu = new TPMenu("EMPTY MENU");
-    private int xDim = 1000;
-    private int yDim = 800;
     private TPSwingPanel panel;
     private List<Supplier<String>> infoGetters = new ArrayList<>();
     private Color bgColor = Color.BLUE;
 
     public TPSwingUI(String title) {
         super(title);
-        setBounds(50, 50, xDim, yDim);
+        setBounds(100, 50, 1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
         panel = new TPSwingPanel();
@@ -48,11 +48,12 @@ public class TPSwingUI extends JFrame
         addKeyListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
+        addComponentListener(this);
     }
 
     @Override
     public void updateUI() {
-        panel.paintImmediately(0, 0, xDim, yDim);
+        panel.paintImmediately(0, 0, getWidth(), getHeight());
     }
 
     public TPProgram getProgram() {
@@ -62,11 +63,22 @@ public class TPSwingUI extends JFrame
     @Override
     public void setProgram(TPProgram program) {
         this.program = program;
+        this.program.fitUI(this);
     }
 
     @Override
     public void setMenu(TPMenu menu) {
         this.menu = menu;
+    }
+
+    @Override
+    public int getUIWidth() {
+        return Math.max(10, getWidth());
+    }
+
+    @Override
+    public int getUIHeight() {
+        return Math.max(10, getHeight());
     }
 
     @Override
@@ -83,14 +95,14 @@ public class TPSwingUI extends JFrame
     private class TPSmearImage extends BufferedImage {
 
         public TPSmearImage() {
-            super(xDim, yDim, BufferedImage.TYPE_INT_RGB);
+            super(getUIWidth(), getUIHeight(), BufferedImage.TYPE_INT_RGB);
         }
 
         public void updateImage(boolean paintBG) {
             Graphics2D g = createGraphics();
             if (paintBG) {
                 g.setColor(bgColor);
-                g.fillRect(0, 0, xDim, yDim);
+                g.fillRect(0, 0, getUIWidth(), getUIHeight());
             }
             paintBackground(g);
             paintActors(g);
@@ -231,7 +243,7 @@ public class TPSwingUI extends JFrame
         program.getPlayer().getInputHandler().setKey(e.getKeyCode(), false);
     }
 
-    /*--------------------------- MouseInput ---------------------------*/
+    /*-------------------------- Mouse Input ---------------------------*/
 
     @Override
     public void mouseClicked(MouseEvent e) {}
@@ -253,5 +265,21 @@ public class TPSwingUI extends JFrame
 
     @Override
     public void mouseDragged(MouseEvent e) {}
+
+    /*------------------------ window resizing -------------------------*/
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        getProgram().fitUI(this);
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {}
+
+    @Override
+    public void componentShown(ComponentEvent e) {}
+
+    @Override
+    public void componentHidden(ComponentEvent e) {}
 
 }

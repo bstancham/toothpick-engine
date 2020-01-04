@@ -39,8 +39,16 @@ public class TPGeometry implements TPEncodingHelper {
         return xCenter;
     }
 
+    public void setXCenter(int val) {
+        xCenter = val;
+    }
+
     public int getYCenter() {
         return yCenter;
+    }
+
+    public void setYCenter(int val) {
+        yCenter = val;
     }
 
     public double xToScreen(double x) {

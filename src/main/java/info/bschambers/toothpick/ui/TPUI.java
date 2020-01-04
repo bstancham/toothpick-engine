@@ -24,6 +24,10 @@ public interface TPUI {
      */
     void updateUI();
 
+    int getUIWidth();
+
+    int getUIHeight();
+
     void setProgram(TPProgram program);
 
     void setMenu(TPMenu menu);

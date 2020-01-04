@@ -4,6 +4,7 @@ import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.actor.TPPlayer;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.geom.Rect;
+import info.bschambers.toothpick.ui.TPUI;
 import java.awt.Color;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -172,6 +173,11 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public void setGeometry(TPGeometry val) {
         geom = val;
+    }
+
+    public void fitUI(TPUI ui) {
+        getGeometry().setXCenter(ui.getUIWidth() / 2);
+        getGeometry().setYCenter(ui.getUIHeight() / 2);
     }
 
     /**
