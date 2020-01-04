@@ -38,6 +38,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private boolean rescueChildActors = true;
     public boolean showProgramInfo = true;
     public boolean showDebugInfo = true;
+    private boolean sfxTriggered = false;
 
     public TPProgram() {
         this("UNTITLED PROGRAM");
@@ -178,6 +179,18 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     public void fitUI(TPUI ui) {
         getGeometry().setXCenter(ui.getUIWidth() / 2);
         getGeometry().setYCenter(ui.getUIHeight() / 2);
+    }
+
+    public void triggerSfx() {
+        sfxTriggered = true;
+    }
+
+    public boolean isSfxTriggered() {
+        return sfxTriggered;
+    }
+
+    public void sfxReset() {
+        sfxTriggered = false;
     }
 
     /**

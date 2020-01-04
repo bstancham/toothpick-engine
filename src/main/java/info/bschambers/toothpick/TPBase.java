@@ -1,5 +1,6 @@
 package info.bschambers.toothpick;
 
+import info.bschambers.toothpick.sound.TPSound;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPUI;
 
@@ -8,6 +9,7 @@ public class TPBase {
     private TPProgram program = new TPProgram();
     private TPUI ui = null;
     private TPMenu menu = null;
+    private TPSound sound = TPSound.NULL;
     private boolean running = true;
     private long iterGoal = 10;
     private int fpsGoal = 20;
@@ -43,6 +45,11 @@ public class TPBase {
             menu.setActive(false);
     }
 
+    public void setSound(TPSound sound) {
+        this.sound = sound;
+        System.out.println("TPBase.setSound() --> " + sound.getClass());
+    }
+
     /**
      * Runs the main-loop.<br/>
      *
@@ -60,6 +67,11 @@ public class TPBase {
                     program.update();
                     if (program.stopAfter() > 0)
                         program.setStopAfter(program.stopAfter() - 1);
+                }
+
+                if (program.isSfxTriggered()) {
+                    sound.sfxExplode();
+                    program.sfxReset();
                 }
 
                 ui.updateUI();

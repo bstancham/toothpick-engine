@@ -1,6 +1,7 @@
 package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPEncoding;
+import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.Line;
 import info.bschambers.toothpick.geom.Pt;
 
@@ -60,11 +61,12 @@ public class TPLine extends TPPart {
     /**
      * TODO: add more params to enable physics simulation - magnitude/direction/sharpness
      */
-    public void forceApplied(Pt p, TPLine protagonist) {
+    public void forceApplied(TPProgram prog, Pt p, TPLine protagonist) {
         // die with an explosion
         if (form != null) {
             form.removePart(this);
             form.addPart(new TPExplosion(p));
+            prog.triggerSfx();
         }
         // send messages so that stats can be updated
         if (getActor() != null)

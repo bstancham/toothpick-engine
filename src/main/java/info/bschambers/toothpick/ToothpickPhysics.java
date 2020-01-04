@@ -67,10 +67,10 @@ public class ToothpickPhysics implements ProgramBehaviour {
         if (dist1 < 1.0 && dist2 < 1.0) {
             if (dist1 > dist2) {
                 // line A is the winner!
-                b.forceApplied(iPt, a);
+                b.forceApplied(prog, iPt, a);
             } else {
                 // line B is the winner!
-                a.forceApplied(iPt, b);
+                a.forceApplied(prog, iPt, b);
             }
         }
         return iPt;
