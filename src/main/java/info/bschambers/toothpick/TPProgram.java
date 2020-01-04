@@ -35,6 +35,8 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private List<TPActor> toRemove = new ArrayList<>();
     private int stopAfter = -1;
     private boolean rescueChildActors = true;
+    public boolean showProgramInfo = true;
+    public boolean showDebugInfo = true;
 
     public TPProgram() {
         this("UNTITLED PROGRAM");
@@ -148,6 +150,22 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         smearMode = val;
     }
 
+    public boolean getShowProgramInfo() {
+        return showProgramInfo;
+    }
+
+    public void setShowProgramInfo(boolean val) {
+        showProgramInfo = val;
+    }
+
+    public boolean getShowDebugInfo() {
+        return showDebugInfo;
+    }
+
+    public void setShowDebugInfo(boolean val) {
+        showDebugInfo = val;
+    }
+
     public TPGeometry getGeometry() {
         return geom;
     }
@@ -195,12 +213,16 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public List<String> getInfoLines() {
         List<String> lines = new ArrayList<String>();
-        lines.add("num kills: " + getPlayer().getActor().numKills);
-        lines.add("num deaths: " + getPlayer().getActor().numDeaths);
-        lines.add("num actors: " + actors.size());
-        for (ProgramBehaviour pb : behaviours)
-            for (String pbLine : pb.getInfoLines())
-                lines.add(pbLine);
+        if (showProgramInfo) {
+            lines.add("kills: " + getPlayer().getActor().numKills);
+            lines.add("deaths: " + getPlayer().getActor().numDeaths);
+        }
+        if (showDebugInfo) {
+            lines.add("actors: " + actors.size());
+            for (ProgramBehaviour pb : behaviours)
+                for (String pbLine : pb.getInfoLines())
+                    lines.add(pbLine);
+        }
         return lines;
     }
 
