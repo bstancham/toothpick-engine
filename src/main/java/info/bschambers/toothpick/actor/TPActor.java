@@ -12,6 +12,8 @@ public class TPActor implements TPEncodingHelper {
 
     public static final TPActor NULL = new TPActor(new TPForm(new TPPart[0]));
 
+    private Color bgColor = Color.BLACK;
+
     private TPForm form;
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
@@ -89,7 +91,8 @@ public class TPActor implements TPEncodingHelper {
     }
 
     public Color getColor() {
-        return color.get();
+        // return color.get();
+        return color.getWithBG(bgColor);
     }
 
     public void setColorGetter(ColorGetter cg) {
@@ -130,6 +133,9 @@ public class TPActor implements TPEncodingHelper {
     }
 
     public void update(TPProgram prog) {
+
+        bgColor = prog.getBGColor();
+
         x += xInertia;
         y += yInertia;
         angle += angleInertia;
