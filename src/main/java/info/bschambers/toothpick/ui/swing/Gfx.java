@@ -74,8 +74,7 @@ public class Gfx {
     }
 
     public static void rectangle(Graphics g, TPGeometry geom, Rectangle r) {
-        g.drawRect((int) geom.xToScreen(r.x), (int) geom.yToScreen(r.y),
-                   (int) geom.scale * r.width, (int) geom.scale * r.height);
+        rectangle(g, geom, r.x, r.y, r.width, r.height);
     }
 
     public static void crosshairs(Graphics g, double x, double y, int size) {

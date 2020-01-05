@@ -24,4 +24,31 @@ public abstract class TPPart implements TPEncodingHelper {
 
     public abstract TPPart copy();
 
+    /**
+     * <p>Returns true, if this part has meaningful dimensions. If this method returns
+     * false then the values returned by {@link xMin}, {@link yMin}, {@link xMax} and
+     * {@link yMax} should not be considered meaningful.</p>
+     *
+     * <p>The default implementation returns false.</p>
+     */
+    public boolean hasDimensions() {
+        return false;
+    }
+
+    public int xMin() {
+        return 0;
+    }
+
+    public int yMin() {
+        return 0;
+    }
+
+    public int xMax() {
+        return 0;
+    }
+
+    public int yMax() {
+        return 0;
+    }
+
 }

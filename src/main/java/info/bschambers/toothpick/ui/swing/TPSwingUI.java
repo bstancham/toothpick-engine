@@ -2,6 +2,7 @@ package info.bschambers.toothpick.ui.swing;
 
 import info.bschambers.toothpick.TPGeometry;
 import info.bschambers.toothpick.TPProgram;
+import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
@@ -178,6 +179,14 @@ public class TPSwingUI extends JFrame
             g.setColor(Color.YELLOW);
             for (Pt p : program.getIntersectionPoints())
                 Gfx.crosshairs(g, program.getGeometry(), (int) p.x, (int) p.y, 10);
+        }
+        // bounding boxes
+        if (program.isShowBoundingBoxes()) {
+            g.setColor(Color.CYAN);
+            for (TPActor a : getProgram()) {
+                Gfx.rectangle(g, program.getGeometry(), a.getForm().getBoundingBox());
+                Gfx.crosshairs(g, program.getGeometry(), (int) a.x, (int) a.y, 20);
+            }
         }
     }
 

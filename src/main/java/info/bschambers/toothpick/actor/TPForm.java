@@ -3,6 +3,7 @@ package info.bschambers.toothpick.actor;
 import info.bschambers.toothpick.TPEncoding;
 import info.bschambers.toothpick.TPEncodingHelper;
 import info.bschambers.toothpick.geom.Pt;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class TPForm implements TPEncodingHelper {
     private List<TPPart> parts = new ArrayList<>();
     private List<TPPart> toAdd = new ArrayList<>();
     private List<TPPart> toRemove = new ArrayList<>();
+    public Rectangle bounds = new Rectangle();
 
     public TPForm() {}
 
@@ -70,6 +72,10 @@ public class TPForm implements TPEncodingHelper {
         toRemove.add(p);
     }
 
+    public Rectangle getBoundingBox() {
+        return bounds;
+    }
+
     public void housekeeping() {
         // remove dead parts
         for (TPPart p : toRemove)
@@ -84,10 +90,42 @@ public class TPForm implements TPEncodingHelper {
             alive = false;
     }
 
+    /**
+     * <p>Does housekeeping, updates the form for the actor position and rotation, updates
+     * the bounding box.</p>
+     */
     public void update(TPActor a) {
         housekeeping();
-        for (TPPart p : parts)
+
+        int x1 = 0;
+        int y1 = 0;
+        int x2 = 0;
+        int y2 = 0;
+        boolean first = true;
+
+        for (TPPart p : parts) {
             p.update(a.x, a.y, a.angle);
+
+            if (p.hasDimensions()) {
+                if (first) {
+                    x1 = p.xMin();
+                    y1 = p.yMin();
+                    x2 = p.xMax();
+                    y2 = p.yMax();
+                    first = false;
+                } else {
+                    if (p.xMin() < x1)
+                        x1 = p.xMin();
+                    if (p.yMin() < y1)
+                        y1 = p.yMin();
+                    if (p.xMax() > x2)
+                        x2 = p.xMax();
+                    if (p.yMax() > y2)
+                        y2 = p.yMax();
+                }
+            }
+        }
+        bounds.setBounds(x1, y1, x2 - x1, y2 - y1);
     }
 
     /*---------------------------- Encoding ----------------------------*/
@@ -96,7 +134,6 @@ public class TPForm implements TPEncodingHelper {
     public TPEncoding getEncoding() {
         TPEncoding params = new TPEncoding();
         params.addListMethod(TPPart.class, parts, "addPart");
-        params.addVoidMethod("housekeeping");
         return params;
     }
 

@@ -28,6 +28,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private boolean pauseForMenu = true;
     protected boolean keepIntersectionPoints = false;
     protected List<Pt> intersectionPoints = new ArrayList<>();
+    protected boolean showBoundingBoxes = false;
     private boolean smearMode = false;
     private TPPlayer player = TPPlayer.NULL;
     private List<ProgramBehaviour> behaviours = new ArrayList<>();;
@@ -37,7 +38,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private int stopAfter = -1;
     private boolean rescueChildActors = true;
     public boolean showProgramInfo = true;
-    public boolean showDebugInfo = true;
+    public boolean showDiagnosticInfo = true;
     private boolean sfxTriggered = false;
 
     public TPProgram() {
@@ -144,6 +145,14 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         keepIntersectionPoints = val;
     }
 
+    public boolean isShowBoundingBoxes() {
+        return showBoundingBoxes;
+    }
+
+    public void setShowBoundingBoxes(boolean val) {
+        showBoundingBoxes = val;
+    }
+
     public boolean isSmearMode() {
         return smearMode;
     }
@@ -160,12 +169,12 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         showProgramInfo = val;
     }
 
-    public boolean getShowDebugInfo() {
-        return showDebugInfo;
+    public boolean getShowDiagnosticInfo() {
+        return showDiagnosticInfo;
     }
 
-    public void setShowDebugInfo(boolean val) {
-        showDebugInfo = val;
+    public void setShowDiagnosticInfo(boolean val) {
+        showDiagnosticInfo = val;
     }
 
     public TPGeometry getGeometry() {
@@ -232,7 +241,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             lines.add("kills: " + getPlayer().getActor().numKills);
             lines.add("deaths: " + getPlayer().getActor().numDeaths);
         }
-        if (showDebugInfo) {
+        if (showDiagnosticInfo) {
             lines.add("actors: " + actors.size());
             for (ProgramBehaviour pb : behaviours)
                 for (String pbLine : pb.getInfoLines())

@@ -40,6 +40,31 @@ public class TPLine extends TPPart {
         return ln;
     }
 
+    @Override
+    public boolean hasDimensions() {
+        return true;
+    }
+
+    @Override
+    public int xMin() {
+        return (int) Math.min(getLine().start.x, getLine().end.x);
+    }
+
+    @Override
+    public int yMin() {
+        return (int) Math.min(getLine().start.y, getLine().end.y);
+    }
+
+    @Override
+    public int xMax() {
+        return (int) Math.max(getLine().start.x, getLine().end.x);
+    }
+
+    @Override
+    public int yMax() {
+        return (int) Math.max(getLine().start.y, getLine().end.y);
+    }
+
     public Line getArchetype() {
         return archetype;
     }
