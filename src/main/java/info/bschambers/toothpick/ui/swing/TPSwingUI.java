@@ -95,14 +95,15 @@ public class TPSwingUI extends JFrame
     private class TPSmearImage extends BufferedImage {
 
         public TPSmearImage() {
-            super(getUIWidth(), getUIHeight(), BufferedImage.TYPE_INT_RGB);
+            super(TPSwingUI.this.getWidth(), TPSwingUI.this.getHeight(),
+                  BufferedImage.TYPE_INT_RGB);
         }
 
         public void updateImage(boolean paintBG) {
             Graphics2D g = createGraphics();
             if (paintBG) {
                 g.setColor(bgColor);
-                g.fillRect(0, 0, getUIWidth(), getUIHeight());
+                g.fillRect(0, 0, TPSwingUI.this.getWidth(), TPSwingUI.this.getHeight());
             }
             paintBackground(g);
             paintActors(g);
@@ -113,14 +114,18 @@ public class TPSwingUI extends JFrame
 
         private TPSmearImage img;
         private boolean firstSmear = true;
+        private boolean resizeSmear = false;
 
         public TPSwingPanel() {
             img = new TPSmearImage();
         }
 
+        public void schedulteResizeSmearImage() {
+            resizeSmear = true;
+        }
+
         @Override
         public void paintComponent(Graphics g) {
-
             // check whether background color has changed
             if (bgColor != program.getBGColor()) {
                 bgColor = program.getBGColor();
@@ -131,6 +136,11 @@ public class TPSwingUI extends JFrame
             super.paintComponent(g);
 
             if (program.isSmearMode()) {
+                // if window has been resized then need to resize the smear-image
+                if (resizeSmear) {
+                    img = new TPSmearImage();
+                    resizeSmear = false;
+                }
                 img.updateImage(firstSmear);
                 g.drawImage(img, 0, 0, null);
                 firstSmear = false;
@@ -271,6 +281,7 @@ public class TPSwingUI extends JFrame
     @Override
     public void componentResized(ComponentEvent e) {
         getProgram().fitUI(this);
+        panel.schedulteResizeSmearImage();
     }
 
     @Override

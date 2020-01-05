@@ -35,7 +35,7 @@ public final class TPFactory {
     }
 
     public static TPActor regularPolygonActor(TPProgram prog) {
-        double size = rand(20, 100);
+        double size = rand(30, 100);
         int numSides = randInt(3, 8);
         TPForm form = regularPolygonForm(size, numSides);
         return droneActor(form, prog);
@@ -45,6 +45,13 @@ public final class TPFactory {
         double size = rand(20, 100);
         int numSides = randInt(3, 16);
         TPForm form = regularThistleForm(size, numSides);
+        return droneActor(form, prog);
+    }
+
+    public static TPActor segmentedPolygonActor(TPProgram prog) {
+        double size = rand(30, 100);
+        int numSides = randInt(3, 8);
+        TPForm form = segmentedPolygonForm(size, numSides);
         return droneActor(form, prog);
     }
 
@@ -114,6 +121,26 @@ public final class TPFactory {
         TPLine[] lines = new TPLine[points.length];
         for (int i = 0; i < lines.length; i++)
             lines[i] = new TPLine(new Line(zero, points[i]));
+        return new TPForm(lines);
+    }
+
+    public static TPForm segmentedPolygonForm(double size, int numSides) {
+        Pt zero = new Pt(0.000001, 0.000001);
+        Pt[] points = regularPolygonPoints(size, numSides);
+        TPLine[] lines = new TPLine[points.length * 2];
+        int index = 0;
+        // thistle points
+        for (int i = 0; i < points.length; i++) {
+            lines[index] = new TPLine(new Line(zero, points[i]));
+            index++;
+        }
+        // polygon points
+        for (int i = 0; i < (points.length - 1); i++) {
+            lines[index] = new TPLine(new Line(points[i], points[i + 1]));
+            index++;
+        }
+        lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
+
         return new TPForm(lines);
     }
 
