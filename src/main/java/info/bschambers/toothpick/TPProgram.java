@@ -37,8 +37,9 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
-    private int pauseAfter = -1;
     private boolean rescueChildActors = true;
+    private boolean finished = false;
+    private int pauseAfter = -1;
     public boolean showProgramInfo = true;
     public boolean showDiagnosticInfo = true;
     private boolean sfxTriggered = false;
@@ -53,24 +54,25 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     }
 
     /**
-     * <p>Initialise the program - if already running, then return the program to it's
-     * starting state.</p>
+     * <p>Reset the program to a starting state - clear the actors list, reset all
+     * behaviours, and set the finished-flag to false.</p>
      *
-     * <p>Child classes should override this method to do setup - the default
-     * implemetation simply resets the player and clears the actors lists.</p>
+     * <p>To do a full reset, you may want to call {@link resetPlayer} also.</p>
      */
-    public void init() {
+    public void reset() {
         actors.clear();
         toAdd.clear();
         toRemove.clear();
-        initPlayer();
-        updateActorsInPlace();
+        for (ProgramBehaviour pb : behaviours)
+            pb.reset();
+        setFinished(false);
     }
 
-    public void initPlayer() {
+    public void resetPlayer() {
         removeActor(player.getActor());
         player.reset();
         addActor(player.getActor());
+        // updateActorsInPlace();
     }
 
     public TPPlayer getPlayer() {
@@ -92,6 +94,10 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         player.reset(retainStats);
         addActor(player.getActor());
         updateActorsInPlace();
+    }
+
+    protected boolean playerIsDead() {
+        return !getPlayer().getActor().isAlive();
     }
 
     public String getTitle() {
@@ -139,6 +145,14 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             pauseForMenu = false;
         else if (pauseAfter == 0)
             pauseForMenu = true;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean val) {
+        finished = val;
     }
 
     public boolean isShowIntersections() {
@@ -242,6 +256,9 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     public List<String> getInfoLines() {
         List<String> lines = new ArrayList<String>();
         if (showProgramInfo) {
+            if (playerIsDead()) {
+                lines.add("PLAYER DEAD!");
+            }
             lines.add("kills: " + getPlayer().getActor().numKills);
             lines.add("deaths: " + getPlayer().getActor().numDeaths);
         }
@@ -263,6 +280,14 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             pauseAfter--;
             if (pauseAfter == 0) {
                 setPauseForMenu(true);
+            }
+        }
+
+        if (playerIsDead()) {
+            getPlayer().getActor().update(this);
+            if (getPlayer().getActor().getActionTrigger()) {
+                System.out.println("... TRIGGER REVIVAL!");
+                revivePlayer(true);
             }
         }
 

@@ -34,7 +34,7 @@ import static java.awt.event.KeyEvent.*;
 public class TPSwingUI extends JFrame
     implements TPUI, KeyListener, MouseListener, MouseMotionListener, ComponentListener {
 
-    private TPPlatform platform = new TPPlatform();
+    private TPPlatform platform = new TPPlatform("DEFAULT PLATFORM");
     private TPMenu menu = new TPMenu("EMPTY MENU");
     private TPSwingPanel panel;
     private List<Supplier<String>> infoGetters = new ArrayList<>();

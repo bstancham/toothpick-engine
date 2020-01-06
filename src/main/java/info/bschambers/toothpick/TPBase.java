@@ -6,7 +6,7 @@ import info.bschambers.toothpick.ui.TPUI;
 
 public class TPBase {
 
-    private TPPlatform platform = new TPPlatform();
+    private TPPlatform platform = new TPPlatform("DEFAULT PLATFORM");
     private TPUI ui = TPUI.NULL;
     private TPMenu menu = null;
     private TPSound sound = TPSound.NULL;
@@ -28,7 +28,7 @@ public class TPBase {
      * then passes to {@link setPlatform}.</p>
      */
     public void setProgram(TPProgram program) {
-        setPlatform(new TPPlatform(program));
+        setPlatform(new TPPlatform("platform", program));
     }
 
     public void setUI(TPUI ui) {

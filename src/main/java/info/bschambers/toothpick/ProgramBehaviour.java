@@ -22,6 +22,8 @@ public interface ProgramBehaviour {
         return "";
     }
 
+    default void reset() {}
+
     void update(TPProgram prog);
 
 }

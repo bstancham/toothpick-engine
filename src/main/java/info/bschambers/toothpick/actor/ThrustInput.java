@@ -6,6 +6,7 @@ public class ThrustInput extends KeyInputHandler {
 
     @Override
     public void update(TPProgram prog, TPActor tp) {
+        super.update(prog, tp);
         if (bindUp.value()) {
             tp.x += Math.sin(Math.PI * tp.angle) * xyStep;
             tp.y -= Math.cos(Math.PI * tp.angle) * xyStep;

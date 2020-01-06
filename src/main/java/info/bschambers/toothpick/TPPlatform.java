@@ -2,15 +2,22 @@ package info.bschambers.toothpick;
 
 public class TPPlatform {
 
+    private String title = "";
     private TPProgram prog;
     private boolean progChanged = true;
 
-    public TPPlatform() {
+    public TPPlatform(String title) {
+        this.title = title;
         setProgram(TPProgram.NULL);
     }
 
-    public TPPlatform(TPProgram prog) {
+    public TPPlatform(String title, TPProgram prog) {
+        this.title = title;
         setProgram(prog);
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public TPProgram getProgram() {

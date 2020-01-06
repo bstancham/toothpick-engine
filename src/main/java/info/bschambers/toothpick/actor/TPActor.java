@@ -30,6 +30,7 @@ public class TPActor implements TPEncodingHelper {
     private List<TPBehaviour> behaviours = new ArrayList<>();
     private BoundaryBehaviour boundsBehaviour = BoundaryBehaviour.DIE_AT_BOUNDS;
     private ColorGetter color = new ColorMono(Color.PINK);
+    private boolean actionTrigger = false;
     public double x = 0;
     public double y = 0;
     public double angle = 0;
@@ -107,6 +108,13 @@ public class TPActor implements TPEncodingHelper {
         boundsBehaviour = val;
     }
 
+    public boolean getActionTrigger() {
+        return actionTrigger;
+    }
+
+    public void setActionTrigger(boolean val) {
+        actionTrigger = val;
+    }
 
     public Color getColor() {
         // return color.get();

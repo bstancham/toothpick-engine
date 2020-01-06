@@ -11,6 +11,7 @@ public class ThrustInertiaInput extends KeyInputHandler {
 
     @Override
     public void update(TPProgram prog, TPActor tp) {
+        super.update(prog, tp);
         if (bindUp.value()) {
             tp.xInertia += Math.sin(Math.PI * tp.angle) * xyStep;
             tp.yInertia -= Math.cos(Math.PI * tp.angle) * xyStep;
