@@ -35,7 +35,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
-    private int stopAfter = -1;
+    private int pauseAfter = -1;
     private boolean rescueChildActors = true;
     public boolean showProgramInfo = true;
     public boolean showDiagnosticInfo = true;
@@ -124,17 +124,19 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         pauseForMenu = val;
     }
 
-    public int stopAfter() {
-        return stopAfter;
-    }
-
     /**
-     * <p>Request that the program stop iterating after specified number of frames.</p>
+     * <p>If menu is active, iterate specified number of times before pausing.</p>
      *
-     * <p>If val is a negative number then the program will iterate indefinitely.</p>
+     * <p>If val is a zero then pause immediately.</p>
+     *
+     * <p>If val is a negative number then do nothing.</p>
      */
-    public void setStopAfter(int val) {
-        stopAfter = val;
+    public void setPauseAfter(int val) {
+        pauseAfter = val;
+        if (pauseAfter > 0)
+            pauseForMenu = false;
+        else if (pauseAfter == 0)
+            pauseForMenu = true;
     }
 
     public boolean isShowIntersections() {
@@ -254,6 +256,14 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
      * Update and move the action on by one step.
      */
     public void update() {
+
+        if (pauseAfter > 0) {
+            pauseAfter--;
+            if (pauseAfter == 0) {
+                setPauseForMenu(true);
+            }
+        }
+
         intersectionPoints.clear();
         for (TPActor a : actors)
             a.update(this);

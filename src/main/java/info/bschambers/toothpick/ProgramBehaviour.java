@@ -2,6 +2,9 @@ package info.bschambers.toothpick;
 
 public interface ProgramBehaviour {
 
+    /** Singleton-group ID for physics-models. */
+    public static final String PHYSICS_MODEL_ID = "physics-model";
+
     default String[] getInfoLines() {
         return new String[0];
     }

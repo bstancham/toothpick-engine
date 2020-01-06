@@ -9,14 +9,9 @@ import info.bschambers.toothpick.geom.Pt;
 
 public class ToothpickPhysics implements ProgramBehaviour {
 
-    /**
-     * The singleton-group name for physics-models.
-     */
-    public static final String TOOTHPICK_PHYSICS_GROUP = "toothpick-physics-model";
-
     @Override
     public String getSingletonGroup() {
-        return TOOTHPICK_PHYSICS_GROUP;
+        return ProgramBehaviour.PHYSICS_MODEL_ID;
     }
 
     @Override
