@@ -9,6 +9,11 @@ public abstract class KeyInputHandler implements TPBehaviour {
             public void update(TPProgram prog, TPActor a) {}
         };
 
+    @Override
+    public String getSingletonGroup() {
+        return TPBehaviour.KEY_INPUT_BEHAVIOUR_FLAG;
+    }
+
     protected double xyStep = 1;
     protected double angleStep = 0.005;
 

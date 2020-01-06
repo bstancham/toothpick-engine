@@ -2,6 +2,7 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPEncoding;
 import info.bschambers.toothpick.TPEncodingHelper;
+import info.bschambers.toothpick.TPGeometry;
 import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.Pt;
 import java.awt.Color;
@@ -9,6 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TPActor implements TPEncodingHelper {
+
+    public enum BoundaryBehaviour {
+        DO_NOTHING_AT_BOUNDS,
+        DIE_AT_BOUNDS,
+        WRAP_AT_BOUNDS,
+        WRAP_PARTS_AT_BOUNDS
+    };
 
     public static final TPActor NULL = new TPActor(new TPForm(new TPPart[0]));
 
@@ -20,6 +28,7 @@ public class TPActor implements TPEncodingHelper {
     private List<TPActor> childrenToAdd = new ArrayList<>();
     private List<TPActor> childrenToRemove = new ArrayList<>();
     private List<TPBehaviour> behaviours = new ArrayList<>();
+    private BoundaryBehaviour boundsBehaviour = BoundaryBehaviour.DIE_AT_BOUNDS;
     private ColorGetter color = new ColorMono(Color.PINK);
     public double x = 0;
     public double y = 0;
@@ -45,6 +54,7 @@ public class TPActor implements TPEncodingHelper {
         s.append("position: x=" + x + " y=" + y + "\n");
         s.append("inertia: x=" + xInertia + " y=" + yInertia + "\n");
         s.append("angle: " + angle + " (angle-inertia=" + angleInertia + ")\n");
+        s.append("bounds-behaviour: " + boundsBehaviour);
         s.append("FORM: (" + form.numParts() + " parts)\n");
         for (int i = 0; i < form.numParts(); i++)
             s.append("... " + form.getPart(i) + "\n");
@@ -59,6 +69,7 @@ public class TPActor implements TPEncodingHelper {
 
     public TPActor copy() {
         TPActor tp = new TPActor(form.copy());
+        tp.boundsBehaviour = boundsBehaviour;
         tp.x = x;
         tp.y = y;
         tp.angle = angle;
@@ -70,9 +81,7 @@ public class TPActor implements TPEncodingHelper {
         tp.color = color.copy();
         for (TPBehaviour cb : behaviours)
             tp.behaviours.add(cb);
-
-        tp.form.housekeeping();
-
+        tp.updateForm();
         return tp;
     }
 
@@ -89,6 +98,15 @@ public class TPActor implements TPEncodingHelper {
         this.form = form;
         this.form.setActor(this);
     }
+
+    public BoundaryBehaviour getBoundaryBehaviour() {
+        return boundsBehaviour;
+    }
+
+    public void setBoundaryBehaviour(BoundaryBehaviour val) {
+        boundsBehaviour = val;
+    }
+
 
     public Color getColor() {
         // return color.get();
@@ -115,7 +133,20 @@ public class TPActor implements TPEncodingHelper {
         childrenToAdd.add(child);
     }
 
+    /**
+     * <p>Add a behaviour. If behaviour {@code tpb} is a member of a singleton-group then
+     * any existing member of that group will be removed.</p>
+     */
     public void addBehaviour(TPBehaviour tpb) {
+        String group = tpb.getSingletonGroup();
+        if (!group.isEmpty()) {
+            List<TPBehaviour> tpbToRemove = new ArrayList<>();
+            for (TPBehaviour other : behaviours)
+                if (other.getSingletonGroup().equals(group))
+                    tpbToRemove.add(other);
+            for (TPBehaviour other : tpbToRemove)
+                behaviours.remove(other);
+        }
         behaviours.add(tpb);
     }
 
@@ -123,12 +154,7 @@ public class TPActor implements TPEncodingHelper {
      * Removes any existing input handlers and adds this one.
      */
     public void setInputHandler(KeyInputHandler newInput) {
-        List<TPBehaviour> existing = new ArrayList<>();
-        for (TPBehaviour tpb : behaviours)
-            if (tpb instanceof KeyInputHandler)
-                existing.add(tpb);
-        for (TPBehaviour ih : existing)
-            behaviours.remove(ih);
+        // KeyInputHandler will be identified by it's singleton-group ID
         behaviours.add(newInput);
     }
 
@@ -139,9 +165,16 @@ public class TPActor implements TPEncodingHelper {
         x += xInertia;
         y += yInertia;
         angle += angleInertia;
+
+        boundaryCheckPosition(prog);
+
+        updateForm();
+
+        if (boundsBehaviour == BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS)
+            wrapFormAtBounds(prog.getGeometry());
+
         for (TPBehaviour b : behaviours)
             b.update(prog, this);
-        updateForm();
 
         // add and remove children
         for (TPActor child : children)
@@ -164,6 +197,34 @@ public class TPActor implements TPEncodingHelper {
      */
     public void updateForm() {
         form.update(this);
+    }
+
+    private void wrapFormAtBounds(TPGeometry geom) {
+        form.wrapAtBounds(geom);
+    }
+
+    private void boundaryCheckPosition(TPProgram prog) {
+        if (boundsBehaviour == BoundaryBehaviour.DIE_AT_BOUNDS) {
+            TPGeometry geom = prog.getGeometry();
+            if (x < 0 ||
+                x > geom.getWidth() ||
+                y < 0 ||
+                y > geom.getHeight())
+                // if form is empty then actor will die
+                setForm(TPForm.NULL);
+
+        } else if (boundsBehaviour == BoundaryBehaviour.WRAP_AT_BOUNDS ||
+                   boundsBehaviour == BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS) {
+            TPGeometry geom = prog.getGeometry();
+            if (x < 0)
+                x = geom.getWidth();
+            else if (x > geom.getWidth())
+                x = 0;
+            else if (y < 0)
+                y = geom.getHeight();
+            else if (y > geom.getHeight())
+                y = 0;
+        }
     }
 
     public void setPos(Pt pos) {

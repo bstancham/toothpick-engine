@@ -9,8 +9,6 @@ import java.awt.Color;
  */
 public final class TPFactory {
 
-    public static final WrapAtBounds WRAP_AT_BOUNDS = new WrapAtBounds();
-
     /*---------------------------- players -----------------------------*/
 
     public static TPPlayer playerLine(Pt pos) {
@@ -20,7 +18,7 @@ public final class TPFactory {
     public static TPPlayer playerLine(double length, Pt pos) {
         TPActor actor = new TPActor(singleLineForm(length));
         actor.setPos(pos);
-        actor.addBehaviour(WRAP_AT_BOUNDS);
+        actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
         actor.setColorGetter(new ColorMono(Color.PINK));
         TPPlayer player = new TPPlayer(actor);
         player.setInputHandler(new ThrustInertiaInput());
@@ -63,7 +61,7 @@ public final class TPFactory {
 
         TPActor actor = new TPActor(form);
         actor.setColorGetter(randColorGetter());
-        actor.addBehaviour(WRAP_AT_BOUNDS);
+        actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
         // random angle and heading
         actor.angle = Math.random() * Math.PI;
         setRandHeading(actor);
@@ -73,7 +71,7 @@ public final class TPFactory {
     public static TPActor droneActor(TPForm form, TPProgram prog) {
         TPActor actor = new TPActor(form);
         actor.setColorGetter(randColorGetter());
-        actor.addBehaviour(WRAP_AT_BOUNDS);
+        actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
         setRandHeading(actor);
         actor.angleInertia = randAngleInertia();
         actor.setPos(randBoundaryPos(prog.getGeometry().getWidth(),

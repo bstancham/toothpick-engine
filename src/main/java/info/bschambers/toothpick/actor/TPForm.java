@@ -2,6 +2,8 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPEncoding;
 import info.bschambers.toothpick.TPEncodingHelper;
+import info.bschambers.toothpick.TPGeometry;
+import info.bschambers.toothpick.geom.Geom;
 import info.bschambers.toothpick.geom.Pt;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -126,6 +128,26 @@ public class TPForm implements TPEncodingHelper {
             }
         }
         bounds.setBounds(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    /**
+     * <p>For any part outside of bounds, wrap around to the other side.</p>
+     */
+    public void wrapAtBounds(TPGeometry geom) {
+        for (TPPart p : parts) {
+            if (p.hasDimensions()) {
+                int x = Geom.midVal(p.xMin(), p.xMax());
+                int y = Geom.midVal(p.yMin(), p.yMax());
+                if (x < 0)
+                    p.translate(geom.getWidth(), 0);
+                else if (x > geom.getWidth())
+                    p.translate(-geom.getWidth(), 0);
+                if (y < 0)
+                    p.translate(0, geom.getHeight());
+                else if (y > geom.getHeight())
+                    p.translate(0, -geom.getHeight());
+            }
+        }
     }
 
     /*---------------------------- Encoding ----------------------------*/

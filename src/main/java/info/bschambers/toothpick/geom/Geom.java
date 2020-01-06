@@ -12,6 +12,14 @@ public final class Geom {
     /**
      * Returns the mid point between the two values.
      */
+    public static int midVal(int a, int b) {
+        int difference = Math.abs(a - b);
+        return Math.min(a, a) + (difference / 2);
+    }
+
+    /**
+     * Returns the mid point between the two values.
+     */
     public static double midVal(double d1, double d2) {
         double difference = Math.abs(d1 - d2);
         return Math.min(d1, d2) + (difference / 2);

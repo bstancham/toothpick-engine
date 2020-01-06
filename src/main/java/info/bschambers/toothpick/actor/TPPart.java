@@ -51,4 +51,6 @@ public abstract class TPPart implements TPEncodingHelper {
         return 0;
     }
 
+    public void translate(int x, int y) {}
+
 }

@@ -65,6 +65,11 @@ public class TPLine extends TPPart {
         return (int) Math.max(getLine().start.y, getLine().end.y);
     }
 
+    @Override
+    public void translate(int x, int y) {
+        line = line.shift(x, y);
+    }
+
     public Line getArchetype() {
         return archetype;
     }

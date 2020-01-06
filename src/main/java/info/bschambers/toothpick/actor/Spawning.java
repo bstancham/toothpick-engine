@@ -29,7 +29,7 @@ public class Spawning implements TPBehaviour, TPEncodingHelper {
             double speed = 2;
             spawn.xInertia = Math.sin(a.angle * Math.PI) * speed;
             spawn.yInertia = -(Math.cos(a.angle * Math.PI) * speed);
-            spawn.addBehaviour(new DieAtBounds());
+            spawn.setBoundaryBehaviour(TPActor.BoundaryBehaviour.DIE_AT_BOUNDS);
             a.addChild(spawn);
         }
     }
