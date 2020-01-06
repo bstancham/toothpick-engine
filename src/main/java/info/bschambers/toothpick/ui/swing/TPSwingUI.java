@@ -1,6 +1,7 @@
 package info.bschambers.toothpick.ui.swing;
 
 import info.bschambers.toothpick.TPGeometry;
+import info.bschambers.toothpick.TPPlatform;
 import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.geom.Pt;
@@ -33,7 +34,7 @@ import static java.awt.event.KeyEvent.*;
 public class TPSwingUI extends JFrame
     implements TPUI, KeyListener, MouseListener, MouseMotionListener, ComponentListener {
 
-    private TPProgram program = new TPProgram();
+    private TPPlatform platform = new TPPlatform();
     private TPMenu menu = new TPMenu("EMPTY MENU");
     private TPSwingPanel panel;
     private List<Supplier<String>> infoGetters = new ArrayList<>();
@@ -54,17 +55,24 @@ public class TPSwingUI extends JFrame
 
     @Override
     public void updateUI() {
+        if (getPlatform().programChanged()) {
+            getProgram().fitUI(this);
+            getPlatform().setProgramChanged(false);
+        }
         panel.paintImmediately(0, 0, getWidth(), getHeight());
     }
 
-    public TPProgram getProgram() {
-        return program;
+    protected TPPlatform getPlatform() {
+        return platform;
+    }
+
+    protected TPProgram getProgram() {
+        return getPlatform().getProgram();
     }
 
     @Override
-    public void setProgram(TPProgram program) {
-        this.program = program;
-        this.program.fitUI(this);
+    public void setPlatform(TPPlatform platform) {
+        this.platform = platform;
     }
 
     @Override
@@ -128,19 +136,21 @@ public class TPSwingUI extends JFrame
         @Override
         public void paintComponent(Graphics g) {
             // check whether background color has changed
-            if (bgColor != program.getBGColor()) {
-                bgColor = program.getBGColor();
+            if (bgColor != getProgram().getBGColor()) {
+                bgColor = getProgram().getBGColor();
                 setBackground(bgColor);
                 firstSmear = true;
             }
 
             super.paintComponent(g);
 
-            if (program.isSmearMode()) {
+            if (getProgram().isSmearMode()) {
                 // if window has been resized then need to resize the smear-image
                 if (resizeSmear) {
                     img = new TPSmearImage();
+                    paintBackground(g);
                     resizeSmear = false;
+                    firstSmear = true; // will repaint background
                 }
                 img.updateImage(firstSmear);
                 g.drawImage(img, 0, 0, null);
@@ -159,33 +169,33 @@ public class TPSwingUI extends JFrame
 
     protected void paintBackground(Graphics g) {
         // background image
-        if (program.getBGImage() != null)
-            g.drawImage(program.getBGImage(), 0, 0,
+        if (getProgram().getBGImage() != null)
+            g.drawImage(getProgram().getBGImage(), 0, 0,
                         panel.getWidth(), panel.getHeight(), null);
     }
 
     protected void paintActors(Graphics g) {
-        for (int i = 0; i < program.numActors(); i++)
-            Gfx.actor(g, program.getGeometry(), program.getActor(i));
+        for (int i = 0; i < getProgram().numActors(); i++)
+            Gfx.actor(g, getProgram().getGeometry(), getProgram().getActor(i));
     }
 
     protected void paintOverlay(Graphics g) {
         // boundary rectangle
         g.setColor(Color.GRAY);
-        TPGeometry geom = program.getGeometry();
+        TPGeometry geom = getProgram().getGeometry();
         Gfx.rectangle(g, geom, 0, 0, geom.getWidth(), geom.getHeight());
         // line intersection points
-        if (program.isShowIntersections()) {
+        if (getProgram().isShowIntersections()) {
             g.setColor(Color.YELLOW);
-            for (Pt p : program.getIntersectionPoints())
-                Gfx.crosshairs(g, program.getGeometry(), (int) p.x, (int) p.y, 10);
+            for (Pt p : getProgram().getIntersectionPoints())
+                Gfx.crosshairs(g, getProgram().getGeometry(), (int) p.x, (int) p.y, 10);
         }
         // bounding boxes
-        if (program.isShowBoundingBoxes()) {
+        if (getProgram().isShowBoundingBoxes()) {
             g.setColor(Color.CYAN);
             for (TPActor a : getProgram()) {
-                Gfx.rectangle(g, program.getGeometry(), a.getForm().getBoundingBox());
-                Gfx.crosshairs(g, program.getGeometry(), (int) a.x, (int) a.y, 20);
+                Gfx.rectangle(g, getProgram().getGeometry(), a.getForm().getBoundingBox());
+                Gfx.crosshairs(g, getProgram().getGeometry(), (int) a.x, (int) a.y, 20);
             }
         }
     }
@@ -194,7 +204,7 @@ public class TPSwingUI extends JFrame
         Gfx.TextBox box = new Gfx.TextBox(null, Color.WHITE, null);
         box.posX = getWidth() - 150;
         box.posY = 15;
-        for (String line : program.getInfoLines())
+        for (String line : getProgram().getInfoLines())
             box.add(line);
         for (Supplier<String> getter : infoGetters)
             box.add(getter.get());
@@ -255,11 +265,11 @@ public class TPSwingUI extends JFrame
     }
 
     private void keyPressedGame(KeyEvent e) {
-        program.getPlayer().getInputHandler().setKey(e.getKeyCode(), true);
+        getProgram().getPlayer().getInputHandler().setKey(e.getKeyCode(), true);
     }
 
     private void keyReleasedGame(KeyEvent e) {
-        program.getPlayer().getInputHandler().setKey(e.getKeyCode(), false);
+        getProgram().getPlayer().getInputHandler().setKey(e.getKeyCode(), false);
     }
 
     /*-------------------------- Mouse Input ---------------------------*/

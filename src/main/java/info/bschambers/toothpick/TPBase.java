@@ -6,28 +6,35 @@ import info.bschambers.toothpick.ui.TPUI;
 
 public class TPBase {
 
-    private TPProgram program = new TPProgram();
-    private TPUI ui = null;
+    private TPPlatform platform = new TPPlatform();
+    private TPUI ui = TPUI.NULL;
     private TPMenu menu = null;
     private TPSound sound = TPSound.NULL;
     private boolean running = true;
     private long iterGoal = 10;
     private int fpsGoal = 20;
     private long fps = 0;
-
     private long iterTime = 0;
 
-    public void setProgram(TPProgram program) {
-        this.program = program;
+    public void setPlatform(TPPlatform platform) {
+        this.platform = platform;
         if (ui != null)
-            ui.setProgram(program);
-        System.out.println("TPBase.setProgram() --> " + program.getClass());
+            ui.setPlatform(platform);
+        System.out.println("TPBase.setPlatform() --> " + platform.getClass());
+    }
+
+    /**
+     * <p>Convenience method - wraps {@code program} in a {@link TPPlatform} instance and
+     * then passes to {@link setPlatform}.</p>
+     */
+    public void setProgram(TPProgram program) {
+        setPlatform(new TPPlatform(program));
     }
 
     public void setUI(TPUI ui) {
         this.ui = ui;
-        if (program != null) {
-            ui.setProgram(program);
+        if (platform != null) {
+            ui.setPlatform(platform);
             ui.addInfoGetter(() -> "fps: " + getFps());
         }
         System.out.println("TPBase.setUI() --> " + ui.getClass());
@@ -50,6 +57,10 @@ public class TPBase {
         System.out.println("TPBase.setSound() --> " + sound.getClass());
     }
 
+    private TPProgram getProgram() {
+        return platform.getProgram();
+    }
+
     /**
      * Runs the main-loop.<br/>
      *
@@ -57,33 +68,35 @@ public class TPBase {
      */
     public void run() {
         System.out.println("TPBase.run()");
-        if (program == null) {
-            System.out.println("can't run: no program loaded");
-        } else {
-            while (running) {
 
-                if (!menu.isActive() || !program.getPauseForMenu())
-                    program.update();
+        if (ui == TPUI.NULL)
+            System.out.println("WARNING: running with NULL-UI!");
 
-                if (program.isSfxTriggered()) {
-                    sound.sfxExplode();
-                    program.sfxReset();
-                }
+        while (running) {
 
-                ui.updateUI();
+            if (!menu.isActive() || !getProgram().getPauseForMenu())
+                platform.update();
 
-                long thisIter = System.currentTimeMillis() - iterTime;
-                iterTime = System.currentTimeMillis();
-
-                fps = (thisIter > 0 ? 1000L / thisIter : 0);
-
-                long thisSleep = iterGoal - thisIter;
-                thisSleep = Math.max(0, thisSleep);
-
-                try {
-                    Thread.sleep(thisSleep);
-                } catch (Exception ex) {}
+            if (getProgram().isSfxTriggered()) {
+                sound.sfxExplode();
+                getProgram().sfxReset();
             }
+
+            ui.updateUI();
+
+            // regulate timing
+
+            long thisIter = System.currentTimeMillis() - iterTime;
+            iterTime = System.currentTimeMillis();
+
+            fps = (thisIter > 0 ? 1000L / thisIter : 0);
+
+            long thisSleep = iterGoal - thisIter;
+            thisSleep = Math.max(0, thisSleep);
+
+            try {
+                Thread.sleep(thisSleep);
+            } catch (Exception ex) {}
         }
     }
 

@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
+    public static final TPProgram NULL = new TPProgram();
+
     private String title;
     private Color bgColor = Color.BLACK;
     private Image bgImage = null;

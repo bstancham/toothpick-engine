@@ -1,6 +1,6 @@
 package info.bschambers.toothpick.ui;
 
-import info.bschambers.toothpick.TPProgram;
+import info.bschambers.toothpick.TPPlatform;
 import java.util.function.Supplier;
 
 /**
@@ -19,6 +19,21 @@ import java.util.function.Supplier;
  */
 public interface TPUI {
 
+    public static final TPUI NULL = new TPUI() {
+            @Override
+            public void updateUI() {}
+            @Override
+            public int getUIWidth() { return 1; }
+            @Override
+            public int getUIHeight() { return 1; }
+            @Override
+            public void setPlatform(TPPlatform platform) {}
+            @Override
+            public void setMenu(TPMenu menu) {}
+            @Override
+            public void addInfoGetter(Supplier<String> getter) {}
+        };
+
     /**
      * Update the user interface.
      */
@@ -28,7 +43,7 @@ public interface TPUI {
 
     int getUIHeight();
 
-    void setProgram(TPProgram program);
+    void setPlatform(TPPlatform platform);
 
     void setMenu(TPMenu menu);
 
