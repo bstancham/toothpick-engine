@@ -53,6 +53,7 @@ public class TPSequencePlatform extends TPPlatform {
             if (levelNum >= programs.size())
                 levelNum = 0;
             setProgram(programs.get(levelNum));
+            getProgram().setPlayer(getPlayer());
         }
     }
 
