@@ -35,8 +35,8 @@ public class TPSequencePlatform extends TPPlatform {
 
     @Override
     protected void setProgram(TPProgram prog) {
+        prog.reset();
         super.setProgram(prog);
-        getProgram().reset();
     }
 
     @Override

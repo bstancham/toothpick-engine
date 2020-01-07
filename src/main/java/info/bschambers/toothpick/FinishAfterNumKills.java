@@ -28,9 +28,10 @@ public class FinishAfterNumKills implements ProgramBehaviour {
         } else {
             int current = prog.getPlayer().getActor().numKills - startNum;
             remaining = targetNum - current;
+            if (remaining <= 0) {
+                prog.setFinished(true);
+            }
         }
-        if (remaining <= 0)
-            prog.setFinished(true);
     }
 
 }
