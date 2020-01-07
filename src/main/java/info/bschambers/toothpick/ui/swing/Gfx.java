@@ -114,6 +114,10 @@ public class Gfx {
                 line(g, geom, ((TPLine) part).getLine());
             } else if (part instanceof TPExplosion) {
                 explosion(g, geom, (TPExplosion) part);
+            } else if (part instanceof TPText) {
+                text(g, geom, (TPText) part);
+            } else if (part instanceof TPImage) {
+                image(g, geom, (TPImage) part);
             }
         }
     }
@@ -126,6 +130,18 @@ public class Gfx {
         int x = (int) (ex.getPos().x) - half;
         int y = (int) (ex.getPos().y) - half;
         g.fillOval((int) geom.xToScreen(x), (int) geom.yToScreen(y), size, size);
+    }
+
+    public static void text(Graphics g, TPGeometry geom, TPText tpt) {
+        int x = (int) geom.xToScreen(tpt.x);
+        int y = (int) geom.yToScreen(tpt.y);
+        g.drawString(tpt.text, x, y);
+    }
+
+    public static void image(Graphics g, TPGeometry geom, TPImage tpi) {
+        int x = (int) geom.xToScreen(tpi.x);
+        int y = (int) geom.yToScreen(tpi.y);
+        g.drawImage(tpi.image, x, y, null);
     }
 
     public static void menu(Graphics g, TPMenu menu) {

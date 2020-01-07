@@ -74,8 +74,7 @@ public final class TPFactory {
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
         setRandHeading(actor);
         actor.angleInertia = randAngleInertia();
-        actor.setPos(randBoundaryPos(prog.getGeometry().getWidth(),
-                                     prog.getGeometry().getHeight()));
+        actor.setPos(randBoundaryPos(prog));
         return actor;
     }
 
@@ -208,6 +207,11 @@ public final class TPFactory {
 
     public static double randAngleInertia(double max) {
         return Math.random() * max;
+    }
+
+    public static Pt randBoundaryPos(TPProgram prog) {
+        return randBoundaryPos(prog.getGeometry().getWidth(),
+                               prog.getGeometry().getHeight());
     }
 
     public static Pt randBoundaryPos(int width, int height) {
