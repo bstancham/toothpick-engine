@@ -5,6 +5,12 @@ public interface ProgramBehaviour {
     /** Singleton-group ID for physics-models. */
     public static final String PHYSICS_MODEL_ID = "physics-model";
 
+    /** Singleton-group ID for intro-transitions. */
+    public static final String INTRO_TRANSITION_ID = "intro-transition";
+
+    /** Singleton-group ID for outro-transitions. */
+    public static final String OUTRO_TRANSITION_ID = "outro-transition";
+
     default String[] getInfoLines() {
         return new String[0];
     }

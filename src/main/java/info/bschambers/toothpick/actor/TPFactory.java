@@ -174,6 +174,19 @@ public final class TPFactory {
         return points;
     }
 
+    /*--------------------------- text-actor ---------------------------*/
+
+    public static TPActor textCentered(TPProgram prog, String text) {
+        TPActor a = new TPActor();
+        // a.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
+        a.setPos(centerPos(prog));
+        // TPFactory.setRandHeading(a);
+        TPForm form = new TPForm();
+        form.addPart(new TPText(text));
+        a.setForm(form);
+        return a;
+    }
+
     /*----------------------------- color ------------------------------*/
 
     public static ColorGetter randColorGetter() {
@@ -207,6 +220,11 @@ public final class TPFactory {
 
     public static double randAngleInertia(double max) {
         return Math.random() * max;
+    }
+
+    public static Pt centerPos(TPProgram prog) {
+        return new Pt(prog.getGeometry().getXCenter(),
+                      prog.getGeometry().getXCenter());
     }
 
     public static Pt randBoundaryPos(TPProgram prog) {

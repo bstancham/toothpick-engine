@@ -1,5 +1,6 @@
 package info.bschambers.toothpick;
 
+import info.bschambers.toothpick.actor.TPFactory;
 import info.bschambers.toothpick.actor.TPPlayer;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +11,9 @@ import java.util.List;
 public class TPSequencePlatform extends TPPlatform {
 
     private List<TPProgram> programs = new ArrayList<>();
-    private int levelNum = 0;
+    private int levelIndex = 0;
     private TPPlayer player = TPPlayer.NULL;
+    private int levelNum = 1;
 
     public TPSequencePlatform(String title) {
         super(title);
@@ -28,7 +30,7 @@ public class TPSequencePlatform extends TPPlatform {
     public void addProgram(TPProgram p) {
         programs.add(p);
         if (programs.size() == 1) {
-            levelNum = 0;
+            levelIndex = 0;
             setProgram(programs.get(0));
         }
     }
@@ -37,6 +39,8 @@ public class TPSequencePlatform extends TPPlatform {
     protected void setProgram(TPProgram prog) {
         prog.reset();
         super.setProgram(prog);
+        prog.addBehaviour(new IntroTransition(levelNum + ": " + prog.getTitle()));
+        prog.addBehaviour(new OutroTransition("WAVE COMPLETED!"));
     }
 
     @Override
@@ -48,11 +52,12 @@ public class TPSequencePlatform extends TPPlatform {
         super.update();
         // if program is finished, transition to next in sequence
         if (getProgram().isFinished()) {
-            System.out.println("program ended: index=" + levelNum);
+            System.out.println("program ended: index=" + levelIndex);
+            levelIndex++;
             levelNum++;
-            if (levelNum >= programs.size())
-                levelNum = 0;
-            setProgram(programs.get(levelNum));
+            if (levelIndex >= programs.size())
+                levelIndex = 0;
+            setProgram(programs.get(levelIndex));
             getProgram().setPlayer(getPlayer());
         }
     }
