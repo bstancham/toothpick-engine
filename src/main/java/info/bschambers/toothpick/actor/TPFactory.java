@@ -68,6 +68,24 @@ public final class TPFactory {
         return actor;
     }
 
+    public static TPActor regularPolygonActorWithKeyPart(TPProgram prog) {
+        TPActor actor = regularPolygonActor(prog);
+        setStrongWithRandomKeyLine(actor);
+        return actor;
+    }
+
+    public static TPActor regularThistleActorWithKeyPart(TPProgram prog) {
+        TPActor actor = regularThistleActor(prog);
+        setStrongWithRandomKeyLine(actor);
+        return actor;
+    }
+
+    public static TPActor zigzagActorWithKeyPart(TPProgram prog) {
+        TPActor actor = zigzagActor(prog);
+        setStrongWithRandomKeyLine(actor);
+        return actor;
+    }
+
     public static TPActor droneActor(TPForm form, TPProgram prog) {
         TPActor actor = new TPActor(form);
         actor.setColorGetter(randColorGetter());
@@ -201,7 +219,7 @@ public final class TPFactory {
         return items[index];
     }
 
-    /*-------------------------- controllers ---------------------------*/
+    /*--------------------- position and movement ----------------------*/
 
     public static void setRandHeading(TPActor actor) {
         setRandHeading(actor, 0.02, 1);
@@ -241,6 +259,34 @@ public final class TPFactory {
             // vertical edges
             return new Pt((Math.random() < 0.5 ? 0 : width),
                           rand(0, height));
+        }
+    }
+
+    /*--------------------------- properties ---------------------------*/
+
+    public static void setStrongWithRandomKeyLine(TPActor actor) {
+        TPForm form = actor.getForm();
+        // count number of line-parts
+        int lineCount = 0;
+        for (int i = 0; i < form.numParts(); i++) {
+            if (form.getPart(i) instanceof TPLine) {
+                lineCount++;
+            }
+        }
+        // choose one at random
+        int chosen = randInt(lineCount);
+        lineCount = 0;
+        for (int i = 0; i < form.numParts(); i++) {
+            if (form.getPart(i) instanceof TPLine) {
+                TPLine tpl = (TPLine) form.getPart(i);
+                if (lineCount == chosen) {
+                    tpl.setStrength(TPLine.STRENGTH_LIGHT);
+                    tpl.addDeathBehaviour(new KeyPartBehaviour());
+                } else {
+                    tpl.setStrength(TPLine.STRENGTH_HEAVY);
+                }
+                lineCount++;
+            }
         }
     }
 

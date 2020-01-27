@@ -39,8 +39,8 @@ public class TPExplosion extends TPPart {
     public void update(double x, double y, double angle) {
         count++;
         if (count >= lifetime)
-            if (getForm() != null)
-                getForm().removePart(this);
+            die();
+        super.update(x, y, angle);
     }
 
     /*---------------------------- Encoding ----------------------------*/

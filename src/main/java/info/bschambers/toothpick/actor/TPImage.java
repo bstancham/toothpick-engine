@@ -19,6 +19,7 @@ public class TPImage extends TPPart {
     public void update(double x, double y, double angle) {
         this.x = x;
         this.y = y;
+        super.update(x, y, angle);
     }
 
     @Override

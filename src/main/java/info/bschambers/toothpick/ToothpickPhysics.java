@@ -37,9 +37,12 @@ public class ToothpickPhysics implements ProgramBehaviour {
         for (int a = 0; a < formA.numParts(); a++) {
             if (formA.getPart(a) instanceof TPLine) {
                 TPLine lineA = (TPLine) formA.getPart(a);
-                for (int b = 0; b < formB.numParts(); b++) {
-                    if (formB.getPart(b) instanceof TPLine) {
-                        collisionDetection(prog, lineA, (TPLine) formB.getPart(b));
+                if (!lineA.isPassive()) {
+                    for (int b = 0; b < formB.numParts(); b++) {
+                        if (formB.getPart(b) instanceof TPLine &&
+                            !formB.getPart(b).isPassive()) {
+                            collisionDetection(prog, lineA, (TPLine) formB.getPart(b));
+                        }
                     }
                 }
             }

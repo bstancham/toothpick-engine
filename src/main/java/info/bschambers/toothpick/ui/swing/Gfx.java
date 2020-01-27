@@ -7,36 +7,56 @@ import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.geom.Rect;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Gfx {
 
-    public static void line(Graphics g, Line ln) {
-        line(g, ln);
-    }
+    public static final Stroke STROKE_0 = new BasicStroke(0);
+    public static final Stroke STROKE_1 = new BasicStroke(1);
+    public static final Stroke STROKE_2 = new BasicStroke(2);
+    public static final Stroke STROKE_3 = new BasicStroke(3);
+    public static final Stroke STROKE_4 = new BasicStroke(4);
+    public static final Stroke STROKE_5 = new BasicStroke(5);
 
-    public static void line(Graphics g, Pt start, Pt end) {
-        line(g, start, end);
+    private static final Stroke[] strokes0To5 = new Stroke[] {
+        STROKE_0,
+        STROKE_1,
+        STROKE_2,
+        STROKE_3,
+        STROKE_4,
+        STROKE_5
+    };
+
+    public static Stroke getStrokeForLineStrength(TPLine tpl) {
+        int strength = tpl.getStrength();
+        if (strength <= 0)
+            return STROKE_0;
+        if (strength >= 5)
+            return STROKE_5;
+        return strokes0To5[strength];
     }
 
     public static void line(Graphics g, double x1, double y1, double x2, double y2) {
+        if (g instanceof Graphics2D)
+            ((Graphics2D) g).setStroke(STROKE_1);
         g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
     }
 
-    public static void line(Graphics g, TPGeometry geom, Line ln) {
-        line(g, geom, ln.start, ln.end);
+    public static void line(Graphics g, TPGeometry geom, Stroke str, Pt start, Pt end) {
+        line(g, geom, str, start.x, start.y, end.x, end.y);
     }
 
-    public static void line(Graphics g, TPGeometry geom, Pt start, Pt end) {
-        line(g, geom, start.x, start.y, end.x, end.y);
-    }
-
-    public static void line(Graphics g, TPGeometry geom,
+    public static void line(Graphics g, TPGeometry geom, Stroke str,
                             double x1, double y1, double x2, double y2) {
+        if (g instanceof Graphics2D)
+            ((Graphics2D) g).setStroke(str);
         g.drawLine((int) geom.xToScreen(x1), (int) geom.yToScreen(y1),
                    (int) geom.xToScreen(x2), (int) geom.yToScreen(y2));
     }
@@ -63,10 +83,10 @@ public class Gfx {
     public static void rectangle(Graphics g, TPGeometry geom, int x, int y, int w, int h) {
         int x2 = x + w;
         int y2 = y + h;
-        line(g, geom, x, y, x2, y);
-        line(g, geom, x, y2, x2, y2);
-        line(g, geom, x, y, x, y2);
-        line(g, geom, x2, y, x2, y2);
+        line(g, geom, STROKE_1, x, y, x2, y);
+        line(g, geom, STROKE_1, x, y2, x2, y2);
+        line(g, geom, STROKE_1, x, y, x, y2);
+        line(g, geom, STROKE_1, x2, y, x2, y2);
     }
 
     public static void rectangle(Graphics g, Rectangle r) {
@@ -85,8 +105,8 @@ public class Gfx {
 
     public static void crosshairs(Graphics g, TPGeometry geom, double x, double y, int size) {
         int s = size / 2;
-        line(g, geom, x - s, y, x + s, y);
-        line(g, geom, x, y - s, x, y + s);
+        line(g, geom, STROKE_1, x - s, y, x + s, y);
+        line(g, geom, STROKE_1, x, y - s, x, y + s);
     }
 
     public static void centeredSquare(Graphics g, int x, int y, int size) {
@@ -111,7 +131,7 @@ public class Gfx {
         for (int i = 0; i < form.numParts(); i++) {
             TPPart part = form.getPart(i);
             if (part instanceof TPLine) {
-                line(g, geom, ((TPLine) part).getLine());
+                tpLine(g, geom, (TPLine) part);
             } else if (part instanceof TPExplosion) {
                 explosion(g, geom, (TPExplosion) part);
             } else if (part instanceof TPText) {
@@ -120,6 +140,10 @@ public class Gfx {
                 image(g, geom, (TPImage) part);
             }
         }
+    }
+
+    public static void tpLine(Graphics g, TPGeometry geom, TPLine tpl) {
+        line(g, geom, getStrokeForLineStrength(tpl), tpl.getLine().start, tpl.getLine().end);
     }
 
     public static void explosion(Graphics g, TPGeometry geom, TPExplosion ex) {

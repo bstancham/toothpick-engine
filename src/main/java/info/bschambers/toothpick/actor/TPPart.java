@@ -1,10 +1,16 @@
 package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPEncodingHelper;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class TPPart implements TPEncodingHelper {
 
     protected TPForm form = null;
+    private List<PartBehaviour> behaviours = new ArrayList<>();
+    private List<PartBehaviour> deathBehaviours = new ArrayList<>();
+    private boolean alive = true;
+    private boolean passive = false;
 
     public TPForm getForm() {
         return form;
@@ -20,9 +26,38 @@ public abstract class TPPart implements TPEncodingHelper {
         return form.getActor();
     }
 
-    public abstract void update(double x, double y, double angle);
+    public void update(double x, double y, double angle) {
+        for (PartBehaviour pb : behaviours)
+            pb.action(this);
+    }
 
     public abstract TPPart copy();
+
+    public void addBehaviour(PartBehaviour pb) {
+        behaviours.add(pb);
+    }
+
+    public void addDeathBehaviour(PartBehaviour pb) {
+        deathBehaviours.add(pb);
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public boolean isPassive() {
+        return passive;
+    }
+
+    public void setPassive(boolean val) {
+        passive = val;
+    }
+
+    public void die() {
+        alive = false;
+        for (PartBehaviour pb: deathBehaviours)
+            pb.action(this);
+    }
 
     /**
      * <p>Returns true, if this part has meaningful dimensions. If this method returns

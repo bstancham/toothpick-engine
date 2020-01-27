@@ -80,6 +80,9 @@ public class TPForm implements TPEncodingHelper {
 
     public void housekeeping() {
         // remove dead parts
+        for (TPPart p : parts)
+            if (!p.isAlive())
+                toRemove.add(p);
         for (TPPart p : toRemove)
             parts.remove(p);
         toRemove.clear();
