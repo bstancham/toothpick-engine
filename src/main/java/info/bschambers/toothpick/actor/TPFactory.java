@@ -17,6 +17,7 @@ public final class TPFactory {
 
     public static TPPlayer playerLine(double length, Pt pos) {
         TPActor actor = new TPActor(singleLineForm(length));
+        actor.name = "player";
         actor.setPos(pos);
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
         actor.setColorGetter(new ColorMono(Color.PINK));
@@ -29,28 +30,28 @@ public final class TPFactory {
 
     public static TPActor lineActor(TPProgram prog) {
         TPForm form = singleLineForm(randLineLength());
-        return droneActor(form, prog);
+        return droneActor("line", form, prog);
     }
 
     public static TPActor regularPolygonActor(TPProgram prog) {
         double size = rand(30, 100);
         int numSides = randInt(3, 8);
         TPForm form = regularPolygonForm(size, numSides);
-        return droneActor(form, prog);
+        return droneActor("regular polygon (" + numSides + " sides)", form, prog);
     }
 
     public static TPActor regularThistleActor(TPProgram prog) {
         double size = rand(20, 100);
         int numSides = randInt(3, 16);
         TPForm form = regularThistleForm(size, numSides);
-        return droneActor(form, prog);
+        return droneActor("regular thistle (" + numSides + " spines)", form, prog);
     }
 
     public static TPActor segmentedPolygonActor(TPProgram prog) {
         double size = rand(30, 100);
         int numSides = randInt(3, 8);
         TPForm form = segmentedPolygonForm(size, numSides);
-        return droneActor(form, prog);
+        return droneActor("segmented polygon (" + numSides + " sides)", form, prog);
     }
 
     public static TPActor zigzagActor(TPProgram prog) {
@@ -60,6 +61,7 @@ public final class TPFactory {
         TPForm form = zigzagForm(width, sectionLength, numSections);
 
         TPActor actor = new TPActor(form);
+        actor.name = "zigzag (" + numSections + " sections)";
         actor.setColorGetter(randColorGetter());
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
         // random angle and heading
@@ -86,8 +88,9 @@ public final class TPFactory {
         return actor;
     }
 
-    public static TPActor droneActor(TPForm form, TPProgram prog) {
+    public static TPActor droneActor(String name, TPForm form, TPProgram prog) {
         TPActor actor = new TPActor(form);
+        actor.name = name;
         actor.setColorGetter(randColorGetter());
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
         setRandHeading(actor);
@@ -98,6 +101,7 @@ public final class TPFactory {
 
     public static TPActor shooterActor(TPProgram prog) {
         TPActor actor = lineActor(prog);
+        actor.name = "shooter";
         Spawning spawn = new Spawning();
         spawn.setArchetype(new TPActor(singleLineForm(50)));
         actor.addBehaviour(spawn);

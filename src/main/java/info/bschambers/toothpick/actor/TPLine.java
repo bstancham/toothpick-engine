@@ -131,10 +131,10 @@ public class TPLine extends TPPart {
 
     @Override
     public void die() {
-        if (line != null)
-            die(line.center());
-        else
+        if (line == null)
             die(Pt.ZERO);
+        else
+            die(line.center());
     }
 
     private void die(Pt p) {

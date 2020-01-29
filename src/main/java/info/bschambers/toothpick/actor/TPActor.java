@@ -22,6 +22,7 @@ public class TPActor implements TPEncodingHelper {
 
     private Color bgColor = Color.BLACK;
 
+    public String name = "UNNAMED ACTOR";
     private TPForm form;
     private TPActor parent = null;
     private List<TPActor> children = new ArrayList<>();
@@ -253,6 +254,7 @@ public class TPActor implements TPEncodingHelper {
     @Override
     public TPEncoding getEncoding() {
         TPEncoding params = new TPEncoding();
+        params.addField(String.class, name, "name");
         params.addField(Double.class, x, "x");
         params.addField(Double.class, y, "y");
         params.addField(Double.class, angle, "angle");
