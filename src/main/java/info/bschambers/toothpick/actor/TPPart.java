@@ -31,7 +31,22 @@ public abstract class TPPart implements TPEncodingHelper {
             pb.action(this);
     }
 
+    /**
+     * <p>WARNING: child classes implementing {@code copy} should utilise
+     * {@link copyBehaviours}.</p>
+     */
     public abstract TPPart copy();
+
+    /**
+     * <p>Copy all behaviours and death-behaviours from {@code part} to this
+     * {@code TPPart}.</p>
+     */
+    public void copyBehaviours(TPPart part) {
+        for (PartBehaviour pb : part.behaviours)
+            addBehaviour(pb.copy());
+        for (PartBehaviour pb : part.deathBehaviours)
+            addDeathBehaviour(pb.copy());
+    }
 
     public void addBehaviour(PartBehaviour pb) {
         behaviours.add(pb);

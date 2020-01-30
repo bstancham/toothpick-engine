@@ -7,6 +7,11 @@ package info.bschambers.toothpick.actor;
 public class KeyPartBehaviour implements PartBehaviour {
 
     @Override
+    public KeyPartBehaviour copy() {
+        return this;
+    }
+
+    @Override
     public void action(TPPart part) {
         TPForm form = part.getForm();
         if (form != null) {

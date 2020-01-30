@@ -12,6 +12,11 @@ public class DieAfter implements PartBehaviour {
     }
 
     @Override
+    public DieAfter copy() {
+        return new DieAfter(interval);
+    }
+
+    @Override
     public void action(TPPart part) {
         counter++;
         if (counter > interval)

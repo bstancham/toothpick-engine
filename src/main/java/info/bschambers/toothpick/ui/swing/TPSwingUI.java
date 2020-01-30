@@ -66,7 +66,7 @@ public class TPSwingUI extends JFrame
         return platform;
     }
 
-    protected TPProgram getProgram() {
+    public TPProgram getProgram() {
         return getPlatform().getProgram();
     }
 

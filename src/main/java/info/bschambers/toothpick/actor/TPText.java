@@ -26,6 +26,7 @@ public class TPText extends TPPart {
         TPText other = new TPText(text);
         other.x = x;
         other.y = y;
+        other.copyBehaviours(this);
         return other;
     }
 

@@ -31,18 +31,14 @@ public class TPLine extends TPPart {
         super.update(x, y, angle);
     }
 
+    /**
+     * @return An exact copy of this {@code TPLine}.
+     */
     @Override
     public TPLine copy() {
         TPLine ln = new TPLine(archetype);
-        return ln;
-    }
-
-    /**
-     * Makes a copy of the line and line-archetype, but doesn't copy other parameters.
-     */
-    public TPLine weakCopy() {
-        TPLine ln = new TPLine(archetype);
-        ln.line = line;
+        ln.strength = strength;
+        ln.copyBehaviours(this);
         return ln;
     }
 

@@ -27,6 +27,7 @@ public class TPImage extends TPPart {
         TPImage other = new TPImage(image);
         other.x = x;
         other.y = y;
+        other.copyBehaviours(this);
         return other;
     }
 
