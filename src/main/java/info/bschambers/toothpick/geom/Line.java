@@ -11,6 +11,10 @@ public final class Line {
     public final Pt start;
     public final Pt end;
 
+    public Line(double x1, double y1, double x2, double y2) {
+        this(new Pt(x1, y1), new Pt(x2, y2));
+    }
+
     public Line(Pt start, Pt end) {
         this.start = start;
         this.end = end;
