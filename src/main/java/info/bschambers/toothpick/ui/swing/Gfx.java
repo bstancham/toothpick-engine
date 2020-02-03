@@ -43,9 +43,12 @@ public class Gfx {
         return strokes0To5[strength];
     }
 
-    public static void line(Graphics g, double x1, double y1, double x2, double y2) {
+    public static void setStroke(Graphics g, Stroke s) {
         if (g instanceof Graphics2D)
-            ((Graphics2D) g).setStroke(STROKE_1);
+            ((Graphics2D) g).setStroke(s);
+    }
+
+    public static void line(Graphics g, double x1, double y1, double x2, double y2) {
         g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
     }
 
@@ -62,10 +65,13 @@ public class Gfx {
     }
 
     public static void rectangle(Graphics g, Rect r) {
-        rectangle(g, r);
+        int w = r.x2 - r.x1;
+        int h = r.y2 - r.y1;
+        rectangle(g, r.x1, r.y1, w, h);
     }
 
     public static void rectangle(Graphics g, int x, int y, int w, int h) {
+        setStroke(g, STROKE_1);
         int x2 = x + w;
         int y2 = y + h;
         line(g, x, y, x2, y);
@@ -81,6 +87,7 @@ public class Gfx {
     }
 
     public static void rectangle(Graphics g, TPGeometry geom, int x, int y, int w, int h) {
+        setStroke(g, STROKE_1);
         int x2 = x + w;
         int y2 = y + h;
         line(g, geom, STROKE_1, x, y, x2, y);
@@ -90,6 +97,7 @@ public class Gfx {
     }
 
     public static void rectangle(Graphics g, Rectangle r) {
+        setStroke(g, STROKE_1);
         g.drawRect(r.x, r.y, r.width, r.height);
     }
 
@@ -112,6 +120,7 @@ public class Gfx {
     public static void centeredSquare(Graphics g, int x, int y, int size) {
         x = x - (size / 2);
         y = y - (size / 2);
+        setStroke(g, STROKE_1);
         g.drawRect(x, y, size, size);
     }
 
