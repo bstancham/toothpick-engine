@@ -54,7 +54,8 @@ public class OutroTransition implements ProgramBehaviour {
             TPGeometry geom = prog.getGeometry();
             offsetGoal = geom.xOffset - geom.getWidth();
             offset = geom.xOffset;
-            textActor = TPFactory.textCentered(prog, message);
+            textActor = TPFactory.textActor(prog, message);
+            textActor.setPos(TPFactory.centerPos(prog));
             textActor.x = geom.getWidth() / 2;
             textActor.y = geom.getHeight();
             textActor.yInertia = -2;

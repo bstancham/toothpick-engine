@@ -52,7 +52,8 @@ public class IntroTransition implements ProgramBehaviour {
             offsetGoal = -(geom.getWidth() / 2);
             offset = geom.getXCenter() + geom.getWidth();
             geom.xOffset = offset;
-            textActor = TPFactory.textCentered(prog, message);
+            textActor = TPFactory.textActor(prog, message);
+            textActor.setPos(TPFactory.centerPos(prog));
             textActor.x = geom.getWidth() / 2;
             textActor.y = geom.getHeight() / 2;
             textActor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.DIE_AT_BOUNDS);

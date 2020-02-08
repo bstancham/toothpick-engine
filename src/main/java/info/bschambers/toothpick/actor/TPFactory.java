@@ -111,6 +111,83 @@ public final class TPFactory {
         return actor;
     }
 
+    /*------------------------- powerup drones -------------------------*/
+
+    public static TPActor powerupActor(String name, TPForm form, TPProgram prog) {
+        TPActor actor = new TPActor(form);
+        actor.name = name;
+        actor.setColorGetter(randColorGetter());
+        // actor.angleInertia = randAngleInertia(0.001);
+        actor.angle = Math.random() * Math.PI;
+        actor.setPos(randBoundaryPos(prog));
+        setRandHeading(actor, 0.005, 0.5);
+        actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
+        return actor;
+    }
+
+    public static TPActor powerupActorShooting(TPProgram prog) {
+        TPForm form = powerupFormShooting();
+        return powerupActor("powerup: shooting", form, prog);
+    }
+
+    public static TPActor powerupActorSticky(TPProgram prog) {
+        TPForm form = powerupFormSticky();
+        return powerupActor("powerup: shooting", form, prog);
+    }
+
+    public static TPActor powerupActorStrong(TPProgram prog) {
+        TPForm form = powerupFormStrong();
+        return powerupActor("powerup: shooting", form, prog);
+    }
+
+    public static TPForm powerupForm(TPLine[] lines, PowerupBehaviour powerup) {
+        boolean first = true;
+        for (TPLine tpl : lines) {
+            if (first) {
+                tpl.addBehaviour(new SuicidePactBehaviour());
+                tpl.addBehaviour(powerup);
+                first = false;
+            } else {
+                tpl.setStrength(TPLine.STRENGTH_HEAVY);
+            }
+        }
+        return new TPForm(lines);
+    }
+
+    public static TPForm powerupFormShooting() {
+        int unit = 10;
+        TPLine[] lines = new TPLine[5];
+        lines[0] = new TPLine(new Line(0, -unit, 0, unit));
+        lines[1] = new TPLine(new Line(unit * -6, unit * -2, 0, -unit));
+        lines[2] = new TPLine(new Line(unit * -6, unit * 2, 0, unit));
+        lines[3] = new TPLine(new Line(unit * 6, unit * -2, 0, -unit));
+        lines[4] = new TPLine(new Line(unit * 6, unit * 2, 0, unit));
+        return powerupForm(lines, new PowerupBehaviourShooting());
+    }
+
+    public static TPForm powerupFormSticky() {
+        int unit = 10;
+        TPLine[] lines = new TPLine[6];
+        lines[0] = new TPLine(new Line(0, -unit, 0, unit));
+        lines[1] = new TPLine(new Line(unit * -1, unit * -2, unit * -1, unit * 2));
+        lines[2] = new TPLine(new Line(unit * -1, unit * -2, 0, -unit));
+        lines[3] = new TPLine(new Line(unit * -1, unit * 2, 0, unit));
+        lines[4] = new TPLine(new Line(unit * 6, unit * -2, 0, -unit));
+        lines[5] = new TPLine(new Line(unit * 6, unit * 2, 0, unit));
+        return powerupForm(lines, new PowerupBehaviourSticky());
+    }
+
+    public static TPForm powerupFormStrong() {
+        int unit = 10;
+        TPLine[] lines = new TPLine[5];
+        lines[0] = new TPLine(new Line(0.001, 0, 0, unit * 3));
+        lines[1] = new TPLine(new Line(0.001, 0, unit * 6, unit * -6));
+        lines[2] = new TPLine(new Line(0.001, 0, unit * -6, unit * -6));
+        lines[3] = new TPLine(new Line(0.001, unit * 3, unit * 6, unit * -3));
+        lines[4] = new TPLine(new Line(0.001, unit * 3, unit * -6, unit * -3));
+        return powerupForm(lines, new PowerupBehaviourStrong());
+    }
+
     /*------------------------------ form ------------------------------*/
 
     public static TPForm singleLineForm(double length) {
@@ -198,15 +275,20 @@ public final class TPFactory {
 
     /*--------------------------- text-actor ---------------------------*/
 
-    public static TPActor textCentered(TPProgram prog, String text) {
-        TPActor a = new TPActor();
+    public static TPActor textActor(TPProgram prog, String text) {
+        TPActor a = new TPActor(textFormCentered(text));
         // a.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
-        a.setPos(centerPos(prog));
         // TPFactory.setRandHeading(a);
+        return a;
+    }
+
+    /**
+     * todo: make text centered
+     */
+    public static TPForm textFormCentered(String text) {
         TPForm form = new TPForm();
         form.addPart(new TPText(text));
-        a.setForm(form);
-        return a;
+        return form;
     }
 
     /*----------------------------- color ------------------------------*/
@@ -285,7 +367,7 @@ public final class TPFactory {
                 TPLine tpl = (TPLine) form.getPart(i);
                 if (lineCount == chosen) {
                     tpl.setStrength(TPLine.STRENGTH_LIGHT);
-                    tpl.addDeathBehaviour(new KeyPartBehaviour());
+                    tpl.addBehaviour(new SuicidePactBehaviour());
                 } else {
                     tpl.setStrength(TPLine.STRENGTH_HEAVY);
                 }

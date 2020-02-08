@@ -116,6 +116,11 @@ public final class Geom {
         return new Pt(x, y);
     }
 
+    public static Line rotate(Line ln, double amount, Pt center) {
+        return new Line(rotate(ln.start, amount, center),
+                        rotate(ln.end, amount, center));
+    }
+
     /**
      * Calculates the angle going clockwise starting from the line heading
      * vertically upwards from the 'home' point.

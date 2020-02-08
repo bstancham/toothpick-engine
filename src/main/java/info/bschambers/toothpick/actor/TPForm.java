@@ -51,6 +51,10 @@ public class TPForm implements TPEncodingHelper {
         return alive;
     }
 
+    public void setAlive(boolean val) {
+        alive = val;
+    }
+
     public int numParts() {
         return parts.size();
     }

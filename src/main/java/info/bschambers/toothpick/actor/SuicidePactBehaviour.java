@@ -1,18 +1,20 @@
 package info.bschambers.toothpick.actor;
 
+import info.bschambers.toothpick.geom.Pt;
+
 /**
- * <p>Use as a death-behaviour - causes all other parts in the form to die within a short
+ * <p>On {@link die}, causes all other parts in the form to die within a short
  * interval.</p>
  */
-public class KeyPartBehaviour implements PartBehaviour {
+public class SuicidePactBehaviour extends PartBehaviour {
 
     @Override
-    public KeyPartBehaviour copy() {
+    public SuicidePactBehaviour copy() {
         return this;
     }
 
     @Override
-    public void action(TPPart part) {
+    public void die(TPPart part, TPPart killer, Pt p) {
         TPForm form = part.getForm();
         if (form != null) {
             // schedule each part to die after a random short interval
@@ -20,7 +22,7 @@ public class KeyPartBehaviour implements PartBehaviour {
                 TPPart currentPart = form.getPart(i);
                 if (currentPart.isAlive()) {
                     int interval = (int) (Math.random() * 50);
-                    currentPart.addBehaviour(new DieAfter(interval));
+                    currentPart.addBehaviour(new PBDieAfter(interval));
                     currentPart.setPassive(true);
                 }
             }

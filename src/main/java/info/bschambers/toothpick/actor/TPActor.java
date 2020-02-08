@@ -32,6 +32,7 @@ public class TPActor implements TPEncodingHelper {
     private BoundaryBehaviour boundsBehaviour = BoundaryBehaviour.DIE_AT_BOUNDS;
     private ColorGetter color = new ColorMono(Color.PINK);
     private boolean actionTrigger = false;
+    private Runnable triggerAction = null;
     public double x = 0;
     public double y = 0;
     public double angle = 0;
@@ -117,6 +118,10 @@ public class TPActor implements TPEncodingHelper {
         actionTrigger = val;
     }
 
+    public void setTriggerAction(Runnable action) {
+        triggerAction = action;
+    }
+
     public Color getColor() {
         // return color.get();
         return color.getWithBG(bgColor);
@@ -199,6 +204,9 @@ public class TPActor implements TPEncodingHelper {
 
         for (TPActor child : children)
             child.update(prog);
+
+        if (triggerAction != null && actionTrigger)
+            triggerAction.run();
     }
 
     /**

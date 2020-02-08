@@ -8,7 +8,7 @@ import info.bschambers.toothpick.geom.Pt;
 public class TPLine extends TPPart {
 
     public static final int STRENGTH_LIGHT = 1;
-    public static final int STRENGTH_MEDIUM = 3;
+    // public static final int STRENGTH_MEDIUM = 3;
     public static final int STRENGTH_HEAVY = 5;
 
     private Line archetype;
@@ -114,28 +114,31 @@ public class TPLine extends TPPart {
         // this line will die if strength is the same or weaker...
         // ... if protagonist is weaker then it will die instead
         if (getStrength() <= protagonist.getStrength()) {
-            die(p);
+            die(protagonist, p);
+            protagonist.kills(this, p);
             // send messages so that stats can be updated
             if (getActor() != null)
                 getActor().deathEvent(protagonist, p);
             if (protagonist.getActor() != null)
                 protagonist.getActor().killEvent(this, p);
         } else {
-            protagonist.die(p);
+            protagonist.die(this, p);
+            kills(protagonist, p);
         }
     }
 
     @Override
     public void die() {
-        if (line == null)
-            die(Pt.ZERO);
-        else
-            die(line.center());
+        super.die();
+        // die with an explosion
+        if (line != null && form != null)
+            form.addPart(new TPExplosion(line.center()));
     }
 
-    private void die(Pt p) {
+    @Override
+    public void die(TPPart killer, Pt p) {
+        super.die(killer, p);
         // die with an explosion
-        super.die();
         if (form != null)
             form.addPart(new TPExplosion(p));
     }

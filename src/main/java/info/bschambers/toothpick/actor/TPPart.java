@@ -1,6 +1,7 @@
 package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPEncodingHelper;
+import info.bschambers.toothpick.geom.Pt;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,6 @@ public abstract class TPPart implements TPEncodingHelper {
 
     protected TPForm form = null;
     private List<PartBehaviour> behaviours = new ArrayList<>();
-    private List<PartBehaviour> deathBehaviours = new ArrayList<>();
     private boolean alive = true;
     private boolean passive = false;
 
@@ -28,7 +28,7 @@ public abstract class TPPart implements TPEncodingHelper {
 
     public void update(double x, double y, double angle) {
         for (PartBehaviour pb : behaviours)
-            pb.action(this);
+            pb.update(this);
     }
 
     /**
@@ -44,16 +44,10 @@ public abstract class TPPart implements TPEncodingHelper {
     public void copyBehaviours(TPPart part) {
         for (PartBehaviour pb : part.behaviours)
             addBehaviour(pb.copy());
-        for (PartBehaviour pb : part.deathBehaviours)
-            addDeathBehaviour(pb.copy());
     }
 
     public void addBehaviour(PartBehaviour pb) {
         behaviours.add(pb);
-    }
-
-    public void addDeathBehaviour(PartBehaviour pb) {
-        deathBehaviours.add(pb);
     }
 
     public boolean isAlive() {
@@ -68,10 +62,22 @@ public abstract class TPPart implements TPEncodingHelper {
         passive = val;
     }
 
+    /**
+     * <p>Die, without running any part-behaviours.</p>
+     */
     public void die() {
         alive = false;
-        for (PartBehaviour pb: deathBehaviours)
-            pb.action(this);
+    }
+
+    public void die(TPPart killer, Pt p) {
+        alive = false;
+        for (PartBehaviour pb: behaviours)
+            pb.die(this, killer, p);
+    }
+
+    public void kills(TPPart victim, Pt p) {
+        for (PartBehaviour pb: behaviours)
+            pb.kill(this, victim, p);
     }
 
     /**

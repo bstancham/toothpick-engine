@@ -1,6 +1,11 @@
 package info.bschambers.toothpick.actor;
 
-public class DieAfter implements PartBehaviour {
+import info.bschambers.toothpick.TPProgram;
+
+/**
+ * <p>Actor dies after a set interval.</p>
+ */
+public class DieAfter implements TPBehaviour {
 
     private int interval = 100;
     private int counter = 0;
@@ -12,15 +17,10 @@ public class DieAfter implements PartBehaviour {
     }
 
     @Override
-    public DieAfter copy() {
-        return new DieAfter(interval);
-    }
-
-    @Override
-    public void action(TPPart part) {
+    public void update(TPProgram prog, TPActor a) {
         counter++;
         if (counter > interval)
-            part.die();
+            a.getForm().setAlive(false);
     }
 
 }
