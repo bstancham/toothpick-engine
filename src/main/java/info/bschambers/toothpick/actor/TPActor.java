@@ -28,7 +28,7 @@ public class TPActor implements TPEncodingHelper {
     private List<TPActor> children = new ArrayList<>();
     private List<TPActor> childrenToAdd = new ArrayList<>();
     private List<TPActor> childrenToRemove = new ArrayList<>();
-    private List<TPBehaviour> behaviours = new ArrayList<>();
+    private List<ActorBehaviour> behaviours = new ArrayList<>();
     private BoundaryBehaviour boundsBehaviour = BoundaryBehaviour.DIE_AT_BOUNDS;
     private ColorGetter color = new ColorMono(Color.PINK);
     private boolean actionTrigger = false;
@@ -65,27 +65,27 @@ public class TPActor implements TPEncodingHelper {
         s.append("num-children: " + children.size() + "\n");
         s.append("stats: deaths=" + numDeaths + " kills=" + numKills + "\n");
         s.append("BEHAVIOURS:\n");
-        for (TPBehaviour b : behaviours)
+        for (ActorBehaviour b : behaviours)
             s.append("... " + b + "\n");
         return s.toString();
     }
 
     public TPActor copy() {
-        TPActor tp = new TPActor(form.copy());
-        tp.boundsBehaviour = boundsBehaviour;
-        tp.x = x;
-        tp.y = y;
-        tp.angle = angle;
-        tp.xInertia = xInertia;
-        tp.yInertia = yInertia;
-        tp.angleInertia = angleInertia;
-        tp.numDeaths = numDeaths;
-        tp.numKills = numKills;
-        tp.color = color.copy();
-        for (TPBehaviour cb : behaviours)
-            tp.behaviours.add(cb);
-        tp.updateForm();
-        return tp;
+        TPActor actor = new TPActor(form.copy());
+        actor.boundsBehaviour = boundsBehaviour;
+        actor.x = x;
+        actor.y = y;
+        actor.angle = angle;
+        actor.xInertia = xInertia;
+        actor.yInertia = yInertia;
+        actor.angleInertia = angleInertia;
+        actor.numDeaths = numDeaths;
+        actor.numKills = numKills;
+        actor.color = color.copy();
+        for (ActorBehaviour b : behaviours)
+            actor.behaviours.add(b);
+        actor.updateForm();
+        return actor;
     }
 
     public void copyStats(TPActor tp) {
@@ -151,17 +151,17 @@ public class TPActor implements TPEncodingHelper {
      * <p>Add a behaviour. If behaviour {@code tpb} is a member of a singleton-group then
      * any existing member of that group will be removed.</p>
      */
-    public void addBehaviour(TPBehaviour tpb) {
-        String group = tpb.getSingletonGroup();
+    public void addBehaviour(ActorBehaviour ab) {
+        String group = ab.getSingletonGroup();
         if (!group.isEmpty()) {
-            List<TPBehaviour> tpbToRemove = new ArrayList<>();
-            for (TPBehaviour other : behaviours)
+            List<ActorBehaviour> abToRemove = new ArrayList<>();
+            for (ActorBehaviour other : behaviours)
                 if (other.getSingletonGroup().equals(group))
-                    tpbToRemove.add(other);
-            for (TPBehaviour other : tpbToRemove)
+                    abToRemove.add(other);
+            for (ActorBehaviour other : abToRemove)
                 behaviours.remove(other);
         }
-        behaviours.add(tpb);
+        behaviours.add(ab);
     }
 
     /**
@@ -187,8 +187,8 @@ public class TPActor implements TPEncodingHelper {
         if (boundsBehaviour == BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS)
             wrapFormAtBounds(prog.getGeometry());
 
-        for (TPBehaviour b : behaviours)
-            b.update(prog, this);
+        for (ActorBehaviour ab : behaviours)
+            ab.update(prog, this);
 
         // add and remove children
         for (TPActor child : children)
@@ -273,7 +273,7 @@ public class TPActor implements TPEncodingHelper {
         params.addField(Integer.class, numKills, "numKills");
         params.addMethod(ColorGetter.class, color, "setColorGetter");
         params.addMethod(TPForm.class, getForm(), "setForm");
-        params.addListMethod(TPBehaviour.class, behaviours, "addBehaviour");
+        params.addListMethod(ActorBehaviour.class, behaviours, "addBehaviour");
         params.addListMethod(TPActor.class, children, "addChild");
         params.addVoidMethod("updateForm");
         return params;

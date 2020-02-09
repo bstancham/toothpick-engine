@@ -4,7 +4,7 @@ import info.bschambers.toothpick.TPEncoding;
 import info.bschambers.toothpick.TPEncodingHelper;
 import info.bschambers.toothpick.TPProgram;
 
-public class Spawning implements TPBehaviour, TPEncodingHelper {
+public class Spawning implements ActorBehaviour, TPEncodingHelper {
 
     private TPActor archetype = null;
     private double relativeAngle = 0;

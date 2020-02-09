@@ -2,7 +2,7 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPProgram;
 
-public interface TPBehaviour {
+public interface ActorBehaviour {
 
     /** ID string used by key-input-behaviour singleton group. */
     public static final String KEY_INPUT_BEHAVIOUR_FLAG = "key-input-behaviour";

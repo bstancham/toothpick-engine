@@ -2,7 +2,7 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPProgram;
 
-public abstract class KeyInputHandler implements TPBehaviour {
+public abstract class KeyInputHandler implements ActorBehaviour {
 
     public static final KeyInputHandler NULL = new KeyInputHandler() {
             @Override
@@ -11,7 +11,7 @@ public abstract class KeyInputHandler implements TPBehaviour {
 
     @Override
     public String getSingletonGroup() {
-        return TPBehaviour.KEY_INPUT_BEHAVIOUR_FLAG;
+        return ActorBehaviour.KEY_INPUT_BEHAVIOUR_FLAG;
     }
 
     @Override

@@ -5,7 +5,7 @@ import info.bschambers.toothpick.TPProgram;
 /**
  * <p>Actor dies after a set interval.</p>
  */
-public class DieAfter implements TPBehaviour {
+public class DieAfter implements ActorBehaviour {
 
     private int interval = 100;
     private int counter = 0;
