@@ -178,6 +178,7 @@ public class Gfx {
     }
 
     public static void playerIndicator(Graphics g, TPGeometry geom, TPPlayer player) {
+        boolean action = player.getActor().getActionTrigger();
         double len1 = 10;
         double len2 = 15;
         double x1 = player.getActor().x;
@@ -189,7 +190,7 @@ public class Gfx {
         double y3 = y1 + Math.sin(angle) * len2;
         g.setColor(Color.CYAN);
         line(g, geom, STROKE_1, x1, y1, x2, y2);
-        g.setColor(Color.RED);
+        g.setColor((action ? Color.YELLOW : Color.RED));
         line(g, geom, STROKE_1, x2, y2, x3, y3);
     }
 
