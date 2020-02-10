@@ -180,6 +180,9 @@ public class TPSwingUI extends JFrame
     }
 
     protected void paintOverlay(Graphics g) {
+        // player indicator
+        if (getProgram().getPlayer().getActor().isAlive())
+            Gfx.playerIndicator(g, getProgram().getGeometry(), getProgram().getPlayer());
         // boundary rectangle
         g.setColor(Color.GRAY);
         TPGeometry geom = getProgram().getGeometry();

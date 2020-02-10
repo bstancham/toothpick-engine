@@ -177,6 +177,22 @@ public class Gfx {
         g.drawImage(tpi.image, x, y, null);
     }
 
+    public static void playerIndicator(Graphics g, TPGeometry geom, TPPlayer player) {
+        double len1 = 10;
+        double len2 = 15;
+        double x1 = player.getActor().x;
+        double y1 = player.getActor().y;
+        double angle = (player.getActor().angle + 1.5) * Math.PI;
+        double x2 = x1 + Math.cos(angle) * len1;
+        double y2 = y1 + Math.sin(angle) * len1;
+        double x3 = x1 + Math.cos(angle) * len2;
+        double y3 = y1 + Math.sin(angle) * len2;
+        g.setColor(Color.CYAN);
+        line(g, geom, STROKE_1, x1, y1, x2, y2);
+        g.setColor(Color.RED);
+        line(g, geom, STROKE_1, x2, y2, x3, y3);
+    }
+
     public static void menu(Graphics g, TPMenu menu) {
         menu(g, menu, 30, 30);
     }
