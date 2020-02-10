@@ -4,9 +4,7 @@ public interface TPSound {
 
     public static final TPSound NULL = new TPSound() {
             @Override
-            public void sfxExplode() {
-                System.out.println("TPSound.NULL.sfxExplode()");
-            }
+            public void sfxExplode() {}
         };
 
     void sfxExplode();

@@ -4,33 +4,44 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 
 public class TPSampledSound implements TPSound {
 
-    private List<File> soundFiles = new ArrayList<>();
+    private List<SoundClip> sfxClips = new ArrayList<>();
 
-    public void addSoundFile(File f) {
-        soundFiles.add(f);
+    public void addSfx(File f) {
+        SoundClip sfx = new SoundClip(f);
+        sfxClips.add(sfx);
     }
 
     @Override
     public void sfxExplode() {
-        if (soundFiles.size() > 0) {
-            File f = soundFiles.get((int) (Math.random() * soundFiles.size()));
+        if (sfxClips.size() > 0) {
+            SoundClip sc = sfxClips.get((int) (Math.random() * sfxClips.size()));
+            sc.play();
+        }
+
+    }
+
+    private class SoundClip implements LineListener {
+
+        private File soundFile;
+        private Clip clip = null;
+
+        public SoundClip(File f) {
+            soundFile = f;
+            openClip();
+        }
+
+        private void openClip() {
             try {
-                AudioInputStream inputStream = AudioSystem.getAudioInputStream(f);
+                AudioInputStream inputStream = AudioSystem.getAudioInputStream(soundFile);
                 AudioFormat format = inputStream.getFormat();
                 DataLine.Info info = new DataLine.Info(Clip.class, format);
-                Clip clip = (Clip) AudioSystem.getLine(info);
+                clip = (Clip) AudioSystem.getLine(info);
+                // clip.addLineListener(this);
                 clip.open(inputStream);
-                clip.start();
             } catch (UnsupportedAudioFileException e) {
                 e.printStackTrace();
             } catch (LineUnavailableException e) {
@@ -39,6 +50,24 @@ public class TPSampledSound implements TPSound {
                 e.printStackTrace();
             }
         }
+
+        public void play() {
+            if (clip.isRunning()) {
+                clip.stop();
+            } else {
+                // this seems to be where it stops working
+                clip.close();
+                openClip();
+            }
+            clip.setFramePosition(0);
+            clip.start();
+        }
+
+        @Override
+        public void update(LineEvent e) {
+            System.out.println("LineEvent: " + e);
+        }
+
     }
 
 }
