@@ -29,7 +29,7 @@ public class TPActor implements TPEncodingHelper {
     private List<TPActor> childrenToAdd = new ArrayList<>();
     private List<TPActor> childrenToRemove = new ArrayList<>();
     private List<ActorBehaviour> behaviours = new ArrayList<>();
-    private BoundaryBehaviour boundsBehaviour = BoundaryBehaviour.DIE_AT_BOUNDS;
+    private BoundaryBehaviour boundsBehaviour = BoundaryBehaviour.WRAP_AT_BOUNDS;
     private ColorGetter color = new ColorMono(Color.PINK);
     private boolean actionTrigger = false;
     private Runnable triggerAction = null;
@@ -91,6 +91,13 @@ public class TPActor implements TPEncodingHelper {
     public void copyStats(TPActor tp) {
         numDeaths = tp.numDeaths;
         numKills = tp.numKills;
+    }
+
+    /**
+     * <p>often null</p>
+     */
+    public TPActor getParent() {
+        return parent;
     }
 
     public TPForm getForm() {
@@ -198,8 +205,10 @@ public class TPActor implements TPEncodingHelper {
             children.remove(child);
         childrenToRemove.clear();
 
-        for (TPActor child : childrenToAdd)
+        for (TPActor child : childrenToAdd) {
+            child.parent = this;
             children.add(child);
+        }
         childrenToAdd.clear();
 
         for (TPActor child : children)
