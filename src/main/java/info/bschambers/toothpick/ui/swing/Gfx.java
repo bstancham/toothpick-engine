@@ -143,10 +143,10 @@ public class Gfx {
                 tpLine(g, geom, (TPLine) part);
             } else if (part instanceof TPExplosion) {
                 explosion(g, geom, (TPExplosion) part);
-            } else if (part instanceof TPText) {
-                text(g, geom, (TPText) part);
-            } else if (part instanceof TPImage) {
-                image(g, geom, (TPImage) part);
+            } else if (part instanceof TPTextPart) {
+                text(g, geom, (TPTextPart) part);
+            } else if (part instanceof TPImagePart) {
+                image(g, geom, (TPImagePart) part);
             }
         }
     }
@@ -165,13 +165,13 @@ public class Gfx {
         g.fillOval((int) geom.xToScreen(x), (int) geom.yToScreen(y), size, size);
     }
 
-    public static void text(Graphics g, TPGeometry geom, TPText tpt) {
+    public static void text(Graphics g, TPGeometry geom, TPTextPart tpt) {
         int x = (int) geom.xToScreen(tpt.x);
         int y = (int) geom.yToScreen(tpt.y);
         g.drawString(tpt.text, x, y);
     }
 
-    public static void image(Graphics g, TPGeometry geom, TPImage tpi) {
+    public static void image(Graphics g, TPGeometry geom, TPImagePart tpi) {
         int x = (int) geom.xToScreen(tpi.x);
         int y = (int) geom.yToScreen(tpi.y);
         g.drawImage(tpi.image, x, y, null);

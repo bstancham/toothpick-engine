@@ -287,7 +287,7 @@ public final class TPFactory {
      */
     public static TPForm textFormCentered(String text) {
         TPForm form = new TPForm();
-        form.addPart(new TPText(text));
+        form.addPart(new TPTextPart(text));
         return form;
     }
 

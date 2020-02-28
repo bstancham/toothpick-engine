@@ -2,15 +2,15 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPEncoding;
 
-public class TPText extends TPPart {
+public class TPTextPart extends TPPart {
 
     public String text = "...";
     public double x = 0;
     public double y = 0;
 
-    public TPText() {}
+    public TPTextPart() {}
 
-    public TPText(String text) {
+    public TPTextPart(String text) {
         this.text = text;
     }
 
@@ -22,8 +22,8 @@ public class TPText extends TPPart {
     }
 
     @Override
-    public TPText copy() {
-        TPText other = new TPText(text);
+    public TPTextPart copy() {
+        TPTextPart other = new TPTextPart(text);
         other.x = x;
         other.y = y;
         other.copyBehaviours(this);

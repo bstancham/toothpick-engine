@@ -3,15 +3,15 @@ package info.bschambers.toothpick.actor;
 import info.bschambers.toothpick.TPEncoding;
 import java.awt.Image;
 
-public class TPImage extends TPPart {
+public class TPImagePart extends TPPart {
 
     public Image image = null;
     public double x = 0;
     public double y = 0;
 
-    public TPImage() {}
+    public TPImagePart() {}
 
-    public TPImage(Image image) {
+    public TPImagePart(Image image) {
         this.image = image;
     }
 
@@ -23,8 +23,8 @@ public class TPImage extends TPPart {
     }
 
     @Override
-    public TPImage copy() {
-        TPImage other = new TPImage(image);
+    public TPImagePart copy() {
+        TPImagePart other = new TPImagePart(image);
         other.x = x;
         other.y = y;
         other.copyBehaviours(this);
