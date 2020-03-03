@@ -15,6 +15,43 @@ public class GeomTest {
     }
 
     @Test
+    public void testAngle() {
+        Pt start = new Pt(36.1, -3.5);
+
+        // right
+        Pt a = new Pt(149.4, -3.5);
+        assertEquals(0.0, Geom.angle(start, a), DELTA);
+
+        // diagonal down-right
+        Pt b = new Pt(68.1, 28.5);
+        assertEquals(Math.PI / 4, Geom.angle(start, b), DELTA);
+
+        // down
+        Pt c = new Pt(36.1, 110);
+        assertEquals(Math.PI / 2, Geom.angle(start, c), DELTA);
+
+        // diagonal down-left
+        Pt d = new Pt(21.9, 10.7);
+        assertEquals(Math.PI * 0.75, Geom.angle(start, d), DELTA);
+
+        // left
+        Pt e = new Pt(21.9, -3.5);
+        assertEquals(Math.PI, Geom.angle(start, e), DELTA);
+
+        // diagonal up-left
+        Pt f = new Pt(28.4, -11.2);
+        assertEquals(Math.PI * 1.25, Geom.angle(start, f), DELTA);
+
+        // up
+        Pt g = new Pt(36.1, -9.0);
+        assertEquals(Math.PI * 1.5, Geom.angle(start, g), DELTA);
+
+        // diagonal up-right
+        Pt h = new Pt(48.1, -15.5);
+        assertEquals(Math.PI * 1.75, Geom.angle(start, h), DELTA);
+    }
+
+    @Test
     public void testFractionDistFromCenter() {
         Pt a = new Pt(4, 3);
         Pt b = new Pt(14, 7);

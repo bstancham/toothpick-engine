@@ -190,6 +190,10 @@ public final class TPFactory {
 
     /*------------------------------ form ------------------------------*/
 
+    public static double randLineLength() {
+        return 20 + (Math.random() * 150);
+    }
+
     public static TPForm singleLineForm(double length) {
         double half = length / 2;
         Pt start = new Pt(-half, 0);
@@ -198,8 +202,18 @@ public final class TPFactory {
         return form;
     }
 
-    public static double randLineLength() {
-        return 20 + (Math.random() * 150);
+    public static TPForm rectangleForm(double w, double h) {
+        double halfW = w / 2;
+        double halfH = h / 2;
+        Pt a = new Pt(-halfW, -halfH); // top-left
+        Pt b = new Pt(-halfW, halfH);  // bottom-left
+        Pt c = new Pt(halfW, halfH);   // bottom-right
+        Pt d = new Pt(halfW, -halfH);  // top-right
+        TPLine lineA = new TPLine(new Line(a, b));
+        TPLine lineB = new TPLine(new Line(b, c));
+        TPLine lineC = new TPLine(new Line(c, d));
+        TPLine lineD = new TPLine(new Line(d, a));
+        return new TPForm(new TPPart[] { lineA, lineB, lineC, lineD });
     }
 
     public static TPForm regularPolygonForm(double size, int numSides) {
@@ -331,6 +345,14 @@ public final class TPFactory {
                       prog.getGeometry().getXCenter());
     }
 
+    /**
+     * <p>Choose a random position within bounds.</p>
+     */
+    public static Pt randPos(TPProgram prog) {
+        return new Pt(rand(0, prog.getGeometry().getWidth()),
+                      rand(0, prog.getGeometry().getHeight()));
+    }
+
     public static Pt randBoundaryPos(TPProgram prog) {
         return randBoundaryPos(prog.getGeometry().getWidth(),
                                prog.getGeometry().getHeight());
@@ -346,6 +368,38 @@ public final class TPFactory {
             return new Pt((Math.random() < 0.5 ? 0 : width),
                           rand(0, height));
         }
+    }
+
+    public static void anchorToPath(TPActor actor, TPActor path) {
+        PathAnchor anchor = new PathAnchor();
+        anchor.makePath(path);
+        actor.addBehaviour(anchor);
+        // add as child, so that they don't destroy one-another
+        path.addChild(actor);
+    }
+
+    public static void anchorToRandPoint(TPActor actor, TPActor anchorActor) {
+        TPForm form = anchorActor.getForm();
+        TPLine line = null;
+
+        // count lines in form, then choose one
+        int n = 0;
+        for (int i = 0; i < form.numParts(); i++)
+            if (form.getPart(i) instanceof TPLine)
+                n++;
+
+        int chosen = (int) (Math.random() * n);
+
+        for (int i = 0; i < form.numParts(); i++)
+            if (form.getPart(i) instanceof TPLine)
+                if (i == chosen)
+                    line = (TPLine) form.getPart(i);
+
+        PointAnchor anchor = new PointAnchor();
+        anchor.setAnchor(line, form);
+        actor.addBehaviour(anchor);
+        // add as child, so that they don't destroy one-another
+        anchorActor.addChild(actor);
     }
 
     /*--------------------------- properties ---------------------------*/

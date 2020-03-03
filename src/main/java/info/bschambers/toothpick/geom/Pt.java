@@ -45,6 +45,14 @@ public final class Pt {
         return false;
     }
 
+    public boolean equals(Pt p, double delta) {
+        if (p.x < x - delta) return false;
+        if (p.y < y - delta) return false;
+        if (p.x > x + delta) return false;
+        if (p.y > y + delta) return false;
+        return true;
+    }
+
     @Override
     public int hashCode() {
         return Double.hashCode(x) + Double.hashCode(y);

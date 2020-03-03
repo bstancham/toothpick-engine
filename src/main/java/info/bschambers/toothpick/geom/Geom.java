@@ -47,6 +47,35 @@ public final class Geom {
 	return Math.sqrt((xDist * xDist) + (yDist * yDist));
     }
 
+    public static double angle(Line ln) {
+        return angle(ln.start, ln.end);
+    }
+
+    /**
+     * <p>Calculates the angle in radians of the line from point a to point b.</p>
+     *
+     * <p>Angles are measured in a clockwise direction:</p>
+     *
+     * <ul>
+     * <li>Horizontal Line pointing to the right is 0.0.</li>
+     * <li>Vertical line pointing down is Math.PI / 2.</li>
+     * <li>Horizontal Line pointing to the left is Math.PI.</li>
+     * <li>Vertical line pointing up is Math.PI * 1.5.</li>
+     * </ul>
+     */
+    public static double angle(Pt a, Pt b) {
+	// get x & y lengths
+	double xLen = b.x - a.x;
+	double yLen = b.y - a.y;
+	// length of hypotenuse (Pythagoras' theroem ---> a2 + b2 = c2)
+	double hLen = Math.sqrt((xLen * xLen) + (yLen * yLen));
+	// get angle (compensate for negative y-direction)
+	if (yLen < 0) hLen = -hLen;
+	double angle = Math.acos(xLen / hLen);
+        if (yLen < 0) angle += Math.PI;
+        return angle;
+    }
+
     public static Pt orthoIntersection(Line ln, Pt p) {
         // get relative point values
         double xRelative = p.x - ln.constant().x;
