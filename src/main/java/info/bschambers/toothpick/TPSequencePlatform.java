@@ -37,7 +37,7 @@ public class TPSequencePlatform extends TPPlatform {
 
     @Override
     protected void setProgram(TPProgram prog) {
-        prog.reset();
+        prog.init();
         super.setProgram(prog);
         prog.addBehaviour(new IntroTransition(levelNum + ": " + prog.getTitle()));
         prog.addBehaviour(new OutroTransition("WAVE COMPLETED!"));

@@ -18,7 +18,7 @@ public class TPActor implements TPEncodingHelper {
         WRAP_PARTS_AT_BOUNDS
     };
 
-    public static final TPActor NULL = new TPActor(new TPForm(new TPPart[0]));
+    public static final TPActor NULL = new TPActor(new TPForm());
 
     private Color bgColor = Color.BLACK;
 
@@ -43,7 +43,7 @@ public class TPActor implements TPEncodingHelper {
     public int numKills = 0;
 
     public TPActor() {
-        this(TPForm.NULL);
+        this(new TPForm());
     }
 
     public TPActor(TPForm form) {
@@ -237,8 +237,7 @@ public class TPActor implements TPEncodingHelper {
                 y < 0 ||
                 y > geom.getHeight())
                 // if form is empty then actor will die
-                setForm(TPForm.NULL);
-
+                setForm(new TPForm());
         } else if (boundsBehaviour == BoundaryBehaviour.WRAP_AT_BOUNDS ||
                    boundsBehaviour == BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS) {
             TPGeometry geom = prog.getGeometry();

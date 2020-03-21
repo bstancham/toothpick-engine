@@ -33,6 +33,18 @@ public final class Geom {
 	return new Pt(midVal(a.x, b.x), midVal(a.y, b.y));
     }
 
+    public static Pt randPointOnLine(Line ln) {
+        return randPointOnLine(ln.start, ln.end);
+    }
+
+    public static Pt randPointOnLine(Pt a, Pt b) {
+        double amt = Math.random();
+        double xDim = b.x - a.x;
+        double yDim = b.y - a.y;
+        return new Pt(a.x + (amt * xDim),
+                      a.y + (amt * yDim));
+    }
+
     /** @return The distance between the two points. */
     public static double distance(Pt a, Pt b) {
 	/*

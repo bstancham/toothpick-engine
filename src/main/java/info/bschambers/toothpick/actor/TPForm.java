@@ -11,8 +11,6 @@ import java.util.List;
 
 public class TPForm implements TPEncodingHelper {
 
-    public static final TPForm NULL = new TPForm();
-
     private TPActor actor = null;
     protected boolean alive = true;
     private List<TPPart> parts = new ArrayList<>();

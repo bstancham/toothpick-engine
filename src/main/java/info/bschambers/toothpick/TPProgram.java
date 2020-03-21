@@ -34,6 +34,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private boolean smearMode = false;
     private TPPlayer player = TPPlayer.NULL;
     private List<ProgramBehaviour> behaviours = new ArrayList<>();;
+    protected List<TPActor> initialActors = new ArrayList<>();
     protected List<TPActor> actors = new ArrayList<>();
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
@@ -50,29 +51,46 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public TPProgram(String title) {
         this.title = title;
-        geom.setupAndCenter(1000, 800);
+        setPlayArea(1000, 800);
+    }
+
+    public void setPlayArea(int w, int h) {
+        geom.setupAndCenter(w, h);
     }
 
     /**
-     * <p>Reset the program to a starting state - clear the actors list, reset all
-     * behaviours, and set the finished-flag to false.</p>
+     * <p>Reset the program to a starting state - clear all existing actors and re-add the
+     * initial-actors list, reset all behaviours, and set the finished-flag to false.</p>
      *
      * <p>To do a full reset, you may want to call {@link resetPlayer} also.</p>
      */
-    public void reset() {
+    public void init() {
+        // return actors to inital state
         actors.clear();
         toAdd.clear();
         toRemove.clear();
+        for (TPActor a: initialActors)
+            toAdd.add(a.copy());
+        updateActorsInPlace();
+
         for (ProgramBehaviour pb : behaviours)
             pb.reset();
+
         setFinished(false);
+    }
+
+    public void setInitialActors(TPActor[] newActors) {
+        initialActors.clear();
+        for (TPActor a: newActors) {
+            a.updateForm();
+            initialActors.add(a.copy());
+        }
     }
 
     public void resetPlayer() {
         removeActor(player.getActor());
         player.reset();
         addActor(player.getActor());
-        // updateActorsInPlace();
     }
 
     public TPPlayer getPlayer() {

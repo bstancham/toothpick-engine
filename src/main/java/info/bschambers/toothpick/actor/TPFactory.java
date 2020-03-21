@@ -100,14 +100,14 @@ public final class TPFactory {
     }
 
     public static TPActor shooterActor(TPProgram prog) {
-        TPActor actor = lineActor(prog);
-        actor.name = "shooter";
         Spawning spawn = new Spawning();
         spawn.setArchetype(new TPActor(singleLineForm(50)));
-        actor.addBehaviour(spawn);
         spawn.setInterval(randInt(10, 500));
         if (Math.random() < 0.5)
-            spawn.setRelativeAngle(0.5);
+            spawn.setRelativeRotation(0.5);
+        TPActor actor = lineActor(prog);
+        actor.name = "shooter";
+        actor.addBehaviour(spawn);
         return actor;
     }
 
@@ -304,6 +304,21 @@ public final class TPFactory {
         form.addPart(new TPTextPart(text));
         return form;
     }
+
+    /*------------------------------ line ------------------------------*/
+
+    public static TPLine lineStrong(double x1, double y1, double x2, double y2) {
+        return lineStrong(x1, y1, x2, y2, randColorGetter());
+    }
+
+    public static TPLine lineStrong(double x1, double y1, double x2, double y2,
+                                    ColorGetter col) {
+        TPLine tpl = new TPLine(new Line(x1, y1, x2, y2));
+        tpl.setStrength(TPLine.STRENGTH_HEAVY);
+        tpl.setColorGetter(col);
+        return tpl;
+    }
+
 
     /*----------------------------- color ------------------------------*/
 

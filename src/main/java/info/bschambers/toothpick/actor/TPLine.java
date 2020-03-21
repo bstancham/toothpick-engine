@@ -14,6 +14,7 @@ public class TPLine extends TPPart {
     private Line archetype;
     private Line line;
     private int strength = STRENGTH_LIGHT;
+    private ColorGetter colorGet = null;
 
     public TPLine() {}
 
@@ -38,6 +39,8 @@ public class TPLine extends TPPart {
     public TPLine copy() {
         TPLine ln = new TPLine(archetype);
         ln.strength = strength;
+        if (colorGet != null)
+            ln.colorGet = colorGet.copy();
         ln.copyBehaviours(this);
         return ln;
     }
@@ -99,6 +102,14 @@ public class TPLine extends TPPart {
      */
     public void setStrength(int val) {
         strength = val;
+    }
+
+    public ColorGetter getColorGetter() {
+        return colorGet;
+    }
+
+    public void setColorGetter(ColorGetter val) {
+        colorGet = val;
     }
 
     /**

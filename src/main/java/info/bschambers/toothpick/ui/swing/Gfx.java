@@ -152,7 +152,12 @@ public class Gfx {
     }
 
     public static void tpLine(Graphics g, TPGeometry geom, TPLine tpl) {
+        Color col = g.getColor();
+        if (tpl.getColorGetter() != null) {
+            g.setColor(tpl.getColorGetter().get());
+        }
         line(g, geom, getStrokeForLineStrength(tpl), tpl.getLine().start, tpl.getLine().end);
+        g.setColor(col);
     }
 
     public static void explosion(Graphics g, TPGeometry geom, TPExplosion ex) {
