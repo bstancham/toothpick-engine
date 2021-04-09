@@ -307,8 +307,19 @@ public final class TPFactory {
 
     /*------------------------------ line ------------------------------*/
 
+    public static TPLine lineStandard(double x1, double y1, double x2, double y2) {
+        return lineStandard(x1, y1, x2, y2, null);
+    }
+
+    public static TPLine lineStandard(double x1, double y1, double x2, double y2,
+                                      ColorGetter col) {
+        TPLine tpl = new TPLine(new Line(x1, y1, x2, y2));
+        tpl.setColorGetter(col);
+        return tpl;
+    }
+
     public static TPLine lineStrong(double x1, double y1, double x2, double y2) {
-        return lineStrong(x1, y1, x2, y2, randColorGetter());
+        return lineStrong(x1, y1, x2, y2, null);
     }
 
     public static TPLine lineStrong(double x1, double y1, double x2, double y2,
@@ -318,7 +329,6 @@ public final class TPFactory {
         tpl.setColorGetter(col);
         return tpl;
     }
-
 
     /*----------------------------- color ------------------------------*/
 

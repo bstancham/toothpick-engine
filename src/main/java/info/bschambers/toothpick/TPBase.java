@@ -8,7 +8,7 @@ public class TPBase {
 
     private TPPlatform platform = new TPPlatform("DEFAULT PLATFORM");
     private TPUI ui = TPUI.NULL;
-    private TPMenu menu = null;
+    private TPMenu menu = new TPMenu("MENU"); // an empty menu
     private TPSound sound = TPSound.NULL;
     private boolean running = true;
     private long iterGoal = 10;

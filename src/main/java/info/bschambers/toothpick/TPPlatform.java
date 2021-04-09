@@ -1,5 +1,10 @@
 package info.bschambers.toothpick;
 
+/**
+ * Handles the running of a single TPProgram instance.
+ *
+ * @see TPSequencePlatform
+ */
 public class TPPlatform {
 
     private String title = "";

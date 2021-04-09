@@ -88,6 +88,9 @@ public final class Geom {
         return angle;
     }
 
+    /**
+     * What does this do?
+     */
     public static Pt orthoIntersection(Line ln, Pt p) {
         // get relative point values
         double xRelative = p.x - ln.constant().x;
@@ -104,14 +107,14 @@ public final class Geom {
     public static Pt lineIntersection(Line l1, Line l2) {
 	Pt oPt1 = orthoIntersection(l2, l1.constant());
 	Pt oPt2 = orthoIntersection(l2, l1.end);
-	double yGap1 = oPt1.y - l1.constant().y;
-	double yGap2 = oPt2.y - l1.end.y;
-	double yDiff = yGap1 - yGap2;
 	double xGap1 = oPt1.x - l1.constant().x;
 	double xGap2 = oPt2.x - l1.end.x;
 	double xDiff = xGap1 - xGap2;
-	double yRatio = yGap1 / yDiff;
+	double yGap1 = oPt1.y - l1.constant().y;
+	double yGap2 = oPt2.y - l1.end.y;
+	double yDiff = yGap1 - yGap2;
 	double xRatio = xGap1 / xDiff;
+	double yRatio = yGap1 / yDiff;
 	double xVal = l1.constant().x + (l1.xVector() * yRatio);
 	double yVal = l1.constant().y + (l1.yVector() * xRatio);
 	return new Pt(xVal, yVal);

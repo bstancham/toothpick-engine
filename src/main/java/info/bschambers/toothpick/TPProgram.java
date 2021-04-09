@@ -259,6 +259,25 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         return actors.size();
     }
 
+    public int numActorsIncChildren() {
+        int n = 0;
+        for (TPActor a : actors)
+            n = countChildren(a, n + 1);
+        return n;
+    }
+
+    /**
+     * Recursive method for counting children of TPActor a.
+     *
+     * @return The total number of children and sub-children, plus 1 for the initial input
+     * TPActor. i.e. if TPActor a has just one child-actor the value returned will be 2.
+     */
+    private int countChildren(TPActor a, int n) {
+        for (int i = 0; i < a.numChildren(); i++)
+            n = countChildren(a.getChild(i), n + 1);
+        return n;
+    }
+
     public TPActor getActor(int index) {
         return actors.get(index);
     }
@@ -281,7 +300,8 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             lines.add("deaths: " + getPlayer().getActor().numDeaths);
         }
         if (showDiagnosticInfo) {
-            lines.add("actors: " + actors.size());
+            lines.add("actors (top lvl): " + numActors());
+            lines.add("actors (total): " + numActorsIncChildren());
             for (ProgramBehaviour pb : behaviours)
                 for (String pbLine : pb.getInfoLines())
                     lines.add(pbLine);
@@ -294,6 +314,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
      */
     public void update() {
 
+        // maybe pause program
         if (pauseAfter > 0) {
             pauseAfter--;
             if (pauseAfter == 0) {
@@ -301,6 +322,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             }
         }
 
+        // if player is dead, revive on trigger press
         if (playerIsDead()) {
             getPlayer().getActor().update(this);
             if (getPlayer().getActor().getActionTrigger()) {
@@ -309,6 +331,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             }
         }
 
+        // update all actors and program behaviours
         intersectionPoints.clear();
         for (TPActor a : actors)
             a.update(this);

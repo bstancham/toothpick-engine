@@ -176,7 +176,7 @@ public class TPActor implements TPEncodingHelper {
      */
     public void setInputHandler(KeyInputHandler newInput) {
         // KeyInputHandler will be identified by it's singleton-group ID
-        behaviours.add(newInput);
+        addBehaviour(newInput);
     }
 
     public void update(TPProgram prog) {
@@ -197,7 +197,7 @@ public class TPActor implements TPEncodingHelper {
         for (ActorBehaviour ab : behaviours)
             ab.update(prog, this);
 
-        // add and remove children
+        // remove children as required
         for (TPActor child : children)
             if (!child.isAlive())
                 childrenToRemove.add(child);
@@ -205,6 +205,7 @@ public class TPActor implements TPEncodingHelper {
             children.remove(child);
         childrenToRemove.clear();
 
+        // add children as required
         for (TPActor child : childrenToAdd) {
             child.parent = this;
             children.add(child);

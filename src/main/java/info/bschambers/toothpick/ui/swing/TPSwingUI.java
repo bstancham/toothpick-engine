@@ -7,6 +7,7 @@ import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
+import info.bschambers.toothpick.ui.TPMenuItemSimple;
 import info.bschambers.toothpick.ui.TPUI;
 import info.bschambers.toothpick.ui.swing.Gfx.TextBox;
 import java.awt.Color;
@@ -314,5 +315,13 @@ public class TPSwingUI extends JFrame
 
     @Override
     public void componentHidden(ComponentEvent e) {}
+
+    /*-------------------------- default menu --------------------------*/
+
+    public static TPMenu makeDefaultMenu(TPSwingUI ui) {
+        TPMenu m = new TPMenu("MAIN MENU");
+        m.add(new TPMenuItemSimple("EXIT", () -> ui.exit()));
+        return m;
+    }
 
 }
