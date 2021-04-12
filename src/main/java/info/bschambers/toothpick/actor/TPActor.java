@@ -52,6 +52,7 @@ public class TPActor implements TPEncodingHelper {
 
     public String infoString() {
         StringBuffer s = new StringBuffer();
+        s.append("name: " + name + "\n");
         s.append("instance: " + super.toString() + "\n");
         s.append("alive: " + isAlive() + "\n");
         s.append("position: x=" + x + " y=" + y + "\n");
@@ -72,6 +73,7 @@ public class TPActor implements TPEncodingHelper {
 
     public TPActor copy() {
         TPActor actor = new TPActor(form.copy());
+        actor.name = name;
         actor.boundsBehaviour = boundsBehaviour;
         actor.x = x;
         actor.y = y;

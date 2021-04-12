@@ -2,6 +2,7 @@ package info.bschambers.toothpick;
 
 import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.actor.TPPlayer;
+import info.bschambers.toothpick.geom.Geom;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.geom.Rect;
 import info.bschambers.toothpick.ui.TPUI;
@@ -374,10 +375,18 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         toAdd.clear();
     }
 
+    /**
+     * Puts TPActor {@code a} on the to-remove list. Call {@link update} to finalise the
+     * operation.
+     */
     public void removeActor(TPActor a) {
         toRemove.add(a);
     }
 
+    /**
+     * Puts TPActor {@code a} on the to-add list. Call {@link update} to finalise the
+     * operation.
+     */
     public void addActor(TPActor a) {
         toAdd.add(a);
     }
@@ -389,6 +398,51 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     @Override
     public Iterator<TPActor> iterator() {
         return actors.iterator();
+    }
+
+    /**
+     * Gets the nearest other TPActor to TPActor {@code a}.
+     *
+     * @return The actor which is the shortest distance away from actor {@code a}.
+     * Returns {@code null} if there is no other actor active in this program, or if
+     * {@code a} is not active in this program.
+     */
+    public TPActor getNearest(TPActor a, boolean wrapAtBounds) {
+        if (!contains(a))
+            return null;
+
+        TPActor nearest = null;
+        double dist = Double.POSITIVE_INFINITY;
+        for (TPActor b : actors) {
+            if (a != b) {
+                double bDist = getDistance(a, b, wrapAtBounds);
+                if (nearest == null || bDist < dist) {
+                    nearest = b;
+                    dist = bDist;
+                }
+            }
+        }
+        return nearest;
+    }
+
+    /**
+     * Gets the distance between actors {@code a} and {@code b} within the geometry of
+     * this program.
+     *
+     * Warning! Does not check whether {@code a} and {@code b} are in the actors-list for
+     * this program - you may want to check by calling {@link contains} first.
+     *
+     */
+    public double getDistance(TPActor a, TPActor b, boolean wrapAtBounds) {
+        if (wrapAtBounds) {
+            double xDist = Math.abs(a.x - b.x);
+            double yDist = Math.abs(a.y - b.y);
+            double xDistWrap = getGeometry().getWidth() - xDist;
+            double yDistWrap = getGeometry().getHeight() - yDist;
+            return Geom.distance(0, 0, Math.min(xDist, xDistWrap), Math.min(yDist, yDistWrap));
+        } else {
+            return Geom.distance(a.x, a.y, b.x, b.y);
+        }
     }
 
     /*---------------------------- Encoding ----------------------------*/

@@ -28,6 +28,9 @@ public final class TPFactory {
 
     /*----------------------------- drones -----------------------------*/
 
+    /**
+     * Creates a new {@code TPActor} with single-line form of random length.
+     */
     public static TPActor lineActor(TPProgram prog) {
         TPForm form = singleLineForm(randLineLength());
         return droneActor("line", form, prog);

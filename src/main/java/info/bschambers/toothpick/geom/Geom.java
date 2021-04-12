@@ -47,6 +47,11 @@ public final class Geom {
 
     /** @return The distance between the two points. */
     public static double distance(Pt a, Pt b) {
+        return distance(a.x, a.y, b.x, b.y);
+    }
+
+    /** @return The distance between the two points. */
+    public static double distance(double x1, double y1, double x2, double y2) {
 	/*
 	 * Pythagoras' theorem:
 	 * In a right angle triangle, the squatre of the hypotenuse is equal to
@@ -54,8 +59,8 @@ public final class Geom {
 	 *
 	 * x2 + y2 = h2
 	 */
-	double xDist = Math.abs(a.x - b.x);
-	double yDist = Math.abs(a.y - b.y);
+	double xDist = Math.abs(x1 - x2);
+	double yDist = Math.abs(y1 - y2);
 	return Math.sqrt((xDist * xDist) + (yDist * yDist));
     }
 
@@ -105,6 +110,13 @@ public final class Geom {
      * Returns the intersection point of two lines.
      */
     public static Pt lineIntersection(Line l1, Line l2) {
+
+        // horiz vs vert cases
+        if (l1.isHorizontal() && l2.isVertical())
+            return new Pt(l2.start.x, l1.start.y);
+        if (l2.isHorizontal() && l1.isVertical())
+            return new Pt(l1.start.x, l2.start.y);
+
 	Pt oPt1 = orthoIntersection(l2, l1.constant());
 	Pt oPt2 = orthoIntersection(l2, l1.end);
 	double xGap1 = oPt1.x - l1.constant().x;
