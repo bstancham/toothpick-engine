@@ -263,6 +263,6 @@ the config file and cannot be switched on-the-fly.
 
 * License
 
-Copyright 2019-present B. S. Chambers.
+Copyright 2019-present B. S. Tancham.
 
 Distributed under GPL, version 3.
