@@ -5,15 +5,18 @@ intersecting.
 
 ** History
 
-The original concept and earliest version of this game date back to the year 200?
+The original concept and earliest version of this game date back to the year
+2007 or maybe 2008.
 
-At some quite early stage of my Java programming, I was able to draw graphics,
-but had not fully got my head around doing double-buffering yet - so I had this
-idea for a game where the screen is never cleared.
+At some quite early stage of learning Java programming, I was experimenting with
+animating graphics, but was having trouble getting the double-buffering to
+work - so I had this idea to try and come up with a game where the screen is
+never cleared.
 
 This new version is a complete rewrite. Most of the concepts and game mechanics
-were present since fairly early days but the architecture has (hopefully) been
-improved, especially with relation to separation of the UI and logic.
+were present since fairly early days but the architecture is completely
+different (and hopefully improved), especially in relation to separation of the
+UI and logic.
 
 * Building
 
@@ -54,15 +57,37 @@ public class ToothpickEngineExample {
 }
 #+END_SRC
 
-With minimal setup we can make a simple toothpick game:
+With minimal setup we can make a simple toothpick game with a player and
+automatically replenishing supply of drones:
 
 #+BEGIN_SRC java
-// insert this before calling base.run()
-TPProgram prog = new TPProgram();
-prog.addBehaviour(new MantainDronesNum());
-prog.addBehaviour(new ToothpickPhysics());
-prog.setPlayer(new Player(TPFactory.playerLine(200, 200)));
-base.setProgram(prog);
+// add these imports
+import info.bschambers.toothpick.*;
+import info.bschambers.toothpick.actor.TPFactory;
+import info.bschambers.toothpick.geom.Pt;
+import info.bschambers.toothpick.ui.swing.SwingUI;
+
+public class ToothpickEngineExample {
+
+    public static void main(String[] args) {
+        TPSwingUI ui = new TPSwingUI("Hello, World!");
+        TPBase base = new TPBase();
+        base.setUI(ui);
+
+        // create program
+        TPProgram prog = new TPProgram();
+        prog.addBehaviour(new PBMaintainDronesNum());
+        prog.addBehaviour(new PBToothpickPhysics());
+        prog.setPlayer(TPFactory.playerLine(new Pt(200, 200)));
+        prog.init();
+        prog.setResetSnapshot();
+
+        // run
+        base.setProgram(prog);
+        ui.setVisible(true);
+        base.run();
+    }
+}
 #+END_SRC
 
 To add a menu system (the menu will appear when you press ESC):
@@ -77,15 +102,35 @@ base.setMenu(menu);
 ** Overview
 
 At the root is a TPBase instance which has reference to one of each:
-- TPProgram
+- TPPlatform
 - TPUI
 - TPMenu
+- TPSound
 
 TPBase provides main program-loop (inside the run method). The basic anatomy of
 the program-loop looks like this:
-- tell program to update
-- tell UI to repaint
+- tell TPPlatform to update the current program, or don't if program is paused
+- trigger sound effects if required by current program
+- tell UI to update and repaint
 - regulate timing
+
+** Behaviours-Driven Architecture
+
+A common theme in these classes is the use of 'behaviours'. TPProgram, TPActor
+etc maintain a list of behaviours. These are objects which are updated on every
+move and may do almost anything.
+
+There are some behaviours of which multiples should not be allowed to exist in a
+certain context. These are identified by having a 'singleton-group' ID. When a
+behaviour object is added, if it has a sigleton ID, then any other behaviour
+with the same singleton ID is automatically removed. For example
+ProgramBehaviour has the singleton group "physics-model".
+
+** TPPlatform
+
+TPPlatform handles running TPProgram instances. TPSequencePlatform runs a
+sequence of programs one after the other and manages the transitions between
+them.
 
 ** TPProgram
 
@@ -96,14 +141,30 @@ The TPProgram update function:
 - do collision detection
 - do garbage collection/housekeeping
 
+** TPActor
 TPActor:
-- TPController
 - TPForm
+- children (sub-actors)
+- behaviours
 
 - ColorGetter
 - TPLine
 
-*** Behaviours-Driven Architecture
+** TPPlayer
+TPPlayer wraps a TPActor and a KeyInputHandler.
+
+Also remembers the starting state of the actor, to handle resetting or reviving the player-actor.
+
+TPPlayer gets key input like this:
+- TPSwingUI implements KeyListener
+- TPSwingUI passes key-pressed and key-released events to player via getProgram().getPlayer()
+
+KeyInputHandler extends ActorBehaviour
+
+TODO: improve key handling architecture
+... use something like this...
+... TPUI.registerKeyListener(KeyListener)
+... can have multiple key listeners/players etc
 
 ** TPUI
 
@@ -116,7 +177,7 @@ fully functional implementation using the java swing library).
 
 The following things need to be done in order to achieve full implementation:
 - paint actors (with TPGeometry transformation)
-- paint bound (with TPGeometry transformation)
+- paint bounds (with TPGeometry transformation)
 - paint menus
 - paint line intersection points
 - handle smear-mode
@@ -175,30 +236,30 @@ the config file and cannot be switched on-the-fly.
 * Default Controls
 ** Menu Navigation
 
-- ~ESC~: activate/deactivate menu
-- ~h~: hide/show menu without deactivating it
-- ~ENTER~: run menu item or enter sub-menu
-- ~BACKSPACE~: up to parent-menu
-- ~UP/DOWN~: select previous/next menu item
-- ~LEFT/RIGHT~: decrement/increment incrementable item or toggle boolean
+- ~ESC~        - activate/deactivate menu
+- ~h~          - hide/show menu without deactivating it
+- ~ENTER~      - run menu item or enter sub-menu
+- ~BACKSPACE~  - up to parent-menu
+- ~UP/DOWN~    - select previous/next menu item
+- ~LEFT/RIGHT~ - decrement/increment incrementable item or toggle boolean
 
 ** Player 1
 
-- ~w~: left
-- ~e~: right
-- ~q~: up
-- ~a~: down
-- ~z~: action
-- ~1~: zoom in
-- ~2~: zoom out
+- ~w~ - left
+- ~e~ - right
+- ~q~ - up
+- ~a~ - down
+- ~z~ - action
+- ~1~ - zoom in
+- ~2~ - zoom out
 
 ** Player 2
 
-- ~[~: left
-- ~]~: right
-- ~p~: up
-- ~;~: down
-- ~/~: action
+- ~[~ - left
+- ~]~ - right
+- ~p~ - up
+- ~;~ - down
+- ~/~ - action
 
 * License
 
