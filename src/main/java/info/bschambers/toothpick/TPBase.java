@@ -11,10 +11,13 @@ public class TPBase {
     private TPMenu menu = new TPMenu("MENU"); // an empty menu
     private TPSound sound = TPSound.NULL;
     private boolean running = true;
+
     private long iterGoal = 10;
     private int fpsGoal = 20;
     private long fps = 0;
     private long iterTime = 0;
+    private long thisIter = 0;
+    private long thisSleep = 0;
 
     public void setPlatform(TPPlatform platform) {
         this.platform = platform;
@@ -72,32 +75,37 @@ public class TPBase {
         if (ui == TPUI.NULL)
             System.out.println("WARNING: running with NULL-UI!");
 
+        running = true;
+
         while (running) {
-
-            if (!menu.isActive() || !getProgram().getPauseForMenu())
-                platform.update();
-
-            if (getProgram().isSfxTriggered()) {
-                sound.sfxExplode();
-                getProgram().sfxReset();
-            }
-
-            ui.updateUI();
-
-            // regulate timing
-
-            long thisIter = System.currentTimeMillis() - iterTime;
-            iterTime = System.currentTimeMillis();
-
-            fps = (thisIter > 0 ? 1000L / thisIter : 0);
-
-            long thisSleep = iterGoal - thisIter;
-            thisSleep = Math.max(0, thisSleep);
-
-            try {
-                Thread.sleep(thisSleep);
-            } catch (Exception ex) {}
+            iterate();
         }
+    }
+
+    /**
+     * Performs a single iteration of the program loop.
+     */
+    public void iterate() {
+
+        if (!menu.isActive() || !getProgram().getPauseForMenu())
+            platform.update();
+
+        if (getProgram().isSfxTriggered()) {
+            sound.sfxExplode();
+            getProgram().sfxReset();
+        }
+
+        ui.updateUI();
+
+        // regulate timing
+        thisIter = System.currentTimeMillis() - iterTime;
+        iterTime = System.currentTimeMillis();
+        fps = (thisIter > 0 ? 1000L / thisIter : 0);
+        thisSleep = iterGoal - thisIter;
+        thisSleep = Math.max(0, thisSleep);
+        try {
+            Thread.sleep(thisSleep);
+        } catch (Exception ex) {}
     }
 
     public long getFps() { return fps; }

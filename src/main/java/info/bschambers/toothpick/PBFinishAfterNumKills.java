@@ -24,17 +24,26 @@ package info.bschambers.toothpick;
  * <p>NOTE: in order for the above sequence to work {@code FinishAfterNumKills} must be
  * put into the program's behaviours list before {@code OutroTransition}.</p>
  */
-public class FinishAfterNumKills implements ProgramBehaviour {
+public class PBFinishAfterNumKills implements ProgramBehaviour {
 
     private int targetNum = 10;
     private int startNum = -1;
     private int remaining = 10;
     private boolean triggered = false;
 
-    public FinishAfterNumKills() {}
+    public PBFinishAfterNumKills() {}
 
-    public FinishAfterNumKills(int targetNum) {
+    public PBFinishAfterNumKills(int targetNum) {
         this.targetNum = targetNum;
+    }
+
+    @Override
+    public PBFinishAfterNumKills copy() {
+        PBFinishAfterNumKills out = new PBFinishAfterNumKills(targetNum);
+        out.startNum = startNum;
+        out.remaining = remaining;
+        out.triggered = triggered;
+        return out;
     }
 
     @Override

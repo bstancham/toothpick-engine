@@ -2,9 +2,14 @@ package info.bschambers.toothpick;
 
 import info.bschambers.toothpick.actor.TPActor;
 
-public class ScrollWithPlayer implements ProgramBehaviour {
+public class PBScrollWithPlayer implements ProgramBehaviour {
 
     private TPActor player = null;
+
+    @Override
+    public PBScrollWithPlayer copy() {
+        return new PBScrollWithPlayer();
+    }
 
     @Override
     public void update(TPProgram prog) {

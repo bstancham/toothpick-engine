@@ -8,6 +8,8 @@ import java.awt.Color;
  * Static methods for making TPActors.
  */
 public final class TPFactory {
+    
+    public static final double NEARLY_ZERO = 0.00000001;
 
     /*---------------------------- players -----------------------------*/
 
@@ -26,6 +28,12 @@ public final class TPFactory {
         return player;
     }
 
+    public static TPPlayer player(TPActor actor) {
+        TPPlayer player = new TPPlayer(actor);
+        player.setInputHandler(new ThrustInertiaInput());
+        return player;
+    }
+
     /*----------------------------- drones -----------------------------*/
 
     /**
@@ -39,6 +47,10 @@ public final class TPFactory {
     public static TPActor regularPolygonActor(TPProgram prog) {
         double size = rand(30, 100);
         int numSides = randInt(3, 8);
+        return regularPolygonActor(prog, size, numSides);
+    }
+
+    public static TPActor regularPolygonActor(TPProgram prog, double size, int numSides) {
         TPForm form = regularPolygonForm(size, numSides);
         return droneActor("regular polygon (" + numSides + " sides)", form, prog);
     }
@@ -62,7 +74,6 @@ public final class TPFactory {
         double sectionLength = rand(20, 80);
         int numSections = randInt(4, 12);
         TPForm form = zigzagForm(width, sectionLength, numSections);
-
         TPActor actor = new TPActor(form);
         actor.name = "zigzag (" + numSections + " sections)";
         actor.setColorGetter(randColorGetter());
@@ -201,8 +212,13 @@ public final class TPFactory {
         double half = length / 2;
         Pt start = new Pt(-half, 0);
         Pt end = new Pt(half, 0);
-        TPForm form = new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
-        return form;
+        return new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
+    }
+
+    public static TPForm singleLineForm(double x1, double y1, double x2, double y2) {
+        Pt start = new Pt(x1, y1);
+        Pt end = new Pt(x2, y2);
+        return new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
     }
 
     public static TPForm rectangleForm(double w, double h) {
@@ -254,6 +270,14 @@ public final class TPFactory {
         }
         lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
 
+        return new TPForm(lines);
+    }
+
+    public static TPForm closedLoopForm(Pt[] points) {
+        TPLine[] lines = new TPLine[points.length];
+        for (int i = 0; i < (lines.length - 1); i++)
+            lines[i] = new TPLine(new Line(points[i], points[i + 1]));
+        lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
         return new TPForm(lines);
     }
 
@@ -337,7 +361,7 @@ public final class TPFactory {
 
     public static ColorGetter randColorGetter() {
         ColorGetter[] items = new ColorGetter[] {
-            new ColorMono(),
+            // new ColorMono(),
             new ColorRandom(),
             new ColorRandomMono(),
             new ColorSmoothMono(),
@@ -360,11 +384,22 @@ public final class TPFactory {
         actor.yInertia = Math.cos(angle) * magnitude;
     }
 
-    public static double randAngleInertia() {
-        return randAngleInertia(0.007);
+    public static void setRandAngle(TPActor actor) {
+        actor.angle = Math.random() * Math.PI;
     }
 
-    public static double randAngleInertia(double max) {
+    public static double randAngleInertia() {
+        // return randAngleInertia(0.007);
+        return rand(0.007);
+    }
+
+    public static void setRandAngleAndHeading(TPActor actor) {
+        setRandHeading(actor);
+        setRandAngle(actor);
+    }
+
+    // public static double randAngleInertia(double max) {
+    public static double rand(double max) {
         return Math.random() * max;
     }
 
@@ -460,20 +495,20 @@ public final class TPFactory {
 
     /*------------------------- helper methods -------------------------*/
 
-    private static double rand(double max) {
-        return Math.random() * max;
-    }
+    // private static double rand(double max) {
+    //     return Math.random() * max;
+    // }
 
-    private static double rand(double min, double max) {
+    public static double rand(double min, double max) {
         double dist = max - min;
         return min + (Math.random() * dist);
     }
 
-    private static int randInt(int max) {
+    public static int randInt(int max) {
         return (int) (Math.random() * max);
     }
 
-    private static int randInt(int min, int max) {
+    public static int randInt(int min, int max) {
         double dist = max - min;
         return (int) (min + (Math.random() * dist));
     }

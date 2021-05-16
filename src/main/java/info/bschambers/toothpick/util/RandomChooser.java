@@ -79,6 +79,15 @@ public class RandomChooser<T> implements Iterable<T> {
         this.changeability = changeability;
     }
 
+    public RandomChooser<T> copy() {
+        RandomChooser<T> out = new RandomChooser<T>(defaultItem, changeability);
+        for (ChooserItem ci : items)
+            out.items.add(ci);
+        out.currentItem = currentItem;
+        out.combinedWeight = combinedWeight;
+        return out;
+    }
+
     @Override
     public String toString() {
         String text = "RandomChooser: changeability=" + changeability
@@ -89,6 +98,10 @@ public class RandomChooser<T> implements Iterable<T> {
                 + " (weight=" + ci.weight + ")";
         return text;
     }
+
+    // public T getDefaultItem() {
+    //     return defaultItem;
+    // }
 
     /**
      * <p>Returns true, if there is no items, or if the combined weight of all
@@ -172,7 +185,7 @@ public class RandomChooser<T> implements Iterable<T> {
         }
     }
 
-        public int getCombinedWeight() {
+    public int getCombinedWeight() {
         // return combinedWeight;
         int weight = 0;
         for (ChooserItem item : items)

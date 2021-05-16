@@ -14,7 +14,7 @@ import info.bschambers.toothpick.actor.TPFactory;
  * screen.</li>
  * </ul>
  */
-public class OutroTransition implements ProgramBehaviour {
+public class PBOutroTransition implements ProgramBehaviour {
 
     private String message;
     private boolean triggered = false;
@@ -25,12 +25,26 @@ public class OutroTransition implements ProgramBehaviour {
     private int messageCount = 0;
     private TPActor textActor = null;
 
-    public OutroTransition() {
+    public PBOutroTransition() {
         this("...");
     }
 
-    public OutroTransition(String message) {
+    public PBOutroTransition(String message) {
         this.message = message;
+    }
+
+    @Override
+    public PBOutroTransition copy() {
+        PBOutroTransition out = new PBOutroTransition(message);
+        out.triggered = triggered;
+        out.finished = finished;
+        out.offsetGoal = offsetGoal;
+        out.offset = offset;
+        out.messagePause = messagePause;
+        out.messageCount = messageCount;
+        if (textActor != null)
+            out.textActor = textActor.copy();
+        return out;
     }
 
     @Override

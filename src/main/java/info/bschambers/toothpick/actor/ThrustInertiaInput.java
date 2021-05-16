@@ -31,4 +31,23 @@ public class ThrustInertiaInput extends KeyInputHandler {
         }
     }
 
+    public static void applyThrust(TPActor a, double angle, double power) {
+        // a.xInertia += Math.sin(Math.PI * angle) * amount;
+        // a.yInertia -= Math.cos(Math.PI * angle) * amount;
+        a.xInertia += thrustAmountX(angle, power);
+        a.yInertia -= thrustAmountY(angle, power);
+    }
+
+    public static double thrustAmountX(double angle, double power) {
+        return Math.sin(Math.PI * angle) * power;
+    }
+
+    public static double thrustAmountY(double angle, double power) {
+        return Math.cos(Math.PI * angle) * power;
+    }
+
+    // pu
+    //     a.yInertia -= Math.cos(Math.PI * angle) * amount;
+    // }
+
 }

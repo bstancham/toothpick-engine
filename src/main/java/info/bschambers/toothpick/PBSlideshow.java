@@ -7,12 +7,23 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class Slideshow implements ProgramBehaviour {
+public class PBSlideshow implements ProgramBehaviour {
 
     private List<Image> images = new ArrayList<>();
     private int index = 0;
     private int delay = 400;
     private int counter = 0;
+
+    @Override
+    public PBSlideshow copy() {
+        PBSlideshow out = new PBSlideshow();
+        out.index = index;
+        out.delay = delay;
+        out.counter = counter;
+        for (Image img : images)
+            out.images.add(img);
+        return out;
+    }
 
     @Override
     public void update(TPProgram prog) {

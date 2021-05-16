@@ -15,8 +15,19 @@ public class PointAnchor implements ActorBehaviour {
      * @param form When line is destroyed, check this form for other contiguous points.
      */
     public void setAnchor(TPLine line, TPForm form) {
+        setAnchor(line, form, true);
+    }
+
+    /**
+     * @param line Anchor to start point of this line.
+     * @param form When line is destroyed, check this form for other contiguous points.
+     * @param anchorAtStart If true, anchor to the start point of {@code line}, if false,
+     * anchor to the end point.
+     */
+    public void setAnchor(TPLine line, TPForm form, boolean anchorAtStart) {
         anchorLine = line;
         anchorForm = form;
+        this.anchorAtStart = anchorAtStart;
     }
 
     public void update(TPProgram prog, TPActor a) {

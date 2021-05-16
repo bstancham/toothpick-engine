@@ -7,7 +7,10 @@ import info.bschambers.toothpick.geom.Geom;
 import info.bschambers.toothpick.geom.Line;
 import info.bschambers.toothpick.geom.Pt;
 
-public class ToothpickPhysics implements ProgramBehaviour {
+public class PBToothpickPhysics implements ProgramBehaviour {
+
+    @Override
+    public PBToothpickPhysics copy() { return this; }
 
     @Override
     public String getSingletonGroup() {

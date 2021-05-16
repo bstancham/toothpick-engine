@@ -1,11 +1,10 @@
 package info.bschambers.toothpick.ui;
 
-import info.bschambers.toothpick.TPBase;
-import info.bschambers.toothpick.TPProgram;
-import info.bschambers.toothpick.ToothpickPhysics;
-import info.bschambers.toothpick.ToothpickPhysicsLight;
-import info.bschambers.toothpick.actor.ColorGetter;
+import info.bschambers.toothpick.*;
+import info.bschambers.toothpick.actor.*;
+import info.bschambers.toothpick.geom.Pt;
 import java.awt.Color;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -13,26 +12,64 @@ import java.util.function.Supplier;
  */
 public class TPMenuFactory {
 
+    // public static TPMenuItem makeIncrementorItemInt(String label,
+    //                                                 Supplier<Integer> getter,
+    //                                                 Consumer<Integer> setter) {
+    //     return new TPMenuItemIncr(label, () -> "" + getter.get(),
+    //                               () -> setter.accept(getter.get() - 1),
+    //                               () -> setter.accept(getter.get() + 1));
+    // }
+    
+    public static TPMenuItem makeIncrementorItemInt(String label,
+                                                    Supplier<Integer> getter,
+                                                    Consumer<Integer> setter,
+                                                    int min, int max) {
+        return new TPMenuItemIncr(label, () -> "" + getter.get(),
+                                  () -> setter.accept(inBounds(getter.get() - 1, min, max)),
+                                  () -> setter.accept(inBounds(getter.get() + 1, min, max)));
+    }
+
+    private static int inBounds(int i, int min, int max) {
+        if (i < min) return min;
+        if (i > max) return max;
+        return i;
+    }
+    
     public static TPMenu makeProgramMenu(TPProgram prog, TPBase base) {
         return makeProgramMenu(() -> prog.getTitle(), prog, base);
     }
 
     public static TPMenu makeProgramMenu(Supplier<String> ss, TPProgram prog, TPBase base) {
         TPMenu m = new TPMenu(ss);
-        m.setInitAction(() -> {
+        // int stopAfterVal = 5;
+            m.setInitAction(() -> {
                 base.setProgram(prog);
                 prog.updateActorsInPlace();
             });
         m.add(new TPMenuItemSimple("RUN", () -> {
                     base.hideMenu();
         }));
-        m.add(new TPMenuItemSimple("RESET PROGRAM", () -> prog.init()));
+        m.add(new TPMenuItemSimple("revive player", () -> {
+                    if (prog.getPlayer() == TPPlayer.NULL) {
+                        System.out.println("Null-player - adding default...");
+                        prog.setPlayer(TPFactory.playerLine(centerPt(prog)));
+                    }
+                    prog.revivePlayer(true);
+        }));
+        m.add(new TPMenuItemSimple("RESET PROGRAM", () -> prog.reset()));
         m.add(new TPMenuItemBool("pause when menu active ",
                                  prog::getPauseForMenu,
                                  prog::setPauseForMenu));
-
+        m.add(new TPMenuItemSimple(() -> "step forward by " + prog.getPauseAfterAmt() + " frames",
+                                   () -> prog.setPauseAfter(prog.getPauseAfterAmt())));
+        m.add(makeIncrementorItemInt("set step-forward amount",
+                                     prog::getPauseAfterAmt,
+                                     prog::setPauseAfterAmt,
+                                     1, 4));
+        m.add(makePlayerMenu(prog));
         m.add(makeScreenGeometryMenu(prog));
         m.add(makePhysicsMenu(prog));
+        m.add(makeStyleMenu(prog));
         m.add(makeInfoPrintMenu(prog));
         m.add(makeDiagnosticsMenu(prog));
         m.add(new TPMenuItemBool("smear-mode",
@@ -58,14 +95,23 @@ public class TPMenuFactory {
         return m;
     }
 
-    private static TPMenu makePhysicsMenu(TPProgram prog) {
-        TPMenu m = new TPMenu("physics type");
-        m.add(makePhysicsSwitcherItem(prog, new ToothpickPhysics()));
-        m.add(makePhysicsSwitcherItem(prog, new ToothpickPhysicsLight()));
+    private static TPMenu makeStyleMenu(TPProgram prog) {
+        TPMenu m = new TPMenu("presentation style");
+        m.add(new TPMenuItemIncr("line-width scaling", () -> "" + prog.getGeometry().lineWidthScale,
+                                 () -> prog.getGeometry().lineWidthScale -= 1,
+                                 () -> prog.getGeometry().lineWidthScale += 1));
         return m;
     }
 
-    private static TPMenuItem makePhysicsSwitcherItem(TPProgram prog, ToothpickPhysics physics) {
+    private static TPMenu makePhysicsMenu(TPProgram prog) {
+        TPMenu m = new TPMenu("physics type");
+        m.add(makePhysicsSwitcherItem(prog, new PBToothpickPhysics()));
+        m.add(makePhysicsSwitcherItem(prog, new PBToothpickPhysicsLight()));
+        return m;
+    }
+
+    private static TPMenuItem makePhysicsSwitcherItem(TPProgram prog,
+                                                      PBToothpickPhysics physics) {
         String name = physics.getClass().getSimpleName();
         return new TPMenuItemSimple(name, () -> {
                 prog.addBehaviour(physics);
@@ -75,7 +121,16 @@ public class TPMenuFactory {
 
     private static TPMenu makeInfoPrintMenu(TPProgram prog) {
         TPMenu m = new TPMenu("print info");
-        m.add(new TPMenuItemSimple("print player info", () -> System.out.println("todo...")));
+        // m.add(new TPMenuItemSimple("print player info", () -> System.out.println("todo...")));
+        m.add(new TPMenuItemSimple("print player info", () -> {
+                    TPPlayer p = prog.getPlayer();
+                    System.out.println("==============================");
+                    System.out.println("PLAYER = " + p);
+                    System.out.println("INPUT = " + p.getInputHandler() + "\n");
+                    System.out.println("ARCHETYPE:\n" + p.getArchetype().infoString());
+                    System.out.println("ACTOR:\n" + p.getActor().infoString());
+                    System.out.println("==============================");
+        }));
         m.add(new TPMenuItemSimple("print game info", () -> {
                     System.out.println("==============================");
                     System.out.println("class = " + prog.getClass());
@@ -129,4 +184,45 @@ public class TPMenuFactory {
         return c.getRed() + ", " + c.getGreen() + ", " + c.getBlue();
     }
 
+    private static Pt centerPt(TPProgram prog) {
+        return new Pt(prog.getGeometry().getXCenter(),
+                      prog.getGeometry().getYCenter());
+
+    }
+
+    private static TPMenu makePlayerMenu(TPProgram prog) {
+        TPMenu m = new TPMenu("Player Options: (" + prog.getTitle() + ")");
+        m.add(makePlayerControllerMenu(prog));
+        m.add(new TPMenuItemSimple("re-define keys", () -> System.out.println("...")));
+        m.add(new TPMenuItemSimple("calibrate input", () -> System.out.println("...")));
+        m.add(makePresetPlayersMenu(prog));
+        return m;
+    }
+
+    private static TPMenu makePlayerControllerMenu(TPProgram prog) {
+        TPMenu m = new TPMenu(() -> "Change Input Handler (current = "
+                              + prog.getPlayer().getInputHandler().getClass().getSimpleName() + ")");
+        m.add(makeInputSwitcherItem(prog, new ThrustInertiaInput()));
+        m.add(makeInputSwitcherItem(prog, new EightWayInertiaInput()));
+        m.add(makeInputSwitcherItem(prog, new ThrustInput()));
+        m.add(makeInputSwitcherItem(prog, new EightWayInput()));
+        return m;
+    }
+
+    private static TPMenuItem makeInputSwitcherItem(TPProgram prog, KeyInputHandler ih) {
+        return new TPMenuItemSimple(ih.getClass().getSimpleName(),
+                                    () -> prog.getPlayer().setInputHandler(ih));
+    }
+
+    private static TPMenu makePresetPlayersMenu(TPProgram prog) {
+        TPMenu m = new TPMenu("preset players");
+        m.add(new TPMenuItemSimple("line-player",
+                                   () -> prog.setPlayer(playerPresetLine(prog))));
+        return m;
+    }
+
+    public static TPPlayer playerPresetLine(TPProgram prog) {
+        return TPFactory.playerLine(centerPt(prog));
+    }
+    
 }

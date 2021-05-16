@@ -81,9 +81,13 @@ public final class Geom {
      * </ul>
      */
     public static double angle(Pt a, Pt b) {
+        return angle(a.x, a.y, b.x, b.y);
+    }
+    
+    public static double angle(double x1, double y1, double x2, double y2) {
 	// get x & y lengths
-	double xLen = b.x - a.x;
-	double yLen = b.y - a.y;
+	double xLen = x2 - x1;
+	double yLen = y2 - y1;
 	// length of hypotenuse (Pythagoras' theroem ---> a2 + b2 = c2)
 	double hLen = Math.sqrt((xLen * xLen) + (yLen * yLen));
 	// get angle (compensate for negative y-direction)
@@ -92,6 +96,26 @@ public final class Geom {
         if (yLen < 0) angle += Math.PI;
         return angle;
     }
+
+    // /**
+    //  * Calculates the angle going clockwise starting from the line heading
+    //  * vertically upwards from the 'home' point.
+    //  */
+    // public static double angle(double x1, double y1, double x2, double y2) {
+    //     // get x & y lengths
+    //     double xLen = x2 - x1;
+    //     double yLen = y2 - y1;
+    //     // get hypotenuse length: Pythagoras' theroem ---> a2 + b2 = c2
+    //     double hLen = Math.sqrt((xLen * xLen) + (yLen * yLen));
+    //     // negative y direction compensation!
+    //     if (yLen < 0)
+    //         hLen = -hLen;
+    //     // calculate angle
+    //     double angle = Math.acos(xLen / hLen);
+    //     if (yLen < 0)
+    //         angle += Math.PI;
+    //     return angle;
+    // }
 
     /**
      * What does this do?
@@ -175,26 +199,6 @@ public final class Geom {
     public static Line rotate(Line ln, double amount, Pt center) {
         return new Line(rotate(ln.start, amount, center),
                         rotate(ln.end, amount, center));
-    }
-
-    /**
-     * Calculates the angle going clockwise starting from the line heading
-     * vertically upwards from the 'home' point.
-     */
-    public static double angle(double x1, double y1, double x2, double y2) {
-	// get x & y lengths
-	double xLen = x2 - x1;
-        double yLen = y2 - y1;
-	// get hypotenuse length: Pythagoras' theroem ---> a2 + b2 = c2
-	double hLen = Math.sqrt((xLen * xLen) + (yLen * yLen));
-	// negative y direction compensation!
-	if (yLen < 0)
-            hLen = -hLen;
-        // calculate angle
-	double angle = Math.acos(xLen / hLen);
-	if (yLen < 0)
-            angle += Math.PI;
-	return angle;
     }
 
 }

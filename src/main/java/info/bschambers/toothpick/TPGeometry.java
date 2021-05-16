@@ -9,9 +9,14 @@ package info.bschambers.toothpick;
  * <p>{@code xOffset}/{@code yOffset} represent the position of the top-left corner of the
  * play-area relative to the center point. So for example, if the play area is perfectly
  * centered then xOffset will be equal to {@code -(width / 2)}.</p>
+ *
+ * <p>NOTE: some parameters related to presentation style but not to screen geometry are
+ * also grouped here for convenience of access (e.g. {@link lineWidthScale}). These may be
+ * moved in a future update.</p>
  */
 public class TPGeometry implements TPEncodingHelper {
 
+    // screen geometry parameters
     private int width = 100;
     private int height = 100;
     private int xCenter = 50;
@@ -19,6 +24,21 @@ public class TPGeometry implements TPEncodingHelper {
     public double xOffset = 0;
     public double yOffset = 0;
     public double scale = 1;
+
+    // style parameters not related to screen geometry
+    public int lineWidthScale = 1;
+
+    public TPGeometry copy() {
+        TPGeometry out = new TPGeometry();
+        out.width = width;
+        out.height = height;
+        out.xCenter = xCenter;
+        out.yCenter = yCenter;
+        out.xOffset = xOffset;
+        out.yOffset = yOffset;
+        out.scale = scale;
+        return out;
+    }
 
     @Deprecated
     public void setupAndCenter(int width, int height) {

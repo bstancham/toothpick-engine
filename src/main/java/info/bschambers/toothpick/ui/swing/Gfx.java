@@ -24,23 +24,79 @@ public class Gfx {
     public static final Stroke STROKE_3 = new BasicStroke(3);
     public static final Stroke STROKE_4 = new BasicStroke(4);
     public static final Stroke STROKE_5 = new BasicStroke(5);
+    public static final Stroke STROKE_6 = new BasicStroke(6);
+    public static final Stroke STROKE_7 = new BasicStroke(7);
+    public static final Stroke STROKE_8 = new BasicStroke(8);
+    public static final Stroke STROKE_9 = new BasicStroke(9);
+    public static final Stroke STROKE_10 = new BasicStroke(10);
+    public static final Stroke STROKE_11 = new BasicStroke(11);
+    public static final Stroke STROKE_12 = new BasicStroke(12);
+    public static final Stroke STROKE_13 = new BasicStroke(13);
+    public static final Stroke STROKE_14 = new BasicStroke(14);
+    public static final Stroke STROKE_15 = new BasicStroke(15);
+    public static final Stroke STROKE_16 = new BasicStroke(16);
+    public static final Stroke STROKE_17 = new BasicStroke(17);
+    public static final Stroke STROKE_18 = new BasicStroke(18);
+    public static final Stroke STROKE_19 = new BasicStroke(19);
+    public static final Stroke STROKE_20 = new BasicStroke(20);
 
-    private static final Stroke[] strokes0To5 = new Stroke[] {
+    // private static final Stroke[] strokes0To5 = new Stroke[] {
+    //     STROKE_0,
+    //     STROKE_1,
+    //     STROKE_2,
+    //     STROKE_3,
+    //     STROKE_4,
+    //     STROKE_5
+    // };
+
+    private static final Stroke[] strokes0to20 = new Stroke[] {
         STROKE_0,
         STROKE_1,
         STROKE_2,
         STROKE_3,
         STROKE_4,
-        STROKE_5
+        STROKE_5,
+        STROKE_6,
+        STROKE_7,
+        STROKE_8,
+        STROKE_9,
+        STROKE_10,
+        STROKE_11,
+        STROKE_12,
+        STROKE_13,
+        STROKE_14,
+        STROKE_15,
+        STROKE_16,
+        STROKE_17,
+        STROKE_18,
+        STROKE_19,
+        STROKE_20
     };
 
-    public static Stroke getStrokeForLineStrength(TPLine tpl) {
-        int strength = tpl.getStrength();
-        if (strength <= 0)
-            return STROKE_0;
-        if (strength >= 5)
-            return STROKE_5;
-        return strokes0To5[strength];
+    // public static Stroke getStrokeForLineStrength(TPLine tpl) {
+    //     int strength = tpl.getStrength();
+    //     if (strength <= 0)
+    //         return STROKE_0;
+    //     if (strength >= 5)
+    //         return STROKE_5;
+    //     return strokes0To5[strength];
+    // }
+
+    public static Stroke getStrokeForLineStrength(TPGeometry geom, TPLine tpl) {
+        return getStrokeForLineStrength(tpl, geom.lineWidthScale);
+    }
+
+    /**
+     * Get stroke, with scaling. If resulting stroke size is larger than 20, return
+     * STROKE_20.
+     */
+    public static Stroke getStrokeForLineStrength(TPLine tpl, int scaling) {
+        int strength = tpl.getStrength() * scaling;
+        if (strength < 0)
+            strength = 0;
+        else if (strength >= strokes0to20.length)
+            strength = strokes0to20.length - 1;
+        return strokes0to20[strength];
     }
 
     public static void setStroke(Graphics g, Stroke s) {
@@ -130,10 +186,34 @@ public class Gfx {
     }
 
     public static void actor(Graphics g, TPGeometry geom, TPActor a) {
+
         g.setColor(a.getColor());
         form(g, geom, a.getForm());
+
+        if (a.getVertexColor() != null) {
+            g.setColor(a.getVertexColor());
+            vertices(g, geom, a.getForm());
+        }
+
         for (int i = 0; i < a.numChildren(); i++)
             actor(g, geom, a.getChild(i));
+    }
+
+    public static void vertices(Graphics g, TPGeometry geom, TPForm form) {
+        for (int i = 0; i < form.numParts(); i++) {
+            TPPart part = form.getPart(i);
+            if (part instanceof TPLine)
+                vertices(g, geom, (TPLine) part);
+        }
+    }
+
+    public static void vertices(Graphics g, TPGeometry geom, TPLine line) {
+        point(g, geom, line.getLine().start, 2);
+        point(g, geom, line.getLine().end, 2);
+    }
+
+    public static void point(Graphics g, TPGeometry geom, Pt p, int size) {
+        g.fillOval((int) geom.xToScreen(p.x), (int) geom.yToScreen(p.y), size, size);
     }
 
     public static void form(Graphics g, TPGeometry geom, TPForm form) {
@@ -153,10 +233,11 @@ public class Gfx {
 
     public static void tpLine(Graphics g, TPGeometry geom, TPLine tpl) {
         Color col = g.getColor();
+        // NOTE: some TPLine instances have their own color-getter
         if (tpl.getColorGetter() != null) {
             g.setColor(tpl.getColorGetter().get());
         }
-        line(g, geom, getStrokeForLineStrength(tpl), tpl.getLine().start, tpl.getLine().end);
+        line(g, geom, getStrokeForLineStrength(geom, tpl), tpl.getLine().start, tpl.getLine().end);
         g.setColor(col);
     }
 

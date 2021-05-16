@@ -9,6 +9,27 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * angle:
+ * - straight up = 0
+ * - right = 0.5
+ * - down = 1
+ * - right = 1.5
+ *
+ * RADIANS
+ * Math.PI * angle: 
+ * - straight up = 0
+ * - right = 0.5
+ * - down = 1
+ * - right = 1.5
+ *
+ * DEGREES
+ * Math.toDegrees(Math.PI * angle): 
+ * - straight up = 0
+ * - right = 90
+ * - down = 180
+ * - right = 270
+ */
 public class TPActor implements TPEncodingHelper {
 
     public enum BoundaryBehaviour {
@@ -31,6 +52,7 @@ public class TPActor implements TPEncodingHelper {
     private List<ActorBehaviour> behaviours = new ArrayList<>();
     private BoundaryBehaviour boundsBehaviour = BoundaryBehaviour.WRAP_AT_BOUNDS;
     private ColorGetter color = new ColorMono(Color.PINK);
+    private ColorGetter vertexColor = null;
     private boolean actionTrigger = false;
     private Runnable triggerAction = null;
     public double x = 0;
@@ -58,6 +80,8 @@ public class TPActor implements TPEncodingHelper {
         s.append("position: x=" + x + " y=" + y + "\n");
         s.append("inertia: x=" + xInertia + " y=" + yInertia + "\n");
         s.append("angle: " + angle + " (angle-inertia=" + angleInertia + ")\n");
+        s.append("(RADIANS) angle: " + (Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
+        s.append("(DEGREES) angle: " + Math.toDegrees(Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
         s.append("bounds-behaviour: " + boundsBehaviour);
         s.append("FORM: (" + form.numParts() + " parts)\n");
         for (int i = 0; i < form.numParts(); i++)
@@ -138,6 +162,19 @@ public class TPActor implements TPEncodingHelper {
 
     public void setColorGetter(ColorGetter cg) {
         color = cg;
+    }
+
+    /**
+     * WARNING! may return null
+     */
+    public Color getVertexColor() {
+        if (vertexColor == null)
+            return null;
+        return vertexColor.getWithBG(bgColor);
+    }
+
+    public void setVertexColorGetter(ColorGetter cg) {
+        vertexColor = cg;
     }
 
     public boolean isAlive() {

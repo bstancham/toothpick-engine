@@ -53,6 +53,27 @@ public class TPForm implements TPEncodingHelper {
         alive = val;
     }
 
+    public int numLines() {
+        int num = 0;
+        for (TPPart p : parts)
+            if (p instanceof TPLine)
+                num++;
+        return num;
+    }
+
+    public TPLine getLine(int index) {
+        int num = 0;
+        for (TPPart p : parts) {
+            if (p instanceof TPLine) {
+                if (num == index) {
+                    return (TPLine) p;
+                }
+                num++;
+            }
+        }
+        throw new IndexOutOfBoundsException("index=" + index);
+    }
+
     public int numParts() {
         return parts.size();
     }

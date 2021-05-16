@@ -3,10 +3,13 @@ package info.bschambers.toothpick;
 import info.bschambers.toothpick.actor.TPActor;
 
 /**
- * <p>Like {@link ToothpickPhysics}, but non-player actors do not interact with
+ * <p>Like {@link PBToothpickPhysics}, but non-player actors do not interact with
  * one-another.</p>
  */
-public class ToothpickPhysicsLight extends ToothpickPhysics {
+public class PBToothpickPhysicsLight extends PBToothpickPhysics {
+
+    @Override
+    public PBToothpickPhysicsLight copy() { return this; }
 
     @Override
     public void update(TPProgram prog) {

@@ -11,9 +11,11 @@ public interface ProgramBehaviour {
     /** Singleton-group ID for outro-transitions. */
     public static final String OUTRO_TRANSITION_ID = "outro-transition";
 
-    default String[] getInfoLines() {
-        return new String[0];
-    }
+    /**
+     * Returns an exact copy of this ProgramBehaviour. In some cases may return the actual
+     * same instance.
+     */
+    ProgramBehaviour copy();
 
     /**
      * <p>Gets the name of the singleton-group which this behaviour belongs to, or an
@@ -31,5 +33,9 @@ public interface ProgramBehaviour {
     default void reset() {}
 
     void update(TPProgram prog);
+
+    default String[] getInfoLines() {
+        return new String[0];
+    }
 
 }

@@ -13,7 +13,7 @@ import info.bschambers.toothpick.actor.TPFactory;
  * intro message slides off the top.</li>
  * </ul>
  */
-public class IntroTransition implements ProgramBehaviour {
+public class PBIntroTransition implements ProgramBehaviour {
 
     private String message;
     private boolean triggered = false;
@@ -24,12 +24,26 @@ public class IntroTransition implements ProgramBehaviour {
     private int messageCount = 0;
     private TPActor textActor = null;
 
-    public IntroTransition() {
+    public PBIntroTransition() {
         this("...");
     }
 
-    public IntroTransition(String message) {
+    public PBIntroTransition(String message) {
         this.message = message;
+    }
+    
+    @Override
+    public PBIntroTransition copy() {
+        PBIntroTransition out = new PBIntroTransition(message);
+        out.triggered = triggered;
+        out.finished = finished;
+        out.offsetGoal = offsetGoal;
+        out.offset = offset;
+        out.messagePause = messagePause;
+        out.messageCount = messageCount;
+        if (textActor != null)
+            out.textActor = textActor.copy();
+        return out;
     }
 
     @Override

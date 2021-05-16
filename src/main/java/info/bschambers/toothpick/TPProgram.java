@@ -2,6 +2,7 @@ package info.bschambers.toothpick;
 
 import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.actor.TPPlayer;
+import info.bschambers.toothpick.actor.TPFactory;
 import info.bschambers.toothpick.geom.Geom;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.geom.Rect;
@@ -19,32 +20,60 @@ import java.util.List;
  *
  * TPUI uses the various accessor methods to get game assets for display - NOTE: that
  * some of these may return null, so they always need to be checked!
+ *
+ * <h2>How to Set Up TPProgram</h2>
+ *
+ * <p>VERY SIMPLE EXAMPLE:
+ * <pre>
+ * {@code 
+ * TPProgram prog = new TPProgram("Very Simple Demo Program");
+ * // do any setup - add behaviours/actors etc
+ * prog.addBehaviour(new ToothpickPhysics());
+ * prog.addActor(TPFactory.lineActor(prog));
+ * prog.addActor(TPFactory.regularPolygonActor(prog));
+ * // initialise, then save state as reset-snapshot        
+ * prog.init();
+ * prog.setResetSnapshot();
+ * }
+ * </pre>
+ * </p>
  */
 public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public static final TPProgram NULL = new TPProgram();
 
+    private TPProgramSnapshot resetSnapshot = null;
+
+    // SIGNIFICANT VARIABLES - need to be retained in snapshot
+    // environment
     private String title;
+    private TPGeometry geom = new TPGeometry();
     private Color bgColor = Color.BLACK;
     private Image bgImage = null;
-    private TPGeometry geom = new TPGeometry();
-    private boolean pauseForMenu = true;
-    protected boolean keepIntersectionPoints = false;
-    protected List<Pt> intersectionPoints = new ArrayList<>();
-    protected boolean showBoundingBoxes = false;
     private boolean smearMode = false;
-    private TPPlayer player = TPPlayer.NULL;
-    private List<ProgramBehaviour> behaviours = new ArrayList<>();;
-    protected List<TPActor> initialActors = new ArrayList<>();
+    private boolean rescueChildActors = true;
+    public boolean showProgramInfo = true;
+    // actors
     protected List<TPActor> actors = new ArrayList<>();
+    private TPPlayer player = TPPlayer.NULL;
+    // private List<TPPlayer> players = new ArrayList<>();
+    // behaviours
+    private List<ProgramBehaviour> behaviours = new ArrayList<>();
+    private List<ProgramBehaviour> resetBehaviours = new ArrayList<>();
+    // debugging
+    public boolean showDiagnosticInfo = true;
+    protected boolean keepIntersectionPoints = false;
+    protected boolean showBoundingBoxes = false;
+
+    // TRANSIENT VARIABLES - discarded in snapshot
+    private boolean finished = false;
+    private boolean pauseForMenu = true;
+    private int pauseAfter = -1;
+    private int pauseAfterAmt = 5;
     private List<TPActor> toAdd = new ArrayList<>();
     private List<TPActor> toRemove = new ArrayList<>();
-    private boolean rescueChildActors = true;
-    private boolean finished = false;
-    private int pauseAfter = -1;
-    public boolean showProgramInfo = true;
-    public boolean showDiagnosticInfo = true;
     private boolean sfxTriggered = false;
+    protected List<Pt> intersectionPoints = new ArrayList<>();
 
     public TPProgram() {
         this("UNTITLED PROGRAM");
@@ -59,34 +88,127 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         geom.setupAndCenter(w, h);
     }
 
+    public TPProgram(TPProgramSnapshot snapshot) {
+        resetSnapshot = snapshot;
+        reset(false);
+    }
+
+    public TPProgramSnapshot getResetSnapshot() { return resetSnapshot; }
+
+    /**
+     * Creates a reset-snapshot from the current program state.
+     */
+    public void setResetSnapshot() {
+        TPProgramSnapshot snapshot = new TPProgramSnapshot();
+        snapshot.title = title;
+        snapshot.geom = geom.copy();
+        snapshot.bgColor = bgColor;
+        snapshot.bgImage = bgImage;
+        snapshot.smearMode = smearMode;
+        snapshot.rescueChildActors = rescueChildActors;
+        snapshot.showProgramInfo = showProgramInfo;
+        snapshot.showDiagnosticInfo = showDiagnosticInfo;
+        snapshot.keepIntersectionPoints = keepIntersectionPoints;
+        snapshot.showBoundingBoxes = showBoundingBoxes;
+        for (TPActor a : actors) snapshot.actors.add(a.copy());
+        // for (TPPlayer p : players) snapshot.players.add(p.copy());
+        for (ProgramBehaviour pb : behaviours) snapshot.behaviours.add(pb.copy());
+        for (ProgramBehaviour pb : resetBehaviours) snapshot.resetBehaviours.add(pb.copy());
+        resetSnapshot = snapshot;
+    }
+
     /**
      * <p>Reset the program to a starting state - clear all existing actors and re-add the
      * initial-actors list, reset all behaviours, and set the finished-flag to false.</p>
      *
+     * <p>Run any reset-behaviours.</p>
+     *
      * <p>To do a full reset, you may want to call {@link resetPlayer} also.</p>
      */
-    public void init() {
-        // return actors to inital state
+    public void reset() { reset(true); }
+
+    public void reset(boolean invokeResetBehaviours) {
+
+        setFinished(false);
+
+        // clear existing actors and behaviours
         actors.clear();
         toAdd.clear();
         toRemove.clear();
-        for (TPActor a: initialActors)
-            toAdd.add(a.copy());
-        updateActorsInPlace();
+        behaviours.clear();
+        resetBehaviours.clear();
 
-        for (ProgramBehaviour pb : behaviours)
-            pb.reset();
+        if (resetSnapshot == null) {
+            System.out.println("WARNING: in TPProgram.reset() - no reset snapshot exists!");
+        } else {
 
-        setFinished(false);
-    }
+            // environment
+            title = resetSnapshot.title;
+            geom = resetSnapshot.geom.copy();
+            bgColor = resetSnapshot.bgColor;
+            bgImage = resetSnapshot.bgImage;
+            smearMode = resetSnapshot.smearMode;
+            rescueChildActors = resetSnapshot.rescueChildActors;
+            showProgramInfo = resetSnapshot.showProgramInfo;
 
-    public void setInitialActors(TPActor[] newActors) {
-        initialActors.clear();
-        for (TPActor a: newActors) {
-            a.updateForm();
-            initialActors.add(a.copy());
+            // debugging
+            showDiagnosticInfo = resetSnapshot.showDiagnosticInfo;
+            keepIntersectionPoints = resetSnapshot.keepIntersectionPoints;
+            showBoundingBoxes = resetSnapshot.showBoundingBoxes;
+
+            // actors/players
+            for (TPActor a: resetSnapshot.actors) actors.add(a.copy());
+            // for (TPPlayer p: resetSnapshot.players) players.add(p.copy());
+            updateActorsInPlace();
+
+            // behaviours
+            for (ProgramBehaviour pb : resetSnapshot.behaviours) behaviours.add(pb);
+            for (ProgramBehaviour pb : resetSnapshot.resetBehaviours) resetBehaviours.add(pb);
+        }
+
+        if (invokeResetBehaviours) {
+            for (ProgramBehaviour pb : behaviours) pb.reset();
+            for (ProgramBehaviour pb : resetBehaviours) pb.update(this);
         }
     }
+    
+    // public void initProgram() {
+    public void init() {
+    
+    // // return actors to inital state
+    //     actors.clear();
+    //     toAdd.clear();
+    //     toRemove.clear();
+    //     // for (TPActor a: initialActors)
+    //     for (TPActor a: setup.actors)
+    //         toAdd.add(a.copy());
+
+        // for (TPActor a : toAdd)
+        //     if (!actors.contains(a))
+        //         actors.add(a);
+
+        updateActorsInPlace();
+
+        // for (ProgramBehaviour pb : behaviours)
+        //     pb.reset();
+
+        // // for (ProgramBehaviour pb : behaviours)
+        // //     pb.reset();
+        // behaviours.clear();
+        // for (ProgramBehaviour pb : setup.behaviours)
+        //     behaviours.add(pb);
+
+        // setFinished(false);
+    
+    }
+
+    // public void setInitialActors(TPActor[] newActors) {
+    //     initialActors.clear();
+    //     for (TPActor a: newActors) {
+    //         a.updateForm();
+    //         initialActors.add(a.copy());
+    //     }
+    // }
 
     public void resetPlayer() {
         removeActor(player.getActor());
@@ -166,6 +288,14 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             pauseForMenu = true;
     }
 
+    public int getPauseAfterAmt() {
+        return pauseAfterAmt;
+    }
+
+    public void setPauseAfterAmt(int val) {
+        pauseAfterAmt = val;
+    }
+
     public boolean isFinished() {
         return finished;
     }
@@ -218,8 +348,8 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         return geom;
     }
 
-    public void setGeometry(TPGeometry val) {
-        geom = val;
+    public void setGeometry(TPGeometry g) {
+        geom = g;
     }
 
     public void fitUI(TPUI ui) {
@@ -244,16 +374,40 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
      * singleton-group then any existing member of that group will be removed.</p>
      */
     public void addBehaviour(ProgramBehaviour pb) {
+        addBehaviour(pb, behaviours);
+    }
+
+    public int numBehaviours() {
+        return behaviours.size();
+    }
+
+    public ProgramBehaviour getBehaviour(int i) {
+        return behaviours.get(i);
+    }
+
+    /**
+     * <p>Add a reset-behaviour. If behaviour {@code pb} is a member of a
+     * singleton-group then any existing member of that group will be removed.</p>
+     */
+    public void addResetBehaviour(ProgramBehaviour pb) {
+        addBehaviour(pb, resetBehaviours);
+    }
+
+    /**
+     * <p>Add a program-behaviour. If behaviour {@code pb} is a member of a
+     * singleton-group then any existing member of that group will be removed.</p>
+     */
+    private void addBehaviour(ProgramBehaviour pb, List<ProgramBehaviour> behaviourList) {
         String group = pb.getSingletonGroup();
         if (!group.isEmpty()) {
             List<ProgramBehaviour> pbToRemove = new ArrayList<>();
-            for (ProgramBehaviour other : behaviours)
+            for (ProgramBehaviour other : behaviourList)
                 if (other.getSingletonGroup().equals(group))
                     pbToRemove.add(other);
             for (ProgramBehaviour other : pbToRemove)
-                behaviours.remove(other);
+                behaviourList.remove(other);
         }
-        behaviours.add(pb);
+        behaviourList.add(pb);
     }
 
     public int numActors() {
@@ -281,6 +435,18 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
     public TPActor getActor(int index) {
         return actors.get(index);
+    }
+
+    /**
+     * <p>Gets first actor who's name matches {@code name}.</p>
+     *
+     * <p>WARNING! Returns null if named actor does not exist.</p>
+     */
+    public TPActor getActor(String name) {
+        for (TPActor a : actors)
+            if (a.name == name)
+                return a;
+        return null;
     }
 
     public List<Pt> getIntersectionPoints() {
@@ -342,7 +508,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     }
 
     /**
-     * Update without advancing the action.
+     * Update all actors, but without advancing the action.
      */
     public void updateActorsInPlace() {
         housekeeping();
@@ -459,6 +625,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         params.addMethod(Boolean.class, isSmearMode(), "setSmearMode");
         params.addMethod(TPPlayer.class, getPlayer(), "setPlayer");
         params.addListMethod(ProgramBehaviour.class, behaviours, "addBehaviour");
+        params.addListMethod(ProgramBehaviour.class, resetBehaviours, "addResetBehaviour");
         List<TPActor> exceptPlayer = new ArrayList<>();
         // don't add the player-actor twice
         for (TPActor a : actors)

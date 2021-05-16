@@ -113,8 +113,8 @@ public interface ColorGetter extends TPEncodingHelper {
             shifter.shift();
             count++;
             if (count >= 3) {
-                System.out.println("ColorGetter.enforceMinProximity()"
-                                   + " --> stop shifter after three repetitions");
+                // System.out.println("ColorGetter.enforceMinProximity()"
+                //                    + " --> stop shifter after three repetitions");
                 shifter.makeSafe();
             }
         }
