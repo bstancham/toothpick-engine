@@ -29,7 +29,7 @@ public class PBRandActorSetup implements ProgramBehaviour {
 
     public void setTarget(String targetName) { names = new String[] { targetName }; };
 
-    public void setTargets(String[] names) { this.names = names; };
+    public void setTarget(String ... names) { this.names = names; };
 
     public void initBounds(TPGeometry geom) {
         initBoundsWithMargins(geom, 0);

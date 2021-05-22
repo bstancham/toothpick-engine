@@ -13,7 +13,7 @@ public class PBMisc implements ProgramBehaviour {
 
     private Consumer<TPProgram> updateFunc;
 
-    public MiscProgramBehaviour(Consumer<TPProgram> updateFunc) {
+    public PBMisc(Consumer<TPProgram> updateFunc) {
         this.updateFunc = updateFunc;
     }
 

@@ -82,7 +82,7 @@ public class TPActor implements TPEncodingHelper {
         s.append("angle: " + angle + " (angle-inertia=" + angleInertia + ")\n");
         s.append("(RADIANS) angle: " + (Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
         s.append("(DEGREES) angle: " + Math.toDegrees(Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
-        s.append("bounds-behaviour: " + boundsBehaviour);
+        s.append("bounds-behaviour: " + boundsBehaviour + "\n");
         s.append("FORM: (" + form.numParts() + " parts)\n");
         for (int i = 0; i < form.numParts(); i++)
             s.append("... " + form.getPart(i) + "\n");
@@ -108,6 +108,8 @@ public class TPActor implements TPEncodingHelper {
         actor.numDeaths = numDeaths;
         actor.numKills = numKills;
         actor.color = color.copy();
+        if (vertexColor != null)
+            actor.vertexColor = vertexColor.copy();
         for (ActorBehaviour b : behaviours)
             actor.behaviours.add(b);
         actor.updateForm();

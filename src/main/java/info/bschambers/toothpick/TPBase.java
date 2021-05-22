@@ -43,11 +43,21 @@ public class TPBase {
         System.out.println("TPBase.setUI() --> " + ui.getClass());
     }
 
+    public void setWindowTitle(String title) {
+        if (ui != null)
+            ui.setTitle(title);
+    }
+
     public void setMenu(TPMenu menu) {
         this.menu = menu;
         if (ui != null)
             ui.setMenu(menu);
         System.out.println("TPBase.setMenu() --> " + menu.getClass());
+    }
+
+    public void showMenu() {
+        if (menu != null)
+            menu.setActive(true);
     }
 
     public void hideMenu() {
@@ -62,6 +72,10 @@ public class TPBase {
 
     private TPProgram getProgram() {
         return platform.getProgram();
+    }
+
+    public void stopRunning() {
+        running = false;
     }
 
     /**

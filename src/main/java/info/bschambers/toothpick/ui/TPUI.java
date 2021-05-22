@@ -32,6 +32,8 @@ public interface TPUI {
             public void setMenu(TPMenu menu) {}
             @Override
             public void addInfoGetter(Supplier<String> getter) {}
+            @Override
+            public void setTitle(String title) {}
         };
 
     /**
@@ -48,5 +50,7 @@ public interface TPUI {
     void setMenu(TPMenu menu);
 
     void addInfoGetter(Supplier<String> getter);
+
+    void setTitle(String title);
 
 }
