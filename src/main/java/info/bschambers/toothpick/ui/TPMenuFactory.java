@@ -12,14 +12,6 @@ import java.util.function.Supplier;
  */
 public class TPMenuFactory {
 
-    // public static TPMenuItem makeIncrementorItemInt(String label,
-    //                                                 Supplier<Integer> getter,
-    //                                                 Consumer<Integer> setter) {
-    //     return new TPMenuItemIncr(label, () -> "" + getter.get(),
-    //                               () -> setter.accept(getter.get() - 1),
-    //                               () -> setter.accept(getter.get() + 1));
-    // }
-    
     public static TPMenuItem makeIncrementorItemInt(String label,
                                                     Supplier<Integer> getter,
                                                     Consumer<Integer> setter,
@@ -65,7 +57,7 @@ public class TPMenuFactory {
         m.add(makeIncrementorItemInt("set step-forward amount",
                                      prog::getPauseAfterAmt,
                                      prog::setPauseAfterAmt,
-                                     1, 4));
+                                     1, 1000));
         m.add(makePlayerMenu(prog));
         m.add(makeScreenGeometryMenu(prog));
         m.add(makePhysicsMenu(prog));
@@ -107,6 +99,10 @@ public class TPMenuFactory {
         TPMenu m = new TPMenu("physics type");
         m.add(makePhysicsSwitcherItem(prog, new PBToothpickPhysics()));
         m.add(makePhysicsSwitcherItem(prog, new PBToothpickPhysicsLight()));
+        m.add(new TPMenuItemSimple("NO PHYSICS", () -> {
+                    System.out.println("Switch to NO PHYSICS!");
+                    prog.removeBehaviourGroup(ProgramBehaviour.PHYSICS_MODEL_ID);
+        }));
         return m;
     }
 

@@ -25,13 +25,13 @@ import java.util.List;
  *
  * <p>VERY SIMPLE EXAMPLE:
  * <pre>
- * {@code 
+ * {@code
  * TPProgram prog = new TPProgram("Very Simple Demo Program");
  * // do any setup - add behaviours/actors etc
  * prog.addBehaviour(new ToothpickPhysics());
  * prog.addActor(TPFactory.lineActor(prog));
  * prog.addActor(TPFactory.regularPolygonActor(prog));
- * // initialise, then save state as reset-snapshot        
+ * // initialise, then save state as reset-snapshot
  * prog.init();
  * prog.setResetSnapshot();
  * }
@@ -171,44 +171,10 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
             for (ProgramBehaviour pb : resetBehaviours) pb.update(this);
         }
     }
-    
-    // public void initProgram() {
+
     public void init() {
-    
-    // // return actors to inital state
-    //     actors.clear();
-    //     toAdd.clear();
-    //     toRemove.clear();
-    //     // for (TPActor a: initialActors)
-    //     for (TPActor a: setup.actors)
-    //         toAdd.add(a.copy());
-
-        // for (TPActor a : toAdd)
-        //     if (!actors.contains(a))
-        //         actors.add(a);
-
         updateActorsInPlace();
-
-        // for (ProgramBehaviour pb : behaviours)
-        //     pb.reset();
-
-        // // for (ProgramBehaviour pb : behaviours)
-        // //     pb.reset();
-        // behaviours.clear();
-        // for (ProgramBehaviour pb : setup.behaviours)
-        //     behaviours.add(pb);
-
-        // setFinished(false);
-    
     }
-
-    // public void setInitialActors(TPActor[] newActors) {
-    //     initialActors.clear();
-    //     for (TPActor a: newActors) {
-    //         a.updateForm();
-    //         initialActors.add(a.copy());
-    //     }
-    // }
 
     public void resetPlayer() {
         removeActor(player.getActor());
@@ -398,16 +364,24 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
      * singleton-group then any existing member of that group will be removed.</p>
      */
     private void addBehaviour(ProgramBehaviour pb, List<ProgramBehaviour> behaviourList) {
-        String group = pb.getSingletonGroup();
-        if (!group.isEmpty()) {
-            List<ProgramBehaviour> pbToRemove = new ArrayList<>();
-            for (ProgramBehaviour other : behaviourList)
-                if (other.getSingletonGroup().equals(group))
-                    pbToRemove.add(other);
-            for (ProgramBehaviour other : pbToRemove)
-                behaviourList.remove(other);
-        }
+        String groupID = pb.getSingletonGroup();
+        if (!groupID.isEmpty())
+            removeBehaviourGroup(groupID);
         behaviourList.add(pb);
+    }
+
+    public void removeBehaviourGroup(String groupID) {
+        removeBehaviourGroup(groupID, behaviours);
+    }
+
+    private void removeBehaviourGroup(String groupID, List<ProgramBehaviour> behaviourList) {
+        List<ProgramBehaviour> pbToRemove = new ArrayList<>();
+        for (ProgramBehaviour other : behaviourList)
+            if (other.getSingletonGroup().equals(groupID))
+                pbToRemove.add(other);
+        for (ProgramBehaviour other : pbToRemove)
+            behaviourList.remove(other);
+
     }
 
     public int numActors() {
