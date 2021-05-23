@@ -24,6 +24,11 @@ public class TPMenu implements TPMenuItem {
         this.titleSupplier = titleSupplier;
     }
 
+    /**
+     * Discards all menu-options.
+     */
+    public void clear() { options.clear(); }
+
     @Override
     public String text() {
         return titleSupplier.get();

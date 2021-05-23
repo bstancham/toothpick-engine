@@ -106,6 +106,30 @@ public class TPGeometry implements TPEncodingHelper {
         return temp / scale;
     }
 
+    public double xDistWrapped(double origin, double target) {
+        if (origin == target)
+            return 0;
+        double dist = target - origin;
+        double distWrapped = (dist < 0 ?
+                              (width - origin) + target :
+                              -((width - target) + origin));
+        if (Math.abs(distWrapped) < Math.abs(dist))
+            return distWrapped;
+        return dist;
+    }
+
+    public double yDistWrapped(double origin, double target) {
+        if (origin == target)
+            return 0;
+        double dist = target - origin;
+        double distWrapped = (dist < 0 ?
+                              (height - origin) + target :
+                              -((height - target) + origin));
+        if (Math.abs(distWrapped) < Math.abs(dist))
+            return distWrapped;
+        return dist;
+    }
+
     /*---------------------------- Encoding ----------------------------*/
 
     @Override

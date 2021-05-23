@@ -118,4 +118,32 @@ public class TPGeometryTest {
         // assertEquals(0, yGeom, DELTA);
     }
 
+    @Test
+    public void testXDistWrapped() {
+        TPGeometry geom = new TPGeometry();
+        geom.setupAndCenter(350, 200);
+        // not wrapped
+        assertEquals(60, geom.xDistWrapped(100, 160), DELTA);
+        assertEquals(-95, geom.xDistWrapped(100, 5), DELTA);
+        // wrapped around
+        assertEquals(120, geom.xDistWrapped(250, 20), DELTA);
+        assertEquals(-150, geom.xDistWrapped(100, 300), DELTA);
+        // origin and target the same
+        assertEquals(0, geom.xDistWrapped(224, 224), DELTA);
+    }
+
+    @Test
+    public void testYDistWrapped() {
+        TPGeometry geom = new TPGeometry();
+        geom.setupAndCenter(350, 200);
+        // not wrapped
+        assertEquals(40, geom.yDistWrapped(150, 190), DELTA);
+        assertEquals(-30, geom.yDistWrapped(150, 120), DELTA);
+        // wrapped around
+        assertEquals(65, geom.yDistWrapped(150, 15), DELTA);
+        assertEquals(-70, geom.yDistWrapped(40, 170), DELTA);
+        // origin and target the same
+        assertEquals(0, geom.yDistWrapped(21, 21), DELTA);
+    }
+
 }
