@@ -9,15 +9,16 @@ import info.bschambers.toothpick.geom.Pt;
  */
 public class AvoiderBehaviour implements ActorBehaviour {
 
+    private double speed;
+    private boolean wrapAtBounds;
     private TPActor target = null;
-    private double speed = 0.25;
-    private boolean wrapAtBounds = true;
 
     public AvoiderBehaviour() {
-        this(true);
+        this(0.25, true);
     }
 
-    public AvoiderBehaviour(boolean wrapAtBounds) {
+    public AvoiderBehaviour(double speed, boolean wrapAtBounds) {
+        this.speed = speed;
         this.wrapAtBounds = wrapAtBounds;
     }
 
