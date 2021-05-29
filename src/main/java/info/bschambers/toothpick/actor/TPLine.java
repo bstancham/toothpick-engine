@@ -18,6 +18,10 @@ public class TPLine extends TPPart {
 
     public TPLine() {}
 
+    public TPLine(double x1, double y1, double x2, double y2) {
+        this(new Line(x1, y1, x2, y2));
+    }
+
     public TPLine(Line line) {
         this.archetype = line;
         this.line = line;
@@ -71,7 +75,16 @@ public class TPLine extends TPPart {
     }
 
     @Override
-    public void translate(int x, int y) {
+    public void translate(double x, double y) {
+        line = line.shift(x, y);
+    }
+
+    /**
+     * Simultaneously translates the working line and the archetype line - mainly exists
+     * just to facilitate {@link TPActor#autosetCenter}.
+     */
+    public void translateLineAndArchetype(double x, double y) {
+        archetype = archetype.shift(x, y);
         line = line.shift(x, y);
     }
 

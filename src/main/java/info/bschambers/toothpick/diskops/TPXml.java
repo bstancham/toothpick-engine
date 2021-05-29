@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 public class TPXml {
 
     public static final String DTD_PATH = "toothpick-program.dtd";
-    private static final String DEFAULT_STR = "!";
+    public static final String DEFAULT_STR = "!";
 
     private class UnsupportedException extends RuntimeException {
 	public UnsupportedException(Object obj) {
@@ -570,7 +570,7 @@ public class TPXml {
 	}
     }
 
-    public String getStringAttr(Element elmt, String attr, String defaultVal) {
+    public static String getStringAttr(Element elmt, String attr, String defaultVal) {
 	if (elmt.hasAttribute(attr)) {
 	    return elmt.getAttribute(attr);
 	}
@@ -614,7 +614,7 @@ public class TPXml {
 	return elem.getNodeName().equals(type);
     }
 
-    private List<Element> getDirectChildElements(Element parent) {
+    public static List<Element> getDirectChildElements(Element parent) {
 	List<Element> directChildren = new ArrayList<Element>();
 	NodeList nl = parent.getChildNodes();
 	for (int n = 0; n < nl.getLength(); ++n)
@@ -627,7 +627,7 @@ public class TPXml {
     /**
      * @return True, if 'child' is a direct child node of 'parent'.
      */
-    public boolean isDirectChild(Node child, Node parent) {
+    public static boolean isDirectChild(Node child, Node parent) {
 	Node trueParent = child.getParentNode();
 	if (parent == trueParent) return true;
 	return false;

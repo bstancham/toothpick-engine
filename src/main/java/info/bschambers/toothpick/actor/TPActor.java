@@ -4,7 +4,7 @@ import info.bschambers.toothpick.TPEncoding;
 import info.bschambers.toothpick.TPEncodingHelper;
 import info.bschambers.toothpick.TPGeometry;
 import info.bschambers.toothpick.TPProgram;
-import info.bschambers.toothpick.geom.Pt;
+import info.bschambers.toothpick.geom.*;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.List;
  * - right = 1.5
  *
  * RADIANS
- * Math.PI * angle: 
+ * Math.PI * angle:
  * - straight up = 0
  * - right = 0.5
  * - down = 1
  * - right = 1.5
  *
  * DEGREES
- * Math.toDegrees(Math.PI * angle): 
+ * Math.toDegrees(Math.PI * angle):
  * - straight up = 0
  * - right = 90
  * - down = 180
@@ -305,6 +305,44 @@ public class TPActor implements TPEncodingHelper {
 
     public void killEvent(TPLine victim, Pt p) {
         numKills++;
+    }
+
+    /**
+     * Find center of form and set as center of actor.
+     */
+    public void autosetCenter() {
+        int numLines = getForm().numLines();
+        if (numLines > 0) {
+            // get initial high and low values
+            Line ln = getForm().getLine(0).getArchetype();
+            double x1 = Math.min(ln.start.x, ln.end.x);
+            double x2 = Math.max(ln.start.x, ln.end.x);
+            double y1 = Math.min(ln.start.y, ln.end.y);
+            double y2 = Math.max(ln.start.y, ln.end.y);
+            // find highest and lowest values
+            int i = 1;
+            while (i < numLines) {
+                ln = getForm().getLine(i++).getArchetype();
+                double xMin = Math.min(ln.start.x, ln.end.x);
+                double xMax = Math.max(ln.start.x, ln.end.x);
+                double yMin = Math.min(ln.start.y, ln.end.y);
+                double yMax = Math.max(ln.start.y, ln.end.y);
+                if (xMin < x1) x1 = xMin;
+                if (xMax > x2) x2 = xMax;
+                if (yMin < y1) y1 = yMin;
+                if (yMax > y2) y2 = yMax;
+            }
+            // mid point
+            double xMid = Geom.midVal(x1, x2);
+            double yMid = Geom.midVal(y1, y2);
+            // shift each line to be centered on zero
+            i = 0;
+            while (i < numLines)
+                getForm().getLine(i++).translateLineAndArchetype(-xMid, -yMid);
+            // set position of actor to mid point
+            x = xMid;
+            y = yMid;
+        }
     }
 
     /*---------------------------- Encoding ----------------------------*/
