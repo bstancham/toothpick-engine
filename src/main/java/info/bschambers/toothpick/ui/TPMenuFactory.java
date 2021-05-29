@@ -5,6 +5,7 @@ import info.bschambers.toothpick.actor.*;
 import info.bschambers.toothpick.geom.Pt;
 import java.awt.Color;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -56,7 +57,7 @@ public class TPMenuFactory {
                                      prog::getPauseAfterAmt,
                                      prog::setPauseAfterAmt,
                                      1, 1000));
-        m.add(makePlayerMenu(prog));
+        m.add(new PlayerMenu(prog));
         m.add(makeScreenGeometryMenu(prog));
         m.add(makePhysicsMenu(prog));
         m.add(makeStyleMenu(prog));
@@ -210,44 +211,103 @@ public class TPMenuFactory {
     private static Pt centerPt(TPProgram prog) {
         return new Pt(prog.getGeometry().getXCenter(),
                       prog.getGeometry().getYCenter());
-
     }
 
-    private static TPMenu makePlayerMenu(TPProgram prog) {
-        TPMenu m = new TPMenu("Player Options: (" + prog.getTitle() + ")");
-        m.add(new TPMenuItemSimple("change input-handler", () -> System.out.println("todo...")));
-        // m.add(makePlayerControllerMenu(prog));
-        m.add(new TPMenuItemSimple("re-define keys", () -> System.out.println("todo...")));
-        m.add(new TPMenuItemSimple("calibrate input", () -> System.out.println("todo...")));
-        m.add(new TPMenuItemSimple("preset players", () -> System.out.println("todo...")));
-        // m.add(makePresetPlayersMenu(prog));
-        return m;
+    public static class PlayerMenu extends TPMenu {
+
+        private int playerIndex = 0;
+        private TPProgram prog;
+
+        public PlayerMenu(TPProgram prog) {
+            super("Player Options: (" + prog.getTitle() + ")");
+            this.prog = prog;
+
+            add(new TPMenuItemIncr("player number",
+                                   () -> "" + (playerIndex + 1) + " of " + prog.numPlayers(),
+                                   () -> incrPlayerIndex(-1),
+                                   () -> incrPlayerIndex(1)));
+            add(makePresetPlayersMenu());
+            add(makeInputHandlerMenu());
+            add(new TPMenuItemSimple("re-define keys", () -> System.out.println("todo...")));
+            add(new TPMenuItemSimple("calibrate input", () -> System.out.println("todo...")));
+            add(new TPMenuItemSimple("position", () -> System.out.println("todo...")));
+        }
+
+        private void incrPlayerIndex(int amt) {
+            playerIndex += amt;
+            if (playerIndex < 0)
+                playerIndex = 0;
+            else if (playerIndex >= prog.numPlayers())
+                playerIndex = prog.numPlayers() - 1;
+        }
+
+        private TPPlayer getPlayer() {
+            if (prog.numPlayers() == 0)
+                return null;
+            return prog.getPlayer(playerIndex);
+        }
+
+        private String getInputHandlerName() {
+            TPPlayer p = getPlayer();
+            if (p == null)
+                return "NULL";
+            return p.getInputHandler().getClass().getSimpleName();
+        }
+
+        private TPMenu makePresetPlayersMenu() {
+            TPMenu m = new TPMenu("preset players");
+            m.add(makePresetPlayerItem("line-player", TPMenuFactory::playerPresetLine));
+            m.add(makePresetPlayerItem("hexagon-player", TPMenuFactory::playerPresetHexagon));
+            return m;
+        }
+
+        private TPMenuItem makePresetPlayerItem(String label,
+                                                Function<TPProgram, TPPlayer> func) {
+            return new TPMenuItemSimple(label, () -> {
+                    TPPlayer p = getPlayer();
+                    if (p == null) {
+                        System.out.println("PLAYER IS NULL!");
+                    } else {
+                        TPPlayer pp = func.apply(prog);
+                        pp.getActor().x = p.getActor().x;
+                        pp.getActor().y = p.getActor().y;
+                        pp.getActor().angle = p.getActor().angle;
+                        prog.setPlayer(playerIndex, pp);
+                    }
+            });
+        }
+
+        private TPMenu makeInputHandlerMenu() {
+            TPMenu m = new TPMenu(() -> "Change Input Handler (current = "
+                                  + getInputHandlerName() + ")");
+            m.add(makeInputSwitcherItem("thrust-inertia", ThrustInertiaInput::new));
+            m.add(makeInputSwitcherItem("thrust-&-angle-inertia", ThrustAndAngleInertiaInput::new));
+            m.add(makeInputSwitcherItem("eight-way inertia", EightWayInertiaInput::new));
+            m.add(makeInputSwitcherItem("thrust", ThrustInput::new));
+            m.add(makeInputSwitcherItem("eight-way", EightWayInput::new));
+            return m;
+        }
+
+        private TPMenuItem makeInputSwitcherItem(String label,
+                                                 Supplier<KeyInputHandler> ihFunc) {
+            return new TPMenuItemSimple(label, () -> {
+                    TPPlayer p = getPlayer();
+                    if (p == null)
+                        System.out.println("PLAYER IS NULL!");
+                    else
+                        p.setInputHandler(ihFunc.get());
+            });
+        }
+
     }
-
-    // private static TPMenu makePlayerControllerMenu(TPProgram prog) {
-    //     TPMenu m = new TPMenu(() -> "Change Input Handler (current = "
-    //                           + prog.getPlayer().getInputHandler().getClass().getSimpleName() + ")");
-    //     m.add(makeInputSwitcherItem(prog, new ThrustInertiaInput()));
-    //     m.add(makeInputSwitcherItem(prog, new EightWayInertiaInput()));
-    //     m.add(makeInputSwitcherItem(prog, new ThrustInput()));
-    //     m.add(makeInputSwitcherItem(prog, new EightWayInput()));
-    //     return m;
-    // }
-
-    // private static TPMenuItem makeInputSwitcherItem(TPProgram prog, KeyInputHandler ih) {
-    //     return new TPMenuItemSimple(ih.getClass().getSimpleName(),
-    //                                 () -> prog.getPlayer().setInputHandler(ih));
-    // }
-
-    // private static TPMenu makePresetPlayersMenu(TPProgram prog) {
-    //     TPMenu m = new TPMenu("preset players");
-    //     m.add(new TPMenuItemSimple("line-player",
-    //                                () -> prog.setPlayer(playerPresetLine(prog))));
-    //     return m;
-    // }
 
     public static TPPlayer playerPresetLine(TPProgram prog) {
         return TPFactory.playerLine(centerPt(prog));
+    }
+
+    public static TPPlayer playerPresetHexagon(TPProgram prog) {
+        TPActor a = new TPActor(TPFactory.regularPolygonForm(30, 6));
+        return TPFactory.player(a);
     }
 
 }

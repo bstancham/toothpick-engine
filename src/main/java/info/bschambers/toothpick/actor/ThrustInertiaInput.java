@@ -53,8 +53,4 @@ public class ThrustInertiaInput extends KeyInputHandler {
         return Math.cos(Math.PI * angle) * power;
     }
 
-    // pu
-    //     a.yInertia -= Math.cos(Math.PI * angle) * amount;
-    // }
-
 }
