@@ -10,6 +10,13 @@ public class ThrustInertiaInput extends KeyInputHandler {
     }
 
     @Override
+    public ThrustInertiaInput copy() {
+        ThrustInertiaInput a = new ThrustInertiaInput();
+        duplicateParameters(a);
+        return a;
+    }
+
+    @Override
     public void update(TPProgram prog, TPActor tp) {
         super.update(prog, tp);
         if (bindUp.value()) {

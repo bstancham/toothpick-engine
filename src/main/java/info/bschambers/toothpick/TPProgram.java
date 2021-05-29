@@ -55,8 +55,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     public boolean showProgramInfo = true;
     // actors
     protected List<TPActor> actors = new ArrayList<>();
-    private TPPlayer player = TPPlayer.NULL;
-    // private List<TPPlayer> players = new ArrayList<>();
+    private List<TPPlayer> players = new ArrayList<>();
     // behaviours
     private List<ProgramBehaviour> behaviours = new ArrayList<>();
     private List<ProgramBehaviour> resetBehaviours = new ArrayList<>();
@@ -111,7 +110,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         snapshot.keepIntersectionPoints = keepIntersectionPoints;
         snapshot.showBoundingBoxes = showBoundingBoxes;
         for (TPActor a : actors) snapshot.actors.add(a.copy());
-        // for (TPPlayer p : players) snapshot.players.add(p.copy());
+        for (TPPlayer p : players) snapshot.players.add(p.copy());
         for (ProgramBehaviour pb : behaviours) snapshot.behaviours.add(pb.copy());
         for (ProgramBehaviour pb : resetBehaviours) snapshot.resetBehaviours.add(pb.copy());
         resetSnapshot = snapshot;
@@ -133,6 +132,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
         // clear existing actors and behaviours
         actors.clear();
+        players.clear();
         toAdd.clear();
         toRemove.clear();
         behaviours.clear();
@@ -158,7 +158,11 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
 
             // actors/players
             for (TPActor a: resetSnapshot.actors) actors.add(a.copy());
-            // for (TPPlayer p: resetSnapshot.players) players.add(p.copy());
+            for (TPPlayer p: resetSnapshot.players) {
+                TPPlayer temp = p.copy();
+                players.add(temp);
+                actors.add(temp.getActor());
+            }
             updateActorsInPlace();
 
             // behaviours
@@ -176,36 +180,39 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         updateActorsInPlace();
     }
 
-    public void resetPlayer() {
-        removeActor(player.getActor());
-        player.reset();
-        addActor(player.getActor());
-    }
+    public int numPlayers() { return players.size(); }
 
-    public TPPlayer getPlayer() {
-        return player;
-    }
+    public TPPlayer getPlayer(int i) { return players.get(i); }
 
-    public void setPlayer(TPPlayer newPlayer) {
-        System.out.println("TPProgram.setPlayer() --> " + newPlayer);
+    public void setPlayer(int i, TPPlayer p) {
+        System.out.println("TPProgram.setPlayer(" + i + ") --> " + p);
         // make sure that the old player-actor has been removed
-        removeActor(player.getActor());
-        player = newPlayer;
-        addActor(player.getActor());
+        removeActor(players.get(i).getActor());
+        players.set(i, p);
+        addActor(p.getActor());
         updateActorsInPlace();
     }
 
-    public void revivePlayer(boolean retainStats) {
-        System.out.println("TPProgram.revivePlayer()");
-        removeActor(player.getActor());
-        player.reset(retainStats);
-        addActor(player.getActor());
+    public void addPlayer(TPPlayer p) {
+        System.out.println("TPProgram.addPlayer() --> " + p);
+        players.add(p);
+        addActor(p.getActor());
         updateActorsInPlace();
     }
 
-    protected boolean playerIsDead() {
-        return !getPlayer().getActor().isAlive();
+    protected boolean playerIsDead(int i) {
+        return !getPlayer(i).getActor().isAlive();
     }
+
+    public void revivePlayer(int i, boolean retainStats) {
+        System.out.println("TPProgram.revivePlayer(" + i + ")");
+        removeActor(players.get(i).getActor());
+        players.get(i).reset(retainStats);
+        addActor(players.get(i).getActor());
+        updateActorsInPlace();
+    }
+
+    public void clearPlayers() { players.clear(); }
 
     public String getTitle() {
         return title;
@@ -434,11 +441,9 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     public List<String> getInfoLines() {
         List<String> lines = new ArrayList<String>();
         if (showProgramInfo) {
-            if (playerIsDead()) {
-                lines.add("PLAYER DEAD!");
+            for (int i = 0; i < numPlayers(); i++) {
+                addPlayerInfoLines(i, lines);
             }
-            lines.add("kills: " + getPlayer().getActor().numKills);
-            lines.add("deaths: " + getPlayer().getActor().numDeaths);
         }
         if (showDiagnosticInfo) {
             lines.add("actors (top lvl): " + numActors());
@@ -448,6 +453,15 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
                     lines.add(pbLine);
         }
         return lines;
+    }
+
+    private void addPlayerInfoLines(int i, List<String> lines) {
+        String pNumStr = "PLAYER " + (i + 1);
+        if (playerIsDead(i))
+            pNumStr += " (DEAD)";
+        lines.add(pNumStr);
+        lines.add("kills: " + getPlayer(i).getActor().numKills);
+        lines.add("deaths: " + getPlayer(i).getActor().numDeaths);
     }
 
     /**
@@ -464,11 +478,13 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         }
 
         // if player is dead, revive on trigger press
-        if (playerIsDead()) {
-            getPlayer().getActor().update(this);
-            if (getPlayer().getActor().getActionTrigger()) {
-                System.out.println("... TRIGGER REVIVAL!");
-                revivePlayer(true);
+        for (int i = 0; i < numPlayers(); i++) {
+            if (playerIsDead(i)) {
+                getPlayer(i).getActor().update(this);
+                if (getPlayer(i).getActor().getActionTrigger()) {
+                    System.out.println("... PLAYER " + (i + 1) + ": TRIGGER REVIVAL!");
+                    revivePlayer(i, true);
+                }
             }
         }
 
@@ -597,15 +613,15 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         params.addMethod(Boolean.class, getPauseForMenu(), "setPauseForMenu");
         params.addMethod(Boolean.class, isShowIntersections(), "setShowIntersections");
         params.addMethod(Boolean.class, isSmearMode(), "setSmearMode");
-        params.addMethod(TPPlayer.class, getPlayer(), "setPlayer");
+        params.addListMethod(TPPlayer.class, players, "addPlayer");
         params.addListMethod(ProgramBehaviour.class, behaviours, "addBehaviour");
         params.addListMethod(ProgramBehaviour.class, resetBehaviours, "addResetBehaviour");
-        List<TPActor> exceptPlayer = new ArrayList<>();
-        // don't add the player-actor twice
+        List<TPActor> exceptPlayers = new ArrayList<>();
+        // don't add player-actors twice
         for (TPActor a : actors)
-            if (a != player.getActor())
-                exceptPlayer.add(a);
-        params.addListMethod(TPActor.class, exceptPlayer, "addActor");
+            if (!a.isPlayer())
+                exceptPlayers.add(a);
+        params.addListMethod(TPActor.class, exceptPlayers, "addActor");
         return params;
     }
 

@@ -5,6 +5,13 @@ import info.bschambers.toothpick.TPProgram;
 public class EightWayInput extends KeyInputHandler {
 
     @Override
+    public EightWayInput copy() {
+        EightWayInput a = new EightWayInput();
+        duplicateParameters(a);
+        return a;
+    }
+
+    @Override
     public void update(TPProgram prog, TPActor tp) {
         super.update(prog, tp);
         if (bindUp.value())    tp.y -= xyStep;

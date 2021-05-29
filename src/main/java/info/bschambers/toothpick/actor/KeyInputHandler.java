@@ -6,6 +6,8 @@ public abstract class KeyInputHandler implements ActorBehaviour {
 
     public static final KeyInputHandler NULL = new KeyInputHandler() {
             @Override
+            public KeyInputHandler copy() { return this; }
+            @Override
             public void update(TPProgram prog, TPActor a) {}
         };
 
@@ -38,6 +40,27 @@ public abstract class KeyInputHandler implements ActorBehaviour {
                                                  bindZoomIn,
                                                  bindZoomOut };
 
+    public abstract KeyInputHandler copy();
+
+    protected void duplicateParameters(KeyInputHandler a) {
+        a.xyStep = xyStep;
+        a.angleStep = angleStep;
+        a.bindUp = bindUp;
+        a.bindDown = bindDown;
+        a.bindLeft = bindLeft;
+        a.bindRight = bindRight;
+        a.bindAction = bindAction;
+        a.bindZoomIn = bindZoomIn;
+        a.bindZoomOut = bindZoomOut;
+        a.bindings = new Binding[] { bindUp,
+                                     bindDown,
+                                     bindLeft,
+                                     bindRight,
+                                     bindAction,
+                                     bindZoomIn,
+                                     bindZoomOut };
+    }
+
     public void setKey(int keyCode, boolean val) {
         for (Binding b : bindings)
             if (keyCode == b.code())
@@ -50,6 +73,12 @@ public abstract class KeyInputHandler implements ActorBehaviour {
         public boolean value = false;
 
         public Binding(int keyCode) { this.keyCode = keyCode; }
+
+        public Binding copy() {
+            Binding b = new Binding(keyCode);
+            b.value = value;
+            return b;
+        }
 
         public int code() { return keyCode; }
 

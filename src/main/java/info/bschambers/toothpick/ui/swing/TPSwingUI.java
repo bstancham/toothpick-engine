@@ -182,8 +182,9 @@ public class TPSwingUI extends JFrame
 
     protected void paintOverlay(Graphics g) {
         // player indicator
-        if (getProgram().getPlayer().getActor().isAlive())
-            Gfx.playerIndicator(g, getProgram().getGeometry(), getProgram().getPlayer());
+        for (int i = 0; i < getProgram().numPlayers(); i++)
+            if (getProgram().getPlayer(i).getActor().isAlive())
+                Gfx.playerIndicator(g, getProgram().getGeometry(), getProgram().getPlayer(i));
         // boundary rectangle
         g.setColor(Color.GRAY);
         TPGeometry geom = getProgram().getGeometry();
@@ -269,11 +270,13 @@ public class TPSwingUI extends JFrame
     }
 
     private void keyPressedGame(KeyEvent e) {
-        getProgram().getPlayer().getInputHandler().setKey(e.getKeyCode(), true);
+        for (int i = 0; i < getProgram().numPlayers(); i++)
+            getProgram().getPlayer(i).getInputHandler().setKey(e.getKeyCode(), true);
     }
 
     private void keyReleasedGame(KeyEvent e) {
-        getProgram().getPlayer().getInputHandler().setKey(e.getKeyCode(), false);
+        for (int i = 0; i < getProgram().numPlayers(); i++)
+            getProgram().getPlayer(i).getInputHandler().setKey(e.getKeyCode(), false);
     }
 
     /*-------------------------- Mouse Input ---------------------------*/

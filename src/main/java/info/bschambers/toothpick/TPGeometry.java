@@ -130,6 +130,22 @@ public class TPGeometry implements TPEncodingHelper {
         return dist;
     }
 
+    public double getXOneThird() {
+        return getWidth() / 3;
+    }
+
+    public double getXTwoThirds() {
+        return (getWidth() / 3) * 2;
+    }
+
+    public double getYOneThird() {
+        return getHeight() / 3;
+    }
+
+    public double getYTwoThirds() {
+        return (getHeight() / 3) * 2;
+    }
+
     /*---------------------------- Encoding ----------------------------*/
 
     @Override

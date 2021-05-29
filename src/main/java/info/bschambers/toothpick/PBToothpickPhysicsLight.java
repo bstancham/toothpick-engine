@@ -4,7 +4,7 @@ import info.bschambers.toothpick.actor.TPActor;
 
 /**
  * <p>Like {@link PBToothpickPhysics}, but non-player actors do not interact with
- * one-another.</p>
+ * one-another. Also, player-actors do not interact with one-another</p>
  */
 public class PBToothpickPhysicsLight extends PBToothpickPhysics {
 
@@ -13,11 +13,13 @@ public class PBToothpickPhysicsLight extends PBToothpickPhysics {
 
     @Override
     public void update(TPProgram prog) {
-        TPActor player = prog.getPlayer().getActor();
-        if (player.isAlive())
-            for (TPActor a : prog)
-                if (a != player)
-                    interact(prog, a, player);
+        for (int i = 0; i < prog.numPlayers(); i++) {
+            TPActor player = prog.getPlayer(i).getActor();
+            if (player.isAlive())
+                for (TPActor a : prog)
+                    if (!a.isPlayer())
+                        interact(prog, a, player);
+        }
     }
 
 }

@@ -12,20 +12,20 @@ public class TPSequencePlatform extends TPPlatform {
 
     private List<TPProgram> programs = new ArrayList<>();
     private int levelIndex = 0;
-    private TPPlayer player = TPPlayer.NULL;
     private int levelNum = 1;
+    private List<TPPlayer> players = new ArrayList<>();
 
     public TPSequencePlatform(String title) {
         super(title);
     }
 
-    public TPPlayer getPlayer() {
-        return player;
-    }
+    public int numPlayers() { return players.size(); }
 
-    public void setPlayer(TPPlayer player) {
-        this.player = player;
-    }
+    public TPPlayer getPlayer(int i) { return players.get(i); }
+
+    public void addPlayer(TPPlayer p) { players.add(p); }
+
+    public void clearPlayers() { players.clear(); }
 
     public void addProgram(TPProgram p) {
         programs.add(p);
@@ -45,9 +45,22 @@ public class TPSequencePlatform extends TPPlatform {
 
     @Override
     public void update() {
-        // make sure that player is set up for current program
-        if (getProgram().getPlayer() != getPlayer())
-            getProgram().setPlayer(getPlayer());
+        // make sure that players are set up for current program
+        boolean updatePlayers = getProgram().numPlayers() != numPlayers();
+        if (updatePlayers) {
+            updateProgramPlayers();
+        } else {
+            // check that each player matches
+            for (int i = 0; i < numPlayers(); i++) {
+                if (getPlayer(i) != getProgram().getPlayer(i)) {
+                    updatePlayers = true;
+                }
+            }
+            if (updatePlayers) {
+                updateProgramPlayers();
+            }
+        }
+
         // update current program
         super.update();
         // if program is finished, transition to next in sequence
@@ -58,8 +71,15 @@ public class TPSequencePlatform extends TPPlatform {
             if (levelIndex >= programs.size())
                 levelIndex = 0;
             setProgram(programs.get(levelIndex));
-            getProgram().setPlayer(getPlayer());
+            // move players into new program
+            updateProgramPlayers();
         }
     }
 
+    /** Make sure that current program has same players as sequence-platform. */
+    private void updateProgramPlayers() {
+        getProgram().clearPlayers();
+        for (int i = 0; i < numPlayers(); i++)
+            getProgram().addPlayer(getPlayer(i));
+    }
 }

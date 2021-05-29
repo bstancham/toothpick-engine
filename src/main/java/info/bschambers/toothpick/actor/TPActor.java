@@ -55,6 +55,7 @@ public class TPActor implements TPEncodingHelper {
     private ColorGetter vertexColor = null;
     private boolean actionTrigger = false;
     private Runnable triggerAction = null;
+    private boolean isPlayer = false;
     public double x = 0;
     public double y = 0;
     public double angle = 0;
@@ -83,6 +84,7 @@ public class TPActor implements TPEncodingHelper {
         s.append("(RADIANS) angle: " + (Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
         s.append("(DEGREES) angle: " + Math.toDegrees(Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
         s.append("bounds-behaviour: " + boundsBehaviour + "\n");
+        s.append("is-player: " + isPlayer + "\n");
         s.append("FORM: (" + form.numParts() + " parts)\n");
         for (int i = 0; i < form.numParts(); i++)
             s.append("... " + form.getPart(i) + "\n");
@@ -99,6 +101,7 @@ public class TPActor implements TPEncodingHelper {
         TPActor actor = new TPActor(form.copy());
         actor.name = name;
         actor.boundsBehaviour = boundsBehaviour;
+        actor.isPlayer = isPlayer;
         actor.x = x;
         actor.y = y;
         actor.angle = angle;
@@ -156,6 +159,10 @@ public class TPActor implements TPEncodingHelper {
     public void setTriggerAction(Runnable action) {
         triggerAction = action;
     }
+
+    public boolean isPlayer() { return isPlayer; }
+
+    public void setIsPlayer(boolean val) { isPlayer = val; }
 
     public Color getColor() {
         // return color.get();
@@ -357,6 +364,7 @@ public class TPActor implements TPEncodingHelper {
         params.addField(Double.class, xInertia, "xInertia");
         params.addField(Double.class, yInertia, "yInertia");
         params.addField(Double.class, angleInertia, "angleInertia");
+        params.addMethod(Double.class, isPlayer(), "setIsPlayer");
         params.addField(Integer.class, numDeaths, "numDeaths");
         params.addField(Integer.class, numKills, "numKills");
         params.addMethod(ColorGetter.class, color, "setColorGetter");

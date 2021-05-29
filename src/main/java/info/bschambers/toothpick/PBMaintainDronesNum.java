@@ -57,7 +57,7 @@ public class PBMaintainDronesNum implements ProgramBehaviour, TPEncodingHelper {
     private int numDrones(TPProgram prog) {
         int n = 0;
         for (TPActor a : prog)
-            if (a != prog.getPlayer().getActor())
+            if (!a.isPlayer())
                 n++;
         return n;
     }

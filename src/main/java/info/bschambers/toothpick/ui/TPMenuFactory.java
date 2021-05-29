@@ -26,27 +26,25 @@ public class TPMenuFactory {
         if (i > max) return max;
         return i;
     }
-    
+
     public static TPMenu makeProgramMenu(TPProgram prog, TPBase base) {
         return makeProgramMenu(() -> prog.getTitle(), prog, base);
     }
 
     public static TPMenu makeProgramMenu(Supplier<String> ss, TPProgram prog, TPBase base) {
         TPMenu m = new TPMenu(ss);
-        // int stopAfterVal = 5;
-            m.setInitAction(() -> {
+        m.setInitAction(() -> {
                 base.setProgram(prog);
                 prog.updateActorsInPlace();
             });
         m.add(new TPMenuItemSimple("RUN", () -> {
                     base.hideMenu();
         }));
-        m.add(new TPMenuItemSimple("revive player", () -> {
-                    if (prog.getPlayer() == TPPlayer.NULL) {
-                        System.out.println("Null-player - adding default...");
-                        prog.setPlayer(TPFactory.playerLine(centerPt(prog)));
-                    }
-                    prog.revivePlayer(true);
+        m.add(new TPMenuItemSimple(() -> "add player (currently " + prog.numPlayers() + ")",
+                                   () -> addPlayer(prog)));
+        m.add(new TPMenuItemSimple("revive players", () -> {
+                    for (int i = 0; i < prog.numPlayers(); i++)
+                        prog.revivePlayer(i, true);
         }));
         m.add(new TPMenuItemSimple("RESET PROGRAM", () -> prog.reset()));
         m.add(new TPMenuItemBool("pause when menu active ",
@@ -71,6 +69,35 @@ public class TPMenuFactory {
         m.add(makeBGColorMenu(prog));
 
         return m;
+    }
+
+    private static void addPlayer(TPProgram prog) {
+        System.out.println("adding new default player...");
+        TPPlayer p = TPFactory.playerLine(centerPt(prog));
+        TPGeometry geom = prog.getGeometry();
+        double x = 0;
+        double y = 0;
+        int n = prog.numPlayers() % 4;
+        if (n == 0) {
+            x = geom.getXOneThird();
+            y = geom.getYCenter();
+        }
+        if (n == 1) {
+            x = geom.getXTwoThirds();
+            y = geom.getYCenter();
+        }
+        if (n == 2) {
+            x = geom.getXCenter();
+            y = geom.getYOneThird();
+        }
+        if (n == 3) {
+            x = geom.getXCenter();
+            y = geom.getYTwoThirds();
+        }
+        p.getArchetype().x = x;
+        p.getArchetype().y = y;
+        p.reset();
+        prog.addPlayer(p);
     }
 
     private static TPMenu makeScreenGeometryMenu(TPProgram prog) {
@@ -117,16 +144,16 @@ public class TPMenuFactory {
 
     private static TPMenu makeInfoPrintMenu(TPProgram prog) {
         TPMenu m = new TPMenu("print info");
-        // m.add(new TPMenuItemSimple("print player info", () -> System.out.println("todo...")));
-        m.add(new TPMenuItemSimple("print player info", () -> {
-                    TPPlayer p = prog.getPlayer();
-                    System.out.println("==============================");
-                    System.out.println("PLAYER = " + p);
-                    System.out.println("INPUT = " + p.getInputHandler() + "\n");
-                    System.out.println("ARCHETYPE:\n" + p.getArchetype().infoString());
-                    System.out.println("ACTOR:\n" + p.getActor().infoString());
-                    System.out.println("==============================");
-        }));
+        m.add(new TPMenuItemSimple("print players info", () -> {
+                    for (int i = 0; i < prog.numPlayers(); i++) {
+                        TPPlayer p = prog.getPlayer(i);
+                        System.out.println("==============================");
+                        System.out.println("PLAYER " + (i + 1) + " = " + p);
+                        System.out.println("INPUT = " + p.getInputHandler() + "\n");
+                        System.out.println("ARCHETYPE:\n" + p.getArchetype().infoString());
+                        System.out.println("ACTOR:\n" + p.getActor().infoString());
+                        System.out.println("==============================");
+                    }}));
         m.add(new TPMenuItemSimple("print game info", () -> {
                     System.out.println("==============================");
                     System.out.println("class = " + prog.getClass());
@@ -188,37 +215,39 @@ public class TPMenuFactory {
 
     private static TPMenu makePlayerMenu(TPProgram prog) {
         TPMenu m = new TPMenu("Player Options: (" + prog.getTitle() + ")");
-        m.add(makePlayerControllerMenu(prog));
-        m.add(new TPMenuItemSimple("re-define keys", () -> System.out.println("...")));
-        m.add(new TPMenuItemSimple("calibrate input", () -> System.out.println("...")));
-        m.add(makePresetPlayersMenu(prog));
+        m.add(new TPMenuItemSimple("change input-handler", () -> System.out.println("todo...")));
+        // m.add(makePlayerControllerMenu(prog));
+        m.add(new TPMenuItemSimple("re-define keys", () -> System.out.println("todo...")));
+        m.add(new TPMenuItemSimple("calibrate input", () -> System.out.println("todo...")));
+        m.add(new TPMenuItemSimple("preset players", () -> System.out.println("todo...")));
+        // m.add(makePresetPlayersMenu(prog));
         return m;
     }
 
-    private static TPMenu makePlayerControllerMenu(TPProgram prog) {
-        TPMenu m = new TPMenu(() -> "Change Input Handler (current = "
-                              + prog.getPlayer().getInputHandler().getClass().getSimpleName() + ")");
-        m.add(makeInputSwitcherItem(prog, new ThrustInertiaInput()));
-        m.add(makeInputSwitcherItem(prog, new EightWayInertiaInput()));
-        m.add(makeInputSwitcherItem(prog, new ThrustInput()));
-        m.add(makeInputSwitcherItem(prog, new EightWayInput()));
-        return m;
-    }
+    // private static TPMenu makePlayerControllerMenu(TPProgram prog) {
+    //     TPMenu m = new TPMenu(() -> "Change Input Handler (current = "
+    //                           + prog.getPlayer().getInputHandler().getClass().getSimpleName() + ")");
+    //     m.add(makeInputSwitcherItem(prog, new ThrustInertiaInput()));
+    //     m.add(makeInputSwitcherItem(prog, new EightWayInertiaInput()));
+    //     m.add(makeInputSwitcherItem(prog, new ThrustInput()));
+    //     m.add(makeInputSwitcherItem(prog, new EightWayInput()));
+    //     return m;
+    // }
 
-    private static TPMenuItem makeInputSwitcherItem(TPProgram prog, KeyInputHandler ih) {
-        return new TPMenuItemSimple(ih.getClass().getSimpleName(),
-                                    () -> prog.getPlayer().setInputHandler(ih));
-    }
+    // private static TPMenuItem makeInputSwitcherItem(TPProgram prog, KeyInputHandler ih) {
+    //     return new TPMenuItemSimple(ih.getClass().getSimpleName(),
+    //                                 () -> prog.getPlayer().setInputHandler(ih));
+    // }
 
-    private static TPMenu makePresetPlayersMenu(TPProgram prog) {
-        TPMenu m = new TPMenu("preset players");
-        m.add(new TPMenuItemSimple("line-player",
-                                   () -> prog.setPlayer(playerPresetLine(prog))));
-        return m;
-    }
+    // private static TPMenu makePresetPlayersMenu(TPProgram prog) {
+    //     TPMenu m = new TPMenu("preset players");
+    //     m.add(new TPMenuItemSimple("line-player",
+    //                                () -> prog.setPlayer(playerPresetLine(prog))));
+    //     return m;
+    // }
 
     public static TPPlayer playerPresetLine(TPProgram prog) {
         return TPFactory.playerLine(centerPt(prog));
     }
-    
+
 }

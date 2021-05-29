@@ -22,12 +22,20 @@ public class TPPlayer implements TPEncodingHelper {
         setArchetype(a);
     }
 
+    public TPPlayer copy() {
+        TPPlayer p = new TPPlayer(archetype.copy());
+        p.actor = actor.copy();
+        p.input = input.copy();
+        return p;
+    }
+
     public TPActor getArchetype() {
         return archetype;
     }
 
     public void setArchetype(TPActor a) {
         archetype = a.copy();
+        archetype.setIsPlayer(true);
         reset();
     }
 

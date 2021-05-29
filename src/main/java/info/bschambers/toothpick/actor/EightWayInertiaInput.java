@@ -10,6 +10,13 @@ public class EightWayInertiaInput extends KeyInputHandler {
     }
 
     @Override
+    public EightWayInertiaInput copy() {
+        EightWayInertiaInput a = new EightWayInertiaInput();
+        duplicateParameters(a);
+        return a;
+    }
+
+    @Override
     public void update(TPProgram prog, TPActor tp) {
         super.update(prog, tp);
         if (bindUp.value())    tp.yInertia -= xyStep;

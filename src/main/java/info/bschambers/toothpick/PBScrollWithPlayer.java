@@ -2,6 +2,9 @@ package info.bschambers.toothpick;
 
 import info.bschambers.toothpick.actor.TPActor;
 
+/**
+ * Scrolls with player 1.
+ */
 public class PBScrollWithPlayer implements ProgramBehaviour {
 
     private TPActor player = null;
@@ -15,9 +18,9 @@ public class PBScrollWithPlayer implements ProgramBehaviour {
     public void update(TPProgram prog) {
 
         // find player
-        if (player == null)
-            if (prog.getPlayer().getActor().isAlive())
-                player = prog.getPlayer().getActor();
+        if (player == null && prog.numPlayers() > 0)
+            if (prog.getPlayer(0).getActor().isAlive())
+                player = prog.getPlayer(0).getActor();
 
         // update scrolling
         if (player != null) {

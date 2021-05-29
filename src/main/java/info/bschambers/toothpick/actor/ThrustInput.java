@@ -5,6 +5,13 @@ import info.bschambers.toothpick.TPProgram;
 public class ThrustInput extends KeyInputHandler {
 
     @Override
+    public ThrustInput copy() {
+        ThrustInput a = new ThrustInput();
+        duplicateParameters(a);
+        return a;
+    }
+
+    @Override
     public void update(TPProgram prog, TPActor tp) {
         super.update(prog, tp);
         if (bindUp.value()) {

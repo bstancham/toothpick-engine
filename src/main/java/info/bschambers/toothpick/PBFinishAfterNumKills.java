@@ -62,9 +62,9 @@ public class PBFinishAfterNumKills implements ProgramBehaviour {
     @Override
     public void update(TPProgram prog) {
         if (startNum < 0) {
-            startNum = prog.getPlayer().getActor().numKills;
+            startNum = getNumKills(prog);
         } else {
-            int current = prog.getPlayer().getActor().numKills - startNum;
+            int current = getNumKills(prog) - startNum;
             remaining = targetNum - current;
             if (remaining <= 0) {
                 if (!triggered) {
@@ -73,6 +73,13 @@ public class PBFinishAfterNumKills implements ProgramBehaviour {
                 }
             }
         }
+    }
+
+    private int getNumKills(TPProgram prog) {
+        int n = 0;
+        for (int i = 0; i < prog.numPlayers(); i++)
+            n += prog.getPlayer(i).getActor().numKills;
+        return n;
     }
 
 }
