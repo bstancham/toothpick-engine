@@ -61,6 +61,14 @@ public abstract class KeyInputHandler implements ActorBehaviour {
                                      bindZoomOut };
     }
 
+    public double getXYStep() { return xyStep; }
+
+    public double getAngleStep() { return angleStep; }
+
+    public void incrXYStep(double amt) { xyStep += amt; }
+
+    public void incrAngleStep(double amt) { angleStep += amt; }
+
     public void setKey(int keyCode, boolean val) {
         for (Binding b : bindings)
             if (keyCode == b.code())

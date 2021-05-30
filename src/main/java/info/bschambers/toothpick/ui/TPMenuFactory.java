@@ -229,7 +229,7 @@ public class TPMenuFactory {
             add(makePresetPlayersMenu());
             add(makeInputHandlerMenu());
             add(new TPMenuItemSimple("re-define keys", () -> System.out.println("todo...")));
-            add(new TPMenuItemSimple("calibrate input", () -> System.out.println("todo...")));
+            add(makeInputCalibrationMenu());
             add(new TPMenuItemSimple("position", () -> System.out.println("todo...")));
         }
 
@@ -297,6 +297,58 @@ public class TPMenuFactory {
                     else
                         p.setInputHandler(ihFunc.get());
             });
+        }
+
+        private TPMenu makeInputCalibrationMenu() {
+            TPMenu m = new TPMenu("input calibration");
+            m.add(new TPMenuItemIncr("xy-step", () -> getXYStepString(),
+                                     () -> incrXYStep(-1),
+                                     () -> incrXYStep(1)));
+            m.add(new TPMenuItemIncr("angle-step", () -> getAngleStepString(),
+                                     () -> incrAngleStep(-1),
+                                     () -> incrAngleStep(1)));
+            return m;
+        }
+
+        private String getXYStepString() {
+                    TPPlayer p = getPlayer();
+                    if (p == null)
+                        return "NULL";
+                    else
+                        return "" + p.getInputHandler().getXYStep();
+        }
+
+        private String getAngleStepString() {
+                    TPPlayer p = getPlayer();
+                    if (p == null)
+                        return "NULL";
+                    else
+                        return "" + p.getInputHandler().getAngleStep();
+        }
+
+        private void incrXYStep(double amt) {
+            TPPlayer p = getPlayer();
+            if (p != null) {
+                double step = getIncrStep(p.getInputHandler().getXYStep(), amt);
+                p.getInputHandler().incrXYStep(step);
+            }
+        }
+
+        private void incrAngleStep(double amt) {
+            TPPlayer p = getPlayer();
+            if (p != null) {
+                double step = getIncrStep(p.getInputHandler().getAngleStep(), amt);
+                p.getInputHandler().incrAngleStep(step);
+            }
+        }
+
+        private double getIncrStep(double current, double dir) {
+            if (current == 0)
+                current = 0.01;
+            double step = current / 10;
+            if (dir < 0)
+                step = -step;
+            return step;
         }
 
     }
