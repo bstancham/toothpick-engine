@@ -2,16 +2,16 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPProgram;
 
-public class EightWayInertiaInput extends KeyInputHandler {
+public class KeyInputEightWayInertia extends KeyInputHandler {
 
-    public EightWayInertiaInput() {
+    public KeyInputEightWayInertia() {
         xyStep = 0.008;
         angleStep = 0.005;
     }
 
     @Override
-    public EightWayInertiaInput copy() {
-        EightWayInertiaInput a = new EightWayInertiaInput();
+    public KeyInputEightWayInertia copy() {
+        KeyInputEightWayInertia a = new KeyInputEightWayInertia();
         duplicateParameters(a);
         return a;
     }

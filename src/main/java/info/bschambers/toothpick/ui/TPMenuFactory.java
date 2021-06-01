@@ -82,18 +82,22 @@ public class TPMenuFactory {
         if (n == 0) {
             x = geom.getXOneThird();
             y = geom.getYCenter();
+            TPFactory.setPlayerKeysQAWE(p.getInputHandler());
         }
         if (n == 1) {
             x = geom.getXTwoThirds();
             y = geom.getYCenter();
+            TPFactory.setPlayerKeysIKOP(p.getInputHandler());
         }
         if (n == 2) {
             x = geom.getXCenter();
             y = geom.getYOneThird();
+            TPFactory.setPlayerKeysQAWE(p.getInputHandler());
         }
         if (n == 3) {
             x = geom.getXCenter();
             y = geom.getYTwoThirds();
+            TPFactory.setPlayerKeysIKOP(p.getInputHandler());
         }
         p.getArchetype().x = x;
         p.getArchetype().y = y;
@@ -280,11 +284,11 @@ public class TPMenuFactory {
         private TPMenu makeInputHandlerMenu() {
             TPMenu m = new TPMenu(() -> "Change Input Handler (current = "
                                   + getInputHandlerName() + ")");
-            m.add(makeInputSwitcherItem("thrust-inertia", ThrustInertiaInput::new));
-            m.add(makeInputSwitcherItem("thrust-&-angle-inertia", ThrustAndAngleInertiaInput::new));
-            m.add(makeInputSwitcherItem("eight-way inertia", EightWayInertiaInput::new));
-            m.add(makeInputSwitcherItem("thrust", ThrustInput::new));
-            m.add(makeInputSwitcherItem("eight-way", EightWayInput::new));
+            m.add(makeInputSwitcherItem("thrust-inertia", KeyInputThrustInertia::new));
+            m.add(makeInputSwitcherItem("thrust-&-angle-inertia", KeyInputThrustAndAngleInertia::new));
+            m.add(makeInputSwitcherItem("eight-way inertia", KeyInputEightWayInertia::new));
+            m.add(makeInputSwitcherItem("thrust", KeyInputThrust::new));
+            m.add(makeInputSwitcherItem("eight-way", KeyInputEightWay::new));
             return m;
         }
 
@@ -292,10 +296,21 @@ public class TPMenuFactory {
                                                  Supplier<KeyInputHandler> ihFunc) {
             return new TPMenuItemSimple(label, () -> {
                     TPPlayer p = getPlayer();
-                    if (p == null)
+                    if (p == null) {
                         System.out.println("PLAYER IS NULL!");
-                    else
-                        p.setInputHandler(ihFunc.get());
+                    } else {
+                        // duplicate key-bindings before switching
+                        KeyInputHandler oldKeys = p.getInputHandler();
+                        KeyInputHandler newKeys = ihFunc.get();
+                        newKeys.bindUp.setCode(oldKeys.bindUp.code());
+                        newKeys.bindDown.setCode(oldKeys.bindDown.code());
+                        newKeys.bindLeft.setCode(oldKeys.bindLeft.code());
+                        newKeys.bindRight.setCode(oldKeys.bindRight.code());
+                        newKeys.bindAction.setCode(oldKeys.bindAction.code());
+                        newKeys.bindZoomIn.setCode(oldKeys.bindZoomIn.code());
+                        newKeys.bindZoomOut.setCode(oldKeys.bindZoomOut.code());
+                        p.setInputHandler(newKeys);
+                    }
             });
         }
 
@@ -359,6 +374,7 @@ public class TPMenuFactory {
 
     public static TPPlayer playerPresetHexagon(TPProgram prog) {
         TPActor a = new TPActor(TPFactory.regularPolygonForm(30, 6));
+        a.setPos(centerPt(prog));
         return TPFactory.player(a);
     }
 

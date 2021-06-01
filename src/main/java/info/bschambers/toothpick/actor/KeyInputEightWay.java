@@ -2,11 +2,11 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPProgram;
 
-public class EightWayInput extends KeyInputHandler {
+public class KeyInputEightWay extends KeyInputHandler {
 
     @Override
-    public EightWayInput copy() {
-        EightWayInput a = new EightWayInput();
+    public KeyInputEightWay copy() {
+        KeyInputEightWay a = new KeyInputEightWay();
         duplicateParameters(a);
         return a;
     }

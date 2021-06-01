@@ -11,6 +11,25 @@ public abstract class KeyInputHandler implements ActorBehaviour {
             public void update(TPProgram prog, TPActor a) {}
         };
 
+    protected double xyStep = 1;
+    protected double angleStep = 0.005;
+
+    public KeyBinding bindUp      = new KeyBinding("up",       81); // q
+    public KeyBinding bindDown    = new KeyBinding("down",     65); // a
+    public KeyBinding bindLeft    = new KeyBinding("left",     87); // w
+    public KeyBinding bindRight   = new KeyBinding("right",    69); // e
+    public KeyBinding bindAction  = new KeyBinding("action",   90); // z
+    public KeyBinding bindZoomIn  = new KeyBinding("zoom in",  50); // 2
+    public KeyBinding bindZoomOut = new KeyBinding("zoom out", 51); // 3
+
+    private KeyBinding[] bindings = new KeyBinding[] { bindUp,
+                                                       bindDown,
+                                                       bindLeft,
+                                                       bindRight,
+                                                       bindAction,
+                                                       bindZoomIn,
+                                                       bindZoomOut };
+
     @Override
     public String getSingletonGroup() {
         return ActorBehaviour.KEY_INPUT_BEHAVIOUR_FLAG;
@@ -21,44 +40,25 @@ public abstract class KeyInputHandler implements ActorBehaviour {
         tp.setActionTrigger(bindAction.value());
     }
 
-    protected double xyStep = 1;
-    protected double angleStep = 0.005;
-
-    protected Binding bindUp      = new Binding(81); // q
-    protected Binding bindDown    = new Binding(65); // a
-    protected Binding bindLeft    = new Binding(87); // w
-    protected Binding bindRight   = new Binding(69); // e
-    protected Binding bindAction  = new Binding(90); // z
-    protected Binding bindZoomIn  = new Binding(49); // 1
-    protected Binding bindZoomOut = new Binding(50); // 2
-
-    private Binding[] bindings = new Binding[] { bindUp,
-                                                 bindDown,
-                                                 bindLeft,
-                                                 bindRight,
-                                                 bindAction,
-                                                 bindZoomIn,
-                                                 bindZoomOut };
-
     public abstract KeyInputHandler copy();
 
     protected void duplicateParameters(KeyInputHandler a) {
         a.xyStep = xyStep;
         a.angleStep = angleStep;
-        a.bindUp = bindUp;
-        a.bindDown = bindDown;
-        a.bindLeft = bindLeft;
-        a.bindRight = bindRight;
-        a.bindAction = bindAction;
-        a.bindZoomIn = bindZoomIn;
-        a.bindZoomOut = bindZoomOut;
-        a.bindings = new Binding[] { bindUp,
-                                     bindDown,
-                                     bindLeft,
-                                     bindRight,
-                                     bindAction,
-                                     bindZoomIn,
-                                     bindZoomOut };
+        a.bindUp = bindUp.copy();
+        a.bindDown = bindDown.copy();
+        a.bindLeft = bindLeft.copy();
+        a.bindRight = bindRight.copy();
+        a.bindAction = bindAction.copy();
+        a.bindZoomIn = bindZoomIn.copy();
+        a.bindZoomOut = bindZoomOut.copy();
+        a.bindings = new KeyBinding[] { bindUp,
+                                        bindDown,
+                                        bindLeft,
+                                        bindRight,
+                                        bindAction,
+                                        bindZoomIn,
+                                        bindZoomOut };
     }
 
     public double getXYStep() { return xyStep; }
@@ -70,31 +70,10 @@ public abstract class KeyInputHandler implements ActorBehaviour {
     public void incrAngleStep(double amt) { angleStep += amt; }
 
     public void setKey(int keyCode, boolean val) {
-        for (Binding b : bindings)
+        // System.out.println("keycode = " + keyCode);
+        for (KeyBinding b : bindings)
             if (keyCode == b.code())
                 b.setValue(val);
-    }
-
-    public class Binding {
-
-        public int keyCode = 0;
-        public boolean value = false;
-
-        public Binding(int keyCode) { this.keyCode = keyCode; }
-
-        public Binding copy() {
-            Binding b = new Binding(keyCode);
-            b.value = value;
-            return b;
-        }
-
-        public int code() { return keyCode; }
-
-        public void setCode(int val) { keyCode = val; }
-
-        public boolean value() { return value; }
-
-        public void setValue(boolean val) { value = val; }
     }
 
 }

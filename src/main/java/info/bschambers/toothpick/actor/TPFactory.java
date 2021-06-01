@@ -23,15 +23,36 @@ public final class TPFactory {
         actor.setPos(pos);
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
         actor.setColorGetter(new ColorMono(Color.PINK));
+        // actor.setColorGetter(new ColorRandom());
         TPPlayer player = new TPPlayer(actor);
-        player.setInputHandler(new ThrustInertiaInput());
+        player.setInputHandler(new KeyInputThrustInertia());
         return player;
     }
 
     public static TPPlayer player(TPActor actor) {
         TPPlayer player = new TPPlayer(actor);
-        player.setInputHandler(new ThrustInertiaInput());
+        player.setInputHandler(new KeyInputThrustInertia());
         return player;
+    }
+
+    public static void setPlayerKeysQAWE(KeyInputHandler keys) {
+        keys.bindUp.setCode(81);      // q
+        keys.bindDown.setCode(65);    // a
+        keys.bindLeft.setCode(87);    // w
+        keys.bindRight.setCode(69);   // e
+        keys.bindAction.setCode(90);  // z
+        keys.bindZoomIn.setCode(50);  // 2
+        keys.bindZoomOut.setCode(51); // 3
+    }
+
+    public static void setPlayerKeysIKOP(KeyInputHandler keys) {
+        keys.bindUp.setCode(73);      // i
+        keys.bindDown.setCode(75);    // k
+        keys.bindLeft.setCode(79);    // o
+        keys.bindRight.setCode(80);   // p
+        keys.bindAction.setCode(44);  // ,
+        keys.bindZoomIn.setCode(57);  // 9
+        keys.bindZoomOut.setCode(58); // 0
     }
 
     /*----------------------------- drones -----------------------------*/

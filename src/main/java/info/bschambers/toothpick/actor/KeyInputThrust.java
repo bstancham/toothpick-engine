@@ -2,11 +2,11 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPProgram;
 
-public class ThrustInput extends KeyInputHandler {
+public class KeyInputThrust extends KeyInputHandler {
 
     @Override
-    public ThrustInput copy() {
-        ThrustInput a = new ThrustInput();
+    public KeyInputThrust copy() {
+        KeyInputThrust a = new KeyInputThrust();
         duplicateParameters(a);
         return a;
     }

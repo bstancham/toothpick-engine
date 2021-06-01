@@ -250,16 +250,18 @@ the config file and cannot be switched on-the-fly.
 - ~q~ - up
 - ~a~ - down
 - ~z~ - action
-- ~1~ - zoom in
-- ~2~ - zoom out
+- ~2~ - zoom in
+- ~3~ - zoom out
 
 ** Player 2
 
-- ~[~ - left
-- ~]~ - right
-- ~p~ - up
-- ~;~ - down
-- ~/~ - action
+- ~o~ - left
+- ~p~ - right
+- ~i~ - up
+- ~k~ - down
+- ~,~ - action
+- ~9~ - zoom in
+- ~0~ - zoom out
 
 * License
 
