@@ -232,7 +232,7 @@ public class TPMenuFactory {
                                    () -> incrPlayerIndex(1)));
             add(makePresetPlayersMenu());
             add(makeInputHandlerMenu());
-            add(new TPMenuItemSimple("re-define keys", () -> System.out.println("todo...")));
+            add(makeDefineKeysMenu());
             add(makeInputCalibrationMenu());
             add(new TPMenuItemSimple("position", () -> System.out.println("todo...")));
         }
@@ -312,6 +312,25 @@ public class TPMenuFactory {
                         p.setInputHandler(newKeys);
                     }
             });
+        }
+
+        private TPMenu makeDefineKeysMenu() {
+            TPMenu m = new TPMenu("define keys");
+            m.add(new TPMenuItemKeyInput(() -> "UP = " + getPlayer().getInputHandler().bindUp.code(),
+                                         (Integer c) -> getPlayer().getInputHandler().bindUp.setCode(c)));
+            m.add(new TPMenuItemKeyInput(() -> "DOWN = " + getPlayer().getInputHandler().bindDown.code(),
+                                         (Integer c) -> getPlayer().getInputHandler().bindDown.setCode(c)));
+            m.add(new TPMenuItemKeyInput(() -> "LEFT = " + getPlayer().getInputHandler().bindLeft.code(),
+                                         (Integer c) -> getPlayer().getInputHandler().bindLeft.setCode(c)));
+            m.add(new TPMenuItemKeyInput(() -> "RIGHT = " + getPlayer().getInputHandler().bindRight.code(),
+                                         (Integer c) -> getPlayer().getInputHandler().bindRight.setCode(c)));
+            m.add(new TPMenuItemKeyInput(() -> "ACTION = " + getPlayer().getInputHandler().bindAction.code(),
+                                         (Integer c) -> getPlayer().getInputHandler().bindAction.setCode(c)));
+            m.add(new TPMenuItemKeyInput(() -> "ZOOM IN = " + getPlayer().getInputHandler().bindZoomIn.code(),
+                                         (Integer c) -> getPlayer().getInputHandler().bindZoomIn.setCode(c)));
+            m.add(new TPMenuItemKeyInput(() -> "ZOOM OUT = " + getPlayer().getInputHandler().bindZoomOut.code(),
+                                         (Integer c) -> getPlayer().getInputHandler().bindZoomOut.setCode(c)));
+            return m;
         }
 
         private TPMenu makeInputCalibrationMenu() {

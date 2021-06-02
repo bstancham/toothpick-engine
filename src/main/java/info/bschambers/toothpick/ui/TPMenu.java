@@ -1,9 +1,11 @@
 package info.bschambers.toothpick.ui;
 
 import info.bschambers.toothpick.TPBase;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import static java.awt.event.KeyEvent.*;
 
 public class TPMenu implements TPMenuItem {
 
@@ -35,14 +37,14 @@ public class TPMenu implements TPMenuItem {
     }
 
     @Override
-    public void action(Code c) {
+    public void action(Code c, int keyCode) {
         if (c == Code.HIDE) {
             hidden = !hidden;
         } else if (!hidden) {
             TPMenuOption opt = getSelectedOption();
             TPMenuItem item = opt.get();
             if (delegating && item instanceof TPMenu) {
-                item.action(c);
+                item.action(c, keyCode);
             } else if (delegating) {
                 System.out.println("ERROR - can't delegate to menu-item type: "
                                    + item.getClass());
@@ -54,7 +56,7 @@ public class TPMenu implements TPMenuItem {
                     m.setParent(this);
                     m.runInitAction();
                 } else {
-                    getSelectedOption().get().action(c);
+                    getSelectedOption().get().action(c, keyCode);
                 }
             } else if (c == Code.CANCEL) {
                 cancel();
@@ -63,10 +65,41 @@ public class TPMenu implements TPMenuItem {
             } else if (c == Code.DOWN) {
                 incrSelected(1);
             } else if (c == Code.LEFT) {
-                getSelectedOption().get().action(c);
+                getSelectedOption().get().action(c, keyCode);
             } else if (c == Code.RIGHT) {
-                getSelectedOption().get().action(c);
+                getSelectedOption().get().action(c, keyCode);
+            } else {
+                getSelectedOption().get().action(c, keyCode);
             }
+        }
+    }
+
+    public void keyPressed(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+        switch (keyCode) {
+        case VK_ENTER:
+            action(TPMenuItem.Code.RET, keyCode);
+            break;
+        case VK_BACK_SPACE:
+            action(TPMenuItem.Code.CANCEL, keyCode);
+            break;
+        case VK_H:
+            action(TPMenuItem.Code.HIDE, keyCode);
+            break;
+        case VK_UP:
+            action(TPMenuItem.Code.UP, keyCode);
+            break;
+        case VK_DOWN:
+            action(TPMenuItem.Code.DOWN, keyCode);
+            break;
+        case VK_LEFT:
+            action(TPMenuItem.Code.LEFT, keyCode);
+            break;
+        case VK_RIGHT:
+            action(TPMenuItem.Code.RIGHT, keyCode);
+            break;
+        default:
+            action(TPMenuItem.Code.UNDEFINED, keyCode);
         }
     }
 

@@ -21,7 +21,7 @@ public class TPMenuItemIncr implements TPMenuItem {
     public String text() { return text + ": < " + getFunc.get() + " >"; }
 
     @Override
-    public void action(Code c) {
+    public void action(Code c, int keyCode) {
         switch (c) {
         case LEFT:
             leftFunc.run();

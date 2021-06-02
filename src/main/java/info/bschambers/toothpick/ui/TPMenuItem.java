@@ -2,7 +2,7 @@ package info.bschambers.toothpick.ui;
 
 public interface TPMenuItem {
 
-    enum Code { RET, CANCEL, HIDE, UP, DOWN, LEFT, RIGHT }
+    enum Code { RET, CANCEL, HIDE, UP, DOWN, LEFT, RIGHT, UNDEFINED }
 
     /**
      * This is the text which will appear on the menu.<br/>
@@ -19,13 +19,13 @@ public interface TPMenuItem {
      * menu-item as an anonymous inner class inside a method.  Then you can use this to
      * assign variables local to the containing method!
      */
-    void action(Code c);
+    void action(Code c, int keyCode);
 
     static final TPMenuItem SPACER = new TPMenuItem() {
             @Override
             public String text() { return ""; }
             @Override
-            public void action(Code c) {}
+            public void action(Code c, int keyCode) {}
         };
 
 }

@@ -22,7 +22,7 @@ public class TPMenuItemSimple implements TPMenuItem {
     }
 
     @Override
-    public void action(Code c) {
+    public void action(Code c, int keyCode) {
         if (c == Code.RET)
             action.run();
     }

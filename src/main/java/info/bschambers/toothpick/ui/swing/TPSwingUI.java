@@ -244,29 +244,7 @@ public class TPSwingUI extends JFrame
     public void keyTyped(KeyEvent e) {}
 
     private void keyPressedMenu(KeyEvent e) {
-        switch (e.getKeyCode()) {
-        case VK_ENTER:
-            menu.action(TPMenuItem.Code.RET);
-            break;
-        case VK_BACK_SPACE:
-            menu.action(TPMenuItem.Code.CANCEL);
-            break;
-        case VK_H:
-            menu.action(TPMenuItem.Code.HIDE);
-            break;
-        case VK_UP:
-            menu.action(TPMenuItem.Code.UP);
-            break;
-        case VK_DOWN:
-            menu.action(TPMenuItem.Code.DOWN);
-            break;
-        case VK_LEFT:
-            menu.action(TPMenuItem.Code.LEFT);
-            break;
-        case VK_RIGHT:
-            menu.action(TPMenuItem.Code.RIGHT);
-            break;
-        }
+        menu.keyPressed(e);
     }
 
     private void keyPressedGame(KeyEvent e) {
