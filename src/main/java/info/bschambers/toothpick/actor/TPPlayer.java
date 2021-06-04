@@ -29,6 +29,10 @@ public class TPPlayer implements TPEncodingHelper {
         return p;
     }
 
+    public String infoString() {
+        return this + "\nKeyInputHandler = " + input;
+    }
+
     public TPActor getArchetype() {
         return archetype;
     }
@@ -43,8 +47,11 @@ public class TPPlayer implements TPEncodingHelper {
         return actor;
     }
 
+    /** Sets the actor, without setting the archetype. */
     public void setActor(TPActor a) {
         actor = a;
+        a.setIsPlayer(true);
+        a.setInputHandler(input);
     }
 
     public KeyInputHandler getInputHandler() {

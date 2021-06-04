@@ -248,13 +248,11 @@ public class TPSwingUI extends JFrame
     }
 
     private void keyPressedGame(KeyEvent e) {
-        for (int i = 0; i < getProgram().numPlayers(); i++)
-            getProgram().getPlayer(i).getInputHandler().setKey(e.getKeyCode(), true);
+        getProgram().keyPressed(e);
     }
 
     private void keyReleasedGame(KeyEvent e) {
-        for (int i = 0; i < getProgram().numPlayers(); i++)
-            getProgram().getPlayer(i).getInputHandler().setKey(e.getKeyCode(), false);
+        getProgram().keyReleased(e);
     }
 
     /*-------------------------- Mouse Input ---------------------------*/

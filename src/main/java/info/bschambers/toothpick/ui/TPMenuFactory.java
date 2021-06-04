@@ -234,6 +234,7 @@ public class TPMenuFactory {
             add(makeInputHandlerMenu());
             add(makeDefineKeysMenu());
             add(makeInputCalibrationMenu());
+            add(makeMenuConvertDroneToPlayer());
             add(new TPMenuItemSimple("position", () -> System.out.println("todo...")));
         }
 
@@ -385,6 +386,27 @@ public class TPMenuFactory {
             return step;
         }
 
+        private TPMenu makeMenuConvertDroneToPlayer() {
+            TPMenu m = new TPMenu("convert drone to player");
+            m.setInitAction(() -> {
+                    m.clear();
+                    for (TPActor a : prog) {
+                        if (!a.isPlayer()) {
+                            m.add(makeMenuItemDroneToPlayer(a));
+                        }
+                    }
+                });
+            return m;
+        }
+
+        private TPMenuItem makeMenuItemDroneToPlayer(TPActor drone) {
+            return new TPMenuItemSimple(drone.name + "(" + drone + ")",
+                                        () -> {
+                                            System.out.println("convert '" + drone.name + "' to player");
+                                            getPlayer().setActor(drone);
+                                            // getPlayer().setArchetype(drone);
+            });
+        }
     }
 
     public static TPPlayer playerPresetLine(TPProgram prog) {

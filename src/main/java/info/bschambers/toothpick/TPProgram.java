@@ -1,14 +1,15 @@
 package info.bschambers.toothpick;
 
 import info.bschambers.toothpick.actor.TPActor;
-import info.bschambers.toothpick.actor.TPPlayer;
 import info.bschambers.toothpick.actor.TPFactory;
+import info.bschambers.toothpick.actor.TPPlayer;
 import info.bschambers.toothpick.geom.Geom;
 import info.bschambers.toothpick.geom.Pt;
 import info.bschambers.toothpick.geom.Rect;
 import info.bschambers.toothpick.ui.TPUI;
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -213,6 +214,16 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     }
 
     public void clearPlayers() { players.clear(); }
+
+    public void keyPressed(KeyEvent e) {
+        for (int i = 0; i < numPlayers(); i++)
+            getPlayer(i).getInputHandler().setKey(e.getKeyCode(), true);
+    }
+
+    public void keyReleased(KeyEvent e) {
+        for (int i = 0; i < numPlayers(); i++)
+            getPlayer(i).getInputHandler().setKey(e.getKeyCode(), false);
+    }
 
     public String getTitle() {
         return title;
