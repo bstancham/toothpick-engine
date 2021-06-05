@@ -18,7 +18,7 @@ public final class TPFactory {
     }
 
     public static TPPlayer playerLine(double length, Pt pos) {
-        TPActor actor = new TPActor(singleLineForm(length));
+        TPActor actor = new TPActor(singleLineFormHoriz(length));
         actor.name = "player";
         actor.setPos(pos);
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
@@ -61,7 +61,7 @@ public final class TPFactory {
      * Creates a new {@code TPActor} with single-line form of random length.
      */
     public static TPActor lineActor(TPProgram prog) {
-        TPForm form = singleLineForm(randLineLength());
+        TPForm form = singleLineFormHoriz(randLineLength());
         return droneActor("line", form, prog);
     }
 
@@ -136,7 +136,7 @@ public final class TPFactory {
 
     public static TPActor shooterActor(TPProgram prog) {
         Spawning spawn = new Spawning();
-        spawn.setArchetype(new TPActor(singleLineForm(50)));
+        spawn.setArchetype(new TPActor(singleLineFormHoriz(50)));
         spawn.setInterval(randInt(10, 500));
         if (Math.random() < 0.5)
             spawn.setRelativeRotation(0.5);
@@ -229,10 +229,17 @@ public final class TPFactory {
         return 20 + (Math.random() * 150);
     }
 
-    public static TPForm singleLineForm(double length) {
+    public static TPForm singleLineFormHoriz(double length) {
         double half = length / 2;
         Pt start = new Pt(-half, 0);
         Pt end = new Pt(half, 0);
+        return new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
+    }
+
+    public static TPForm singleLineFormVert(double length) {
+        double half = length / 2;
+        Pt start = new Pt(0, -half);
+        Pt end = new Pt(0, half);
         return new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
     }
 
@@ -335,6 +342,19 @@ public final class TPFactory {
         return points;
     }
 
+    /**
+     * @param size Size in greatest dimension (length).
+     */
+    public static TPForm shipForm1(double size) {
+        double half = -(size / 2);
+        double quart = size / 4;
+        TPLine[] lines = new TPLine[3];
+        lines[0] = new TPLine(0, half, -quart, -half);
+        lines[1] = new TPLine(0, half, quart, -half);
+        lines[2] = new TPLine(-quart, -half, quart, -half);
+        return new TPForm(lines);
+    }
+
     /*--------------------------- text-actor ---------------------------*/
 
     public static TPActor textActor(TPProgram prog, String text) {
@@ -426,7 +446,12 @@ public final class TPFactory {
 
     public static Pt centerPos(TPProgram prog) {
         return new Pt(prog.getGeometry().getXCenter(),
-                      prog.getGeometry().getXCenter());
+                      prog.getGeometry().getYCenter());
+    }
+
+    public static Pt p1StartPos(TPProgram prog) {
+        return new Pt(prog.getGeometry().getXOneThird(),
+                      prog.getGeometry().getYCenter());
     }
 
     /**

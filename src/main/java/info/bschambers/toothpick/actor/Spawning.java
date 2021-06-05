@@ -25,7 +25,7 @@ public class Spawning implements ActorBehaviour, TPEncodingHelper {
             // make spawn, using default if archetype is not set
             TPActor spawn = null;
             if (archetype == null)
-                spawn = new TPActor(TPFactory.singleLineForm(50));
+                spawn = new TPActor(TPFactory.singleLineFormHoriz(50));
             else
                 spawn = archetype.copy();
             // get origin position

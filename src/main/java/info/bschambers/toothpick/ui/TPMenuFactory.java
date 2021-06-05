@@ -195,6 +195,9 @@ public class TPMenuFactory {
         m.add(new TPMenuItemBool("diagnostic info",
                                  prog::getShowDiagnosticInfo,
                                  prog::setShowDiagnosticInfo));
+        m.add(new TPMenuItemBool("players diagnostic info",
+                                 prog::getShowPlayersDiagnosticInfo,
+                                 prog::setShowPlayersDiagnosticInfo));
         return m;
     }
 
@@ -263,6 +266,13 @@ public class TPMenuFactory {
             TPMenu m = new TPMenu("preset players");
             m.add(makePresetPlayerItem("line-player", TPMenuFactory::playerPresetLine));
             m.add(makePresetPlayerItem("hexagon-player", TPMenuFactory::playerPresetHexagon));
+            m.add(makePresetPlayerItem("shooter-line", TPMenuFactory::playerPresetShooterLine));
+            m.add(makePresetPlayerItem("shooter ship", TPMenuFactory::playerPresetShooterShip));
+            m.add(makePresetPlayerItem("rapid-shooter-ship-1", TPMenuFactory::playerPresetShooterShipRapid1));
+            m.add(makePresetPlayerItem("rapid-shooter-ship-2", TPMenuFactory::playerPresetShooterShipRapid2));
+            m.add(makePresetPlayerItem("spread-shooter-ship-1", TPMenuFactory::playerPresetSpreadShooterShip1));
+            m.add(makePresetPlayerItem("spread-shooter-ship-2", TPMenuFactory::playerPresetSpreadShooterShip2));
+            m.add(makePresetPlayerItem("spread-shooter-ship-3", TPMenuFactory::playerPresetSpreadShooterShip3));
             return m;
         }
 
@@ -346,19 +356,19 @@ public class TPMenuFactory {
         }
 
         private String getXYStepString() {
-                    TPPlayer p = getPlayer();
-                    if (p == null)
-                        return "NULL";
-                    else
-                        return "" + p.getInputHandler().getXYStep();
+            TPPlayer p = getPlayer();
+            if (p == null)
+                return "NULL";
+            else
+                return "" + p.getInputHandler().getXYStep();
         }
 
         private String getAngleStepString() {
-                    TPPlayer p = getPlayer();
-                    if (p == null)
-                        return "NULL";
-                    else
-                        return "" + p.getInputHandler().getAngleStep();
+            TPPlayer p = getPlayer();
+            if (p == null)
+                return "NULL";
+            else
+                return "" + p.getInputHandler().getAngleStep();
         }
 
         private void incrXYStep(double amt) {
@@ -417,6 +427,58 @@ public class TPMenuFactory {
         TPActor a = new TPActor(TPFactory.regularPolygonForm(30, 6));
         a.setPos(centerPt(prog));
         return TPFactory.player(a);
+    }
+
+    public static TPPlayer playerPresetShooterLine(TPProgram prog) {
+        TPPlayer p = playerPresetLine(prog);
+        p.getArchetype().setTriggerBehaviour(new TrigActionShooter());
+        p.reset();
+        return p;
+    }
+
+    public static TPPlayer playerPresetShooterShip(TPProgram prog) {
+        return makePlayerShooterShip(prog, 200);
+    }
+
+    public static TPPlayer playerPresetShooterShipRapid1(TPProgram prog) {
+        return makePlayerShooterShip(prog, 50);
+    }
+
+    public static TPPlayer playerPresetShooterShipRapid2(TPProgram prog) {
+        return makePlayerShooterShip(prog, 20);
+    }
+
+    public static TPPlayer makePlayerShooterShip(TPProgram prog, int delay) {
+        TPActor a = new TPActor(TPFactory.shipForm1(40));
+        // TrigActionShooter action = new TrigActionShooter();
+        // action.setDelay(delay);
+        a.setTriggerBehaviour(new TrigActionShooter(delay));
+        a.setPos(TPFactory.p1StartPos(prog));
+        TPPlayer p = new TPPlayer(a);
+        p.setInputHandler(new KeyInputThrustInertia());
+        return p;
+    }
+
+    public static TPPlayer playerPresetSpreadShooterShip1(TPProgram prog) {
+        return makePlayerSpreadShooterShip(prog, 100, 3, Math.PI * 0.05);
+    }
+
+    public static TPPlayer playerPresetSpreadShooterShip2(TPProgram prog) {
+        return makePlayerSpreadShooterShip(prog, 100, 5, Math.PI * 0.05);
+    }
+
+    public static TPPlayer playerPresetSpreadShooterShip3(TPProgram prog) {
+        return makePlayerSpreadShooterShip(prog, 100, 7, Math.PI * 0.08);
+    }
+
+    public static TPPlayer makePlayerSpreadShooterShip(TPProgram prog, int delay,
+                                                       int numBullets, double spreadWidth) {
+        TPActor a = new TPActor(TPFactory.shipForm1(40));
+        a.setTriggerBehaviour(new TrigActionSpreadShooter(delay, numBullets, spreadWidth));
+        a.setPos(TPFactory.p1StartPos(prog));
+        TPPlayer p = new TPPlayer(a);
+        p.setInputHandler(new KeyInputThrustInertia());
+        return p;
     }
 
 }

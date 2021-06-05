@@ -54,7 +54,7 @@ public class TPActor implements TPEncodingHelper {
     private ColorGetter color = new ColorMono(Color.PINK);
     private ColorGetter vertexColor = null;
     private boolean actionTrigger = false;
-    private Runnable triggerAction = null;
+    private TriggerBehaviour trigAction = null;
     private boolean isPlayer = false;
     public double x = 0;
     public double y = 0;
@@ -84,6 +84,7 @@ public class TPActor implements TPEncodingHelper {
         s.append("(RADIANS) angle: " + (Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
         s.append("(DEGREES) angle: " + Math.toDegrees(Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
         s.append("bounds-behaviour: " + boundsBehaviour + "\n");
+        s.append("trigger-action: " + trigAction + "\n");
         s.append("is-player: " + isPlayer + "\n");
         s.append("FORM: (" + form.numParts() + " parts)\n");
         for (int i = 0; i < form.numParts(); i++)
@@ -101,6 +102,7 @@ public class TPActor implements TPEncodingHelper {
         TPActor actor = new TPActor(form.copy());
         actor.name = name;
         actor.boundsBehaviour = boundsBehaviour;
+        actor.trigAction = trigAction;
         actor.isPlayer = isPlayer;
         actor.x = x;
         actor.y = y;
@@ -156,8 +158,8 @@ public class TPActor implements TPEncodingHelper {
         actionTrigger = val;
     }
 
-    public void setTriggerAction(Runnable action) {
-        triggerAction = action;
+    public void setTriggerBehaviour(TriggerBehaviour action) {
+        trigAction = action;
     }
 
     public boolean isPlayer() { return isPlayer; }
@@ -263,8 +265,8 @@ public class TPActor implements TPEncodingHelper {
         for (TPActor child : children)
             child.update(prog);
 
-        if (triggerAction != null && actionTrigger)
-            triggerAction.run();
+        if (trigAction != null)
+            trigAction.update(this, actionTrigger);
     }
 
     /**
