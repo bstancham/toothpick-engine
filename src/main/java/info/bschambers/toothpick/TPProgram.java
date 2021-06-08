@@ -62,6 +62,7 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
     private List<ProgramBehaviour> resetBehaviours = new ArrayList<>();
     // debugging
     public boolean showDiagnosticInfo = true;
+    public boolean showPlayersDiagnosticInfo = true;
     protected boolean keepIntersectionPoints = false;
     protected boolean showBoundingBoxes = false;
 
@@ -328,6 +329,14 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         showDiagnosticInfo = val;
     }
 
+    public boolean getShowPlayersDiagnosticInfo() {
+        return showPlayersDiagnosticInfo;
+    }
+
+    public void setShowPlayersDiagnosticInfo(boolean val) {
+        showPlayersDiagnosticInfo = val;
+    }
+
     public TPGeometry getGeometry() {
         return geom;
     }
@@ -454,6 +463,9 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         if (showProgramInfo) {
             for (int i = 0; i < numPlayers(); i++) {
                 addPlayerInfoLines(i, lines);
+                if (showPlayersDiagnosticInfo) {
+                    addPlayerDiagnosticLines(i, lines);
+                }
             }
         }
         if (showDiagnosticInfo) {
@@ -473,6 +485,12 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
         lines.add(pNumStr);
         lines.add("kills: " + getPlayer(i).getActor().numKills);
         lines.add("deaths: " + getPlayer(i).getActor().numDeaths);
+    }
+
+    private void addPlayerDiagnosticLines(int i, List<String> lines) {
+        lines.add("angle=" + getPlayer(i).getActor().angle);
+        lines.add("x=" + getPlayer(i).getActor().x);
+        lines.add("y=" + getPlayer(i).getActor().y);
     }
 
     /**
