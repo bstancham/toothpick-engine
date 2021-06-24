@@ -42,8 +42,8 @@ gradlew jar
 Hello, World - opens a do-nothing window:
 
 #+BEGIN_SRC java :classname ToothpickEngineExample.java
-import info.bschambers.toothpick.*;
-import info.bschambers.toothpick.ui.swing.SwingUI;
+import info.bstancham.toothpick.*;
+import info.bstancham.toothpick.ui.swing.SwingUI;
 
 public class ToothpickEngineExample {
 
@@ -62,10 +62,10 @@ automatically replenishing supply of drones:
 
 #+BEGIN_SRC java
 // add these imports
-import info.bschambers.toothpick.*;
-import info.bschambers.toothpick.actor.TPFactory;
-import info.bschambers.toothpick.geom.Pt;
-import info.bschambers.toothpick.ui.swing.SwingUI;
+import info.bstancham.toothpick.*;
+import info.bstancham.toothpick.actor.TPFactory;
+import info.bstancham.toothpick.geom.Pt;
+import info.bstancham.toothpick.ui.swing.SwingUI;
 
 public class ToothpickEngineExample {
 
@@ -233,6 +233,58 @@ you can switch between them via the settings menu.
 The UI is also designed to be easily pluggable, however it must be specified in
 the config file and cannot be switched on-the-fly.
 
+* NEW INTERNAL REPRESENTATION
+TPActor contains a TPForm instance
+TPForm has a list of Links
+Link refers to two Nodes
+
+
+Node represents a point in 2D space.
+
+Node keeps reference to it's 'archetype' - it's original position in relation to the origin point (0, 0).
+
+Rotation and translation are performed on the node-archetype to get the node's current position.
+
+Node maintains a counter for number of users i.e. Links which refer to it. When
+counter is zero, node can be removed from form.
+
+
+Link constructor takes two Nodes. Each Node's reference-count is incremented in constructor.
+
+* BEHAVIOURS
+** ProgramBehaviour (PREFIX: Prog)
+- PBFinishAfterNumKills
+- PBIntroTransition
+- PBMaintainDronesNum
+- PBMisc
+- PBOutroTransition
+- PBRandActorSetup
+- PBScrollWithPlayer
+- PBSlideshow
+- PBToothpickPhysics
+- PBToothpickPhysicsLight
+** ActorBehaviour (PREFIX: Actor)
+- AvoiderBehaviour
+- DieAfter
+- PathAnchor
+- PointAnchor
+- SeekerBehaviour
+- Spawning
+- TrajectoryChangeBehaviour
+** PartBehaviour (PREFIX: Part)
+- PartDieAfter
+- PartSuicidePact
+- PowerupBehaviour
+- PowerupBehaviourShooting
+- PowerupBehaviourSticky
+- PowerupBehaviourStrong
+** LinkBehaviour (PREFIX: Link)
+1) LBSticky
+2) LBDieAfter (SAME AS PART)
+3) LBSuicidePact (SAME AS PART)
+** TriggerBehaviour (change to PlayerBehaviour? - PREFIX: Player)
+- TrigActionShooter
+- TrigActionSpreadShooter
 * Default Controls
 ** Menu Navigation
 
