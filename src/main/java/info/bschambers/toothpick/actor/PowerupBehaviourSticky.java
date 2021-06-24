@@ -2,23 +2,18 @@ package info.bschambers.toothpick.actor;
 
 public class PowerupBehaviourSticky extends PowerupBehaviour {
 
-    public PowerupBehaviourSticky() {
-        super("STICKY");
-    }
+    public PowerupBehaviourSticky() { super("STICKY"); }
 
     @Override
-    public PowerupBehaviourSticky copy() {
-        return this;
-    }
+    public PowerupBehaviourSticky copy() { return this; }
 
     @Override
-    protected void applyPowerup(TPActor actor) {
-        for (int i = 0; i < actor.getForm().numParts(); i++) {
-            TPPart part = actor.getForm().getPart(i);
-            if (part instanceof TPLine) {
-                part.addBehaviour(new LBSticky());
-            }
-        }
+    public void applyPowerup(TPActor actor) {
+        LBSticky sticky = new LBSticky();
+        sticky.setIsContagious(true);
+        // add sticky-behaviour to every link
+        for (int i = 0; i < actor.getForm().numLinks(); i++)
+            actor.getForm().getLink(i).addBehaviour(sticky);
     }
 
 }

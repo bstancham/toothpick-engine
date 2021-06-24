@@ -2,7 +2,7 @@ package info.bschambers.toothpick;
 
 import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.actor.TPForm;
-import info.bschambers.toothpick.actor.TPLine;
+import info.bschambers.toothpick.actor.TPLink;
 import info.bschambers.toothpick.geom.Geom;
 import info.bschambers.toothpick.geom.Line;
 import info.bschambers.toothpick.geom.Pt;
@@ -25,31 +25,25 @@ public class PBToothpickPhysics implements ProgramBehaviour {
                 interact(prog, prog.getActor(a), prog.getActor(b));
     }
 
-    protected void interact(TPProgram prog, TPActor a, TPActor b) {
-        // interact forms
-	interact(prog, a.getForm(), b.getForm());
-        // interact children
-        for (int n = 0; n < a.numChildren(); n++)
-            interact(prog, b, a.getChild(n));
-        for (int n = 0; n < b.numChildren(); n++)
-            interact(prog, a, b.getChild(n));
-    }
-
-    private void interact(TPProgram prog, TPForm formA, TPForm formB) {
-        // Compare every line of form A with every line of form B.
-        for (int a = 0; a < formA.numParts(); a++) {
-            if (formA.getPart(a) instanceof TPLine) {
-                TPLine lineA = (TPLine) formA.getPart(a);
-                if (!lineA.isPassive()) {
-                    for (int b = 0; b < formB.numParts(); b++) {
-                        if (formB.getPart(b) instanceof TPLine &&
-                            !formB.getPart(b).isPassive()) {
-                            collisionDetection(prog, lineA, (TPLine) formB.getPart(b));
-                        }
+    protected void interact(TPProgram prog, TPActor actorA, TPActor actorB) {
+        TPForm formA = actorA.getForm();
+        TPForm formB = actorB.getForm();
+        for (int a = 0; a < formA.numLinks(); a++) {
+            TPLink linkA = formA.getLink(a);
+            if (!linkA.isPassive()) {
+                for (int b = 0; b < formB.numLinks(); b++) {
+                    TPLink linkB = formB.getLink(b);
+                    if (!linkB.isPassive()) {
+                        collisionDetection(prog, linkA, linkB, actorA, actorB);
                     }
                 }
             }
         }
+        // interact children
+        for (int n = 0; n < actorA.numChildren(); n++)
+            interact(prog, actorB, actorA.getChild(n));
+        for (int n = 0; n < actorB.numChildren(); n++)
+            interact(prog, actorA, actorB.getChild(n));
     }
 
     /**
@@ -58,22 +52,23 @@ public class PBToothpickPhysics implements ProgramBehaviour {
      *
      * @return The result of {@code Geom.lineIntersection(a, b)}.
      */
-    private Pt collisionDetection(TPProgram prog, TPLine a, TPLine b) {
-        Line ln1 = a.getLine();
-        Line ln2 = b.getLine();
-        Pt iPt = Geom.lineIntersection(ln1, ln2);
+    private Pt collisionDetection(TPProgram prog, TPLink linkA, TPLink linkB,
+                                  TPActor actorA, TPActor actorB) {
+        Pt iPt = Geom.lineIntersection(linkA, linkB);
         prog.addIntersectionPoint(iPt);
-        double dist1 = Geom.fractionDistFromCenter(ln1, iPt);
-        double dist2 = Geom.fractionDistFromCenter(ln2, iPt);
+        double dist1 = Geom.fractionDistFromCenter(linkA, iPt);
+        double dist2 = Geom.fractionDistFromCenter(linkB, iPt);
+
         if (dist1 < 1.0 && dist2 < 1.0) {
             if (dist1 > dist2) {
-                // line A is the winner!
-                b.forceApplied(prog, iPt, a);
+                // A is the winner!
+                linkB.forceApplied(prog, iPt, linkA, actorB, actorA);
             } else {
-                // line B is the winner!
-                a.forceApplied(prog, iPt, b);
+                // B is the winner!
+                linkA.forceApplied(prog, iPt, linkB, actorA, actorB);
             }
         }
+
         return iPt;
     }
 

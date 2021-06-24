@@ -10,7 +10,7 @@ public class TrigActionSpreadShooter extends TrigActionShooter {
     }
 
     public TrigActionSpreadShooter(int delay, int numBullets, double spreadWidth) {
-        this(new TPActor(TPFactory.singleLineFormVert(50)), delay, numBullets, spreadWidth);
+        this(new TPActor(TPFactory.singleLineFormHoriz(50)), delay, numBullets, spreadWidth);
     }
 
     public TrigActionSpreadShooter(TPActor bulletArchetype,

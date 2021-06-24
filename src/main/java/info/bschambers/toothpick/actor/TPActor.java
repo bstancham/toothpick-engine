@@ -10,6 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * NEW ANGLE (winding is clockwise because of reversed Y-direction in window):
+ * - right = 0
+ * - down  = PI * 0.5
+ * - left  = PI
+ * - up    = PI * 1.5
+ *
+ *
+ *
+ *
+
  * angle:
  * - straight up = 0
  * - right = 0.5
@@ -80,9 +90,9 @@ public class TPActor implements TPEncodingHelper {
         s.append("alive: " + isAlive() + "\n");
         s.append("position: x=" + x + " y=" + y + "\n");
         s.append("inertia: x=" + xInertia + " y=" + yInertia + "\n");
-        s.append("angle: " + angle + " (angle-inertia=" + angleInertia + ")\n");
-        s.append("(RADIANS) angle: " + (Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
-        s.append("(DEGREES) angle: " + Math.toDegrees(Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
+        s.append("angle:           " + angle + " (angle-inertia=" + angleInertia + ")\n");
+        s.append("angle (RADIANS): " + (Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
+        s.append("angle (DEGREES): " + Math.toDegrees(Math.PI * angle) + " (angle-inertia=" + angleInertia + ")\n");
         s.append("bounds-behaviour: " + boundsBehaviour + "\n");
         s.append("trigger-action: " + trigAction + "\n");
         s.append("is-player: " + isPlayer + "\n");
@@ -308,11 +318,11 @@ public class TPActor implements TPEncodingHelper {
         y = pos.y;
     }
 
-    public void deathEvent(TPLine protagonist, Pt p) {
+    public void deathEvent(TPLink protagonist, Pt p) {
         numDeaths++;
     }
 
-    public void killEvent(TPLine victim, Pt p) {
+    public void killEvent(TPLink victim, Pt p) {
         numKills++;
     }
 
@@ -320,34 +330,35 @@ public class TPActor implements TPEncodingHelper {
      * Find center of form and set as center of actor.
      */
     public void autosetCenter() {
-        int numLines = getForm().numLines();
-        if (numLines > 0) {
+        int numNodes = getForm().numNodes();
+        if (numNodes > 0) {
             // get initial high and low values
-            Line ln = getForm().getLine(0).getArchetype();
-            double x1 = Math.min(ln.start.x, ln.end.x);
-            double x2 = Math.max(ln.start.x, ln.end.x);
-            double y1 = Math.min(ln.start.y, ln.end.y);
-            double y2 = Math.max(ln.start.y, ln.end.y);
+            Node n = getForm().getNode(0);
+            // Node n2 = getForm().getLink(0).getEndNode();
+            double x1 = n.getXArchetype();
+            double x2 = n.getXArchetype();
+            double y1 = n.getYArchetype();
+            double y2 = n.getYArchetype();
             // find highest and lowest values
             int i = 1;
-            while (i < numLines) {
-                ln = getForm().getLine(i++).getArchetype();
-                double xMin = Math.min(ln.start.x, ln.end.x);
-                double xMax = Math.max(ln.start.x, ln.end.x);
-                double yMin = Math.min(ln.start.y, ln.end.y);
-                double yMax = Math.max(ln.start.y, ln.end.y);
-                if (xMin < x1) x1 = xMin;
-                if (xMax > x2) x2 = xMax;
-                if (yMin < y1) y1 = yMin;
-                if (yMax > y2) y2 = yMax;
+            while (i < numNodes) {
+                n = getForm().getNode(i++);
+                if (n.getXArchetype() < x1) x1 = n.getXArchetype();
+                if (n.getXArchetype() > x2) x2 = n.getXArchetype();
+                if (n.getYArchetype() < y1) y1 = n.getYArchetype();
+                if (n.getYArchetype() > y2) y2 = n.getYArchetype();
             }
             // mid point
             double xMid = Geom.midVal(x1, x2);
             double yMid = Geom.midVal(y1, y2);
             // shift each line to be centered on zero
             i = 0;
-            while (i < numLines)
-                getForm().getLine(i++).translateLineAndArchetype(-xMid, -yMid);
+            while (i < numNodes) {
+                n = getForm().getNode(i++);
+                n.update(0, 0, 0); // reset to archetype
+                n.update(0, -xMid, -yMid); // shift to new position
+                n.resetArchetype(); // set archetype to current position
+            }
             // set position of actor to mid point
             x = xMid;
             y = yMid;

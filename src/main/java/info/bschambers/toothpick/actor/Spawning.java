@@ -15,7 +15,7 @@ public class Spawning implements ActorBehaviour, TPEncodingHelper {
     private int count = 0;
 
     // if origin is not null, pick random point on line
-    private TPLine originLine = null;
+    private TPLink origin = null;
 
     @Override
     public void update(TPProgram prog, TPActor a) {
@@ -30,47 +30,37 @@ public class Spawning implements ActorBehaviour, TPEncodingHelper {
                 spawn = archetype.copy();
             // get origin position
             Pt p = new Pt(a.x, a.y);
-            if (originLine != null)
-                p = Geom.randPointOnLine(originLine.getLine());
+            if (origin != null)
+                p = Geom.randPoint(origin);
             // set position, angle, inertia
             spawn.x = p.x;
             spawn.y = p.y;
-            spawn.angle = a.angle + relativeRotation * Math.PI;
+            spawn.angle = a.angle + relativeRotation;
             double speed = 2;
-            spawn.xInertia = Math.sin((a.angle + relativeAngle) * Math.PI) * speed;
-            spawn.yInertia = -(Math.cos((a.angle + relativeAngle) * Math.PI) * speed);
+            spawn.xInertia = Math.cos(a.angle + relativeAngle) * speed;
+            spawn.yInertia = Math.sin(a.angle + relativeAngle) * speed;
             spawn.setBoundaryBehaviour(TPActor.BoundaryBehaviour.DIE_AT_BOUNDS);
             a.addChild(spawn);
         }
     }
 
-    public void setArchetype(TPActor a) {
-        archetype = a.copy();
-    }
+    public void setArchetype(TPActor a) { archetype = a.copy(); }
 
-    public void setInterval(int val) {
-        interval = val;
-    }
+    public void setInterval(int interval) { this.interval = interval; }
 
     /**
-     * @param val The direction to shoot spawn (child actor) out, relative to the angle of
-     * the parent actor. 1.0 means a half turn, 0.5 means a quarter turn.
+     * @param val The direction to shoot spawn (child actor) out in radians, relative to
+     * the angle of the parent actor.
      */
-    public void setRelativeAngle(double val) {
-        relativeAngle = val;
-    }
+    public void setRelativeAngle(double relativeAngle) { this.relativeAngle = relativeAngle; }
 
     /**
-     * @param val The angle of the spawn (child actor) relative to the angle of the parent
-     * actor. 1.0 means a half turn,  0.5 means a quarter turn.
+     * @param val The angle of the spawn (child actor) in radians, relative to the angle
+     * of the parent actor.
      */
-    public void setRelativeRotation(double val) {
-        relativeRotation = val;
-    }
+    public void setRelativeRotation(double relativeRotation) { this.relativeRotation = relativeRotation; }
 
-    public void setOriginLine(TPLine tpl) {
-        originLine = tpl;
-    }
+    public void setOrigin(TPLink origin) { this.origin = origin; }
 
     /*---------------------------- Encoding ----------------------------*/
 

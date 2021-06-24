@@ -11,17 +11,11 @@ public class TPExplosion extends TPPart {
 
     public TPExplosion() {}
 
-    public TPExplosion(Pt pos) {
-        this.pos = pos;
-    }
+    public TPExplosion(Pt pos) { this.pos = pos; }
 
-    public Pt getPos() {
-        return pos;
-    }
+    public Pt getPos() { return pos; }
 
-    public void setPos(Pt pos) {
-        this.pos = pos;
-    }
+    public void setPos(Pt pos) { this.pos = pos; }
 
     public double getMagnitude() {
         return (double) lifetime / (double) count;
@@ -36,11 +30,11 @@ public class TPExplosion extends TPPart {
     }
 
     @Override
-    public void update(double x, double y, double angle) {
+    public void update(TPActor a) {
         count++;
         if (count >= lifetime)
-            die();
-        super.update(x, y, angle);
+            die(a);
+        super.update(a);
     }
 
     /*---------------------------- Encoding ----------------------------*/

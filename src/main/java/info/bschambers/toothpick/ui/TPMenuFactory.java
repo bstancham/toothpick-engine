@@ -2,6 +2,7 @@ package info.bschambers.toothpick.ui;
 
 import info.bschambers.toothpick.*;
 import info.bschambers.toothpick.actor.*;
+import info.bschambers.toothpick.geom.Node;
 import info.bschambers.toothpick.geom.Pt;
 import java.awt.Color;
 import java.util.function.Consumer;
@@ -73,8 +74,11 @@ public class TPMenuFactory {
     }
 
     private static void addPlayer(TPProgram prog) {
+        addPlayer(prog, TPFactory.playerLine(centerPt(prog)));
+    }
+
+    public static void addPlayer(TPProgram prog, TPPlayer p) {
         System.out.println("adding new default player...");
-        TPPlayer p = TPFactory.playerLine(centerPt(prog));
         TPGeometry geom = prog.getGeometry();
         double x = 0;
         double y = 0;
@@ -238,6 +242,8 @@ public class TPMenuFactory {
             add(makeDefineKeysMenu());
             add(makeInputCalibrationMenu());
             add(makeMenuConvertDroneToPlayer());
+            add(makeMenuPlayerColor());
+            add(makeMenuPowerups());
             add(new TPMenuItemSimple("position", () -> System.out.println("todo...")));
         }
 
@@ -255,13 +261,6 @@ public class TPMenuFactory {
             return prog.getPlayer(playerIndex);
         }
 
-        private String getInputHandlerName() {
-            TPPlayer p = getPlayer();
-            if (p == null)
-                return "NULL";
-            return p.getInputHandler().getClass().getSimpleName();
-        }
-
         private TPMenu makePresetPlayersMenu() {
             TPMenu m = new TPMenu("preset players");
             m.add(makePresetPlayerItem("line-player", TPMenuFactory::playerPresetLine));
@@ -270,23 +269,28 @@ public class TPMenuFactory {
             m.add(makePresetPlayerItem("shooter ship", TPMenuFactory::playerPresetShooterShip));
             m.add(makePresetPlayerItem("rapid-shooter-ship-1", TPMenuFactory::playerPresetShooterShipRapid1));
             m.add(makePresetPlayerItem("rapid-shooter-ship-2", TPMenuFactory::playerPresetShooterShipRapid2));
+            m.add(makePresetPlayerItem("rapid-shooter-ship-3", TPMenuFactory::playerPresetShooterShipRapid3));
             m.add(makePresetPlayerItem("spread-shooter-ship-1", TPMenuFactory::playerPresetSpreadShooterShip1));
             m.add(makePresetPlayerItem("spread-shooter-ship-2", TPMenuFactory::playerPresetSpreadShooterShip2));
             m.add(makePresetPlayerItem("spread-shooter-ship-3", TPMenuFactory::playerPresetSpreadShooterShip3));
             return m;
         }
 
-        private TPMenuItem makePresetPlayerItem(String label,
-                                                Function<TPProgram, TPPlayer> func) {
+        private TPMenuItem makePresetPlayerItem(String label, Supplier<TPPlayer> func) {
             return new TPMenuItemSimple(label, () -> {
                     TPPlayer p = getPlayer();
                     if (p == null) {
                         System.out.println("PLAYER IS NULL!");
                     } else {
-                        TPPlayer pp = func.apply(prog);
+                        TPPlayer pp = func.get();
+                        // set current position
                         pp.getActor().x = p.getActor().x;
                         pp.getActor().y = p.getActor().y;
                         pp.getActor().angle = p.getActor().angle;
+                        // set restart position
+                        pp.getArchetype().x = p.getArchetype().x;
+                        pp.getArchetype().y = p.getArchetype().y;
+                        pp.getArchetype().angle = p.getArchetype().angle;
                         prog.setPlayer(playerIndex, pp);
                     }
             });
@@ -301,6 +305,13 @@ public class TPMenuFactory {
             m.add(makeInputSwitcherItem("thrust", KeyInputThrust::new));
             m.add(makeInputSwitcherItem("eight-way", KeyInputEightWay::new));
             return m;
+        }
+
+        private String getInputHandlerName() {
+            TPPlayer p = getPlayer();
+            if (p == null)
+                return "NULL";
+            return p.getInputHandler().getClass().getSimpleName();
         }
 
         private TPMenuItem makeInputSwitcherItem(String label,
@@ -417,65 +428,112 @@ public class TPMenuFactory {
                                             // getPlayer().setArchetype(drone);
             });
         }
+
+        private TPMenu makeMenuPlayerColor() {
+            TPMenu m = new TPMenu("player color");
+            m.add(makePlayerColorSwitcher("random", ColorRandom::new));
+            m.add(makePlayerColorSwitcher("random (mono)", ColorRandomMono::new));
+            m.add(makePlayerColorSwitcher("smooth", ColorSmoothColor::new));
+            m.add(makePlayerColorSwitcher("smooth (mono)", ColorSmoothMono::new));
+            m.add(makePlayerColorSwitcher("flat color (white)", () -> ColorMono.WHITE));
+            m.add(makePlayerColorSwitcher("flat color (black)", () -> ColorMono.BLACK));
+            m.add(makePlayerColorSwitcher("flat color (red)", () -> ColorMono.RED));
+            m.add(makePlayerColorSwitcher("flat color (green)", () -> ColorMono.GREEN));
+            m.add(makePlayerColorSwitcher("flat color (blue)", () -> ColorMono.BLUE));
+            m.add(makePlayerColorSwitcher("flat color (cyan)", () -> ColorMono.CYAN));
+            m.add(makePlayerColorSwitcher("flat color (magenta)", () -> ColorMono.MAGENTA));
+            m.add(makePlayerColorSwitcher("flat color (yellow)", () -> ColorMono.YELLOW));
+            m.add(makePlayerColorSwitcher("flat color (RANDOM)", ColorMono::new));
+            return m;
+        }
+
+        private TPMenuItem makePlayerColorSwitcher(String label, Supplier<ColorGetter> colorFunc) {
+            return new TPMenuItemSimple(label, () -> {
+                    ColorGetter cg = colorFunc.get();
+                    getPlayer().getActor().setColorGetter(cg);
+                    getPlayer().getArchetype().setColorGetter(cg);
+            });
+        }
+
+        private TPMenu makeMenuPowerups() {
+            TPMenu m = new TPMenu("powerups");
+            m.add(makeMenuItemPowerup("shooting", new PowerupBehaviourShooting()));
+            m.add(makeMenuItemPowerup("strong", new PowerupBehaviourStrong()));
+            m.add(makeMenuItemPowerup("sticky", new PowerupBehaviourSticky()));
+            return m;
+        }
+
+        private TPMenuItem makeMenuItemPowerup(String label, PowerupBehaviour powerup) {
+            return new TPMenuItemSimple(label, () -> {
+                    powerup.applyPowerup(getPlayer().getActor());
+                    System.out.println("POWERUP APPLIED: " + label);
+            });
+        }
     }
 
-    public static TPPlayer playerPresetLine(TPProgram prog) {
-        return TPFactory.playerLine(centerPt(prog));
+    public static TPPlayer playerPresetLine() {
+        TPForm form = new TPForm();
+        form.addPart(new TPLink(new Node(0, -40), new Node(0, 40)));
+        form.housekeeping();
+        TPActor actor = new TPActor(form);
+        actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
+        actor.setColorGetter(new ColorMono(Color.GREEN));
+        TPPlayer player = new TPPlayer(actor);
+        player.setInputHandler(new KeyInputThrustInertia());
+        return player;
     }
 
-    public static TPPlayer playerPresetHexagon(TPProgram prog) {
+    public static TPPlayer playerPresetHexagon() {
         TPActor a = new TPActor(TPFactory.regularPolygonForm(30, 6));
-        a.setPos(centerPt(prog));
         return TPFactory.player(a);
     }
 
-    public static TPPlayer playerPresetShooterLine(TPProgram prog) {
-        TPPlayer p = playerPresetLine(prog);
+    public static TPPlayer playerPresetShooterLine() {
+        TPPlayer p = playerPresetLine();
         p.getArchetype().setTriggerBehaviour(new TrigActionShooter());
         p.reset();
         return p;
     }
 
-    public static TPPlayer playerPresetShooterShip(TPProgram prog) {
-        return makePlayerShooterShip(prog, 200);
+    public static TPPlayer playerPresetShooterShip() {
+        return makePlayerShooterShip(200);
     }
 
-    public static TPPlayer playerPresetShooterShipRapid1(TPProgram prog) {
-        return makePlayerShooterShip(prog, 50);
+    public static TPPlayer playerPresetShooterShipRapid1() {
+        return makePlayerShooterShip(50);
     }
 
-    public static TPPlayer playerPresetShooterShipRapid2(TPProgram prog) {
-        return makePlayerShooterShip(prog, 20);
+    public static TPPlayer playerPresetShooterShipRapid2() {
+        return makePlayerShooterShip(20);
     }
 
-    public static TPPlayer makePlayerShooterShip(TPProgram prog, int delay) {
+    public static TPPlayer playerPresetShooterShipRapid3() {
+        return makePlayerShooterShip(5);
+    }
+
+    public static TPPlayer makePlayerShooterShip(int delay) {
         TPActor a = new TPActor(TPFactory.shipForm1(40));
-        // TrigActionShooter action = new TrigActionShooter();
-        // action.setDelay(delay);
         a.setTriggerBehaviour(new TrigActionShooter(delay));
-        a.setPos(TPFactory.p1StartPos(prog));
         TPPlayer p = new TPPlayer(a);
         p.setInputHandler(new KeyInputThrustInertia());
         return p;
     }
 
-    public static TPPlayer playerPresetSpreadShooterShip1(TPProgram prog) {
-        return makePlayerSpreadShooterShip(prog, 100, 3, Math.PI * 0.05);
+    public static TPPlayer playerPresetSpreadShooterShip1() {
+        return makePlayerSpreadShooterShip(100, 3, Math.PI * 0.05);
     }
 
-    public static TPPlayer playerPresetSpreadShooterShip2(TPProgram prog) {
-        return makePlayerSpreadShooterShip(prog, 100, 5, Math.PI * 0.05);
+    public static TPPlayer playerPresetSpreadShooterShip2() {
+        return makePlayerSpreadShooterShip(100, 5, Math.PI * 0.05);
     }
 
-    public static TPPlayer playerPresetSpreadShooterShip3(TPProgram prog) {
-        return makePlayerSpreadShooterShip(prog, 100, 7, Math.PI * 0.08);
+    public static TPPlayer playerPresetSpreadShooterShip3() {
+        return makePlayerSpreadShooterShip(100, 7, Math.PI * 0.08);
     }
 
-    public static TPPlayer makePlayerSpreadShooterShip(TPProgram prog, int delay,
-                                                       int numBullets, double spreadWidth) {
+    public static TPPlayer makePlayerSpreadShooterShip(int delay, int numBullets, double spreadWidth) {
         TPActor a = new TPActor(TPFactory.shipForm1(40));
         a.setTriggerBehaviour(new TrigActionSpreadShooter(delay, numBullets, spreadWidth));
-        a.setPos(TPFactory.p1StartPos(prog));
         TPPlayer p = new TPPlayer(a);
         p.setInputHandler(new KeyInputThrustInertia());
         return p;

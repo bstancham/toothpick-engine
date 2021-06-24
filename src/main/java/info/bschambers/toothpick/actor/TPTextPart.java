@@ -10,15 +10,13 @@ public class TPTextPart extends TPPart {
 
     public TPTextPart() {}
 
-    public TPTextPart(String text) {
-        this.text = text;
-    }
+    public TPTextPart(String text) { this.text = text; }
 
     @Override
-    public void update(double x, double y, double angle) {
-        this.x = x;
-        this.y = y;
-        super.update(x, y, angle);
+    public void update(TPActor a) {
+        this.x = a.x;
+        this.y = a.y;
+        super.update(a);
     }
 
     @Override
@@ -26,7 +24,7 @@ public class TPTextPart extends TPPart {
         TPTextPart other = new TPTextPart(text);
         other.x = x;
         other.y = y;
-        other.copyBehaviours(this);
+        other.copyPartProperties(this);
         return other;
     }
 

@@ -6,7 +6,7 @@ public class KeyInputThrustAndAngleInertia extends KeyInputHandler {
 
     public KeyInputThrustAndAngleInertia() {
         xyStep = 0.008;
-        angleStep = 0.00003;
+        angleStep = 0.00009;
     }
 
     @Override
@@ -21,12 +21,12 @@ public class KeyInputThrustAndAngleInertia extends KeyInputHandler {
     public void update(TPProgram prog, TPActor tp) {
         super.update(prog, tp);
         if (bindUp.value()) {
-            tp.xInertia += Math.sin(Math.PI * tp.angle) * xyStep;
-            tp.yInertia -= Math.cos(Math.PI * tp.angle) * xyStep;
+            tp.xInertia += Math.cos(tp.angle) * xyStep;
+            tp.yInertia += Math.sin(tp.angle) * xyStep;
         }
         if (bindDown.value()) {
-            tp.xInertia -= Math.sin(Math.PI * tp.angle) * xyStep;
-            tp.yInertia += Math.cos(Math.PI * tp.angle) * xyStep;
+            tp.xInertia -= Math.cos(tp.angle) * xyStep;
+            tp.yInertia -= Math.sin(tp.angle) * xyStep;
         }
         if (bindLeft.value()) {
             tp.angleInertia -= angleStep;

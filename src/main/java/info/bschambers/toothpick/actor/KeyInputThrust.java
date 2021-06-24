@@ -15,12 +15,12 @@ public class KeyInputThrust extends KeyInputHandler {
     public void update(TPProgram prog, TPActor tp) {
         super.update(prog, tp);
         if (bindUp.value()) {
-            tp.x += Math.sin(Math.PI * tp.angle) * xyStep;
-            tp.y -= Math.cos(Math.PI * tp.angle) * xyStep;
+            tp.x += Math.cos(tp.angle) * xyStep;
+            tp.y += Math.sin(tp.angle) * xyStep;
         }
         if (bindDown.value()) {
-            tp.x -= Math.sin(Math.PI * tp.angle) * xyStep;
-            tp.y += Math.cos(Math.PI * tp.angle) * xyStep;
+            tp.x -= Math.cos(tp.angle) * xyStep;
+            tp.y -= Math.sin(tp.angle) * xyStep;
         }
         if (bindLeft.value()) {
             tp.angle -= angleStep;

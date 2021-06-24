@@ -1,5 +1,7 @@
 package info.bschambers.toothpick.geom;
 
+import info.bschambers.toothpick.actor.TPLink;
+
 public final class Geom {
 
     private Geom() {}
@@ -33,16 +35,27 @@ public final class Geom {
 	return new Pt(midVal(a.x, b.x), midVal(a.y, b.y));
     }
 
+    public static Pt randPoint(TPLink ln) {
+        return randPointOnLine(ln.getStartNode().getX(),
+                               ln.getStartNode().getY(),
+                               ln.getEndNode().getX(),
+                               ln.getEndNode().getY());
+    }
+
     public static Pt randPointOnLine(Line ln) {
         return randPointOnLine(ln.start, ln.end);
     }
 
     public static Pt randPointOnLine(Pt a, Pt b) {
+        return randPointOnLine(a.x, a.y, b.x, b.y);
+    }
+
+    public static Pt randPointOnLine(double x1, double y1, double x2, double y2) {
         double amt = Math.random();
-        double xDim = b.x - a.x;
-        double yDim = b.y - a.y;
-        return new Pt(a.x + (amt * xDim),
-                      a.y + (amt * yDim));
+        double xDim = x2 - x1;
+        double yDim = y2 - y1;
+        return new Pt(x1 + (amt * xDim),
+                      y1 + (amt * yDim));
     }
 
     /** @return The distance between the two points. */
@@ -50,14 +63,19 @@ public final class Geom {
         return distance(a.x, a.y, b.x, b.y);
     }
 
+    /** @return The distance between the two nodes. */
+    public static double distance(Node a, Node b) {
+        return distance(a.getX(), a.getY(), b.getX(), b.getY());
+    }
+
     /** @return The distance between the two points. */
     public static double distance(double x1, double y1, double x2, double y2) {
 	/*
 	 * Pythagoras' theorem:
-	 * In a right angle triangle, the squatre of the hypotenuse is equal to
+	 * In a right angle triangle, the square of the hypotenuse is equal to
 	 * the sum of the squares of the other two sides.
 	 *
-	 * x2 + y2 = h2
+	 * (x * x) + (y * y) = (h * h)
 	 */
 	double xDist = Math.abs(x1 - x2);
 	double yDist = Math.abs(y1 - y2);
@@ -83,7 +101,7 @@ public final class Geom {
     public static double angle(Pt a, Pt b) {
         return angle(a.x, a.y, b.x, b.y);
     }
-    
+
     public static double angle(double x1, double y1, double x2, double y2) {
 	// get x & y lengths
 	double xLen = x2 - x1;
@@ -91,9 +109,11 @@ public final class Geom {
 	// length of hypotenuse (Pythagoras' theroem ---> a2 + b2 = c2)
 	double hLen = Math.sqrt((xLen * xLen) + (yLen * yLen));
 	// get angle (compensate for negative y-direction)
-	if (yLen < 0) hLen = -hLen;
+	if (yLen < 0)
+            hLen = -hLen;
 	double angle = Math.acos(xLen / hLen);
-        if (yLen < 0) angle += Math.PI;
+        if (yLen < 0)
+            angle += Math.PI; // add half-turn
         return angle;
     }
 
@@ -177,6 +197,72 @@ public final class Geom {
         return ptLength / halfLength;
     }
 
+    /**
+     * What does this do?
+     */
+    public static Pt orthoIntersection(TPLink ln, double x, double y) {
+        // get relative point values
+        double xRelative = x - ln.xConstant();
+        double yRelative = y - ln.yConstant();
+        // final x & y values using formula... x = xConst + (xGrad * yRelative)
+        double xVal = ln.xConstant() + (ln.xGradient() * yRelative);
+        double yVal = ln.yConstant() + (ln.yGradient() * xRelative);
+        return new Pt(xVal, yVal);
+    }
+
+    /**
+     * Returns the intersection point of two links.
+     */
+    public static Pt lineIntersection(TPLink l1, TPLink l2) {
+
+        // horiz vs vert cases
+        if (l1.isHorizontal() && l2.isVertical())
+            return new Pt(l2.getStartNode().getX(), l1.getStartNode().getY());
+        if (l2.isHorizontal() && l1.isVertical())
+            return new Pt(l1.getStartNode().getX(), l2.getStartNode().getY());
+
+	Pt oPt1 = orthoIntersection(l2, l1.xConstant(), l1.yConstant());
+	Pt oPt2 = orthoIntersection(l2, l1.getEndNode().getX(), l1.getEndNode().getY());
+	double xGap1 = oPt1.x - l1.xConstant();
+	double xGap2 = oPt2.x - l1.getEndNode().getX();
+	double xDiff = xGap1 - xGap2;
+	double yGap1 = oPt1.y - l1.yConstant();
+	double yGap2 = oPt2.y - l1.getEndNode().getY();
+	double yDiff = yGap1 - yGap2;
+	double xRatio = xGap1 / xDiff;
+	double yRatio = yGap1 / yDiff;
+	double xVal = l1.xConstant() + (l1.xVector() * yRatio);
+	double yVal = l1.yConstant() + (l1.yVector() * xRatio);
+	return new Pt(xVal, yVal);
+    }
+
+    /**
+     * <p>Calculates distance from the given point to the center of the specified Line.</p>
+     *
+     * <p>Return value is given as a fraction of the distance from the center point of the
+     * line to either end.</p>
+     *
+     * <p>Distance of either end point to center will return val of 1.0.</p>
+     *
+     * <p>Exact center pos returns val of 0.0.</p>
+     */
+    public static double fractionDistFromCenter(TPLink ln, Pt p) {
+        // get Line center
+        Pt center = ln.getCenterPoint();
+        // get Line distance from center to end
+        double halfLength = distance(center.x, center.y,
+                                     ln.getEndNode().getX(), ln.getEndNode().getY());
+        // get Line distance from center to input point
+        double ptLength = distance(center.x, center.y, p.x, p.y);
+        // System.out.println("halfLen=" + halfLength + " ptLen=" + ptLength + " midPt=" + center.toString());
+        return ptLength / halfLength;
+    }
+
+
+
+    /**
+     * @param amount The amount of rotation in radians.
+     */
     public static Pt rotate(Pt p, double amount, Pt center) {
 	// get x & y lengths
 	double xLen = p.x - center.x;
@@ -189,7 +275,8 @@ public final class Geom {
             hLen = -hLen;
 	// get angle and increment
 	double angle = Math.acos(xLen / hLen);
-	angle += Math.PI * amount;
+	// angle += Math.PI * amount;
+	angle += amount;
 	// calculate new position
 	double x = center.x + (hLen * (Math.cos(angle)));
 	double y = center.y + (hLen * (Math.sin(angle)));

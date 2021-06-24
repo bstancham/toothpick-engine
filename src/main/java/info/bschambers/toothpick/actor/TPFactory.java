@@ -8,7 +8,7 @@ import java.awt.Color;
  * Static methods for making TPActors.
  */
 public final class TPFactory {
-    
+
     public static final double NEARLY_ZERO = 0.00000001;
 
     /*---------------------------- players -----------------------------*/
@@ -18,7 +18,7 @@ public final class TPFactory {
     }
 
     public static TPPlayer playerLine(double length, Pt pos) {
-        TPActor actor = new TPActor(singleLineFormHoriz(length));
+        TPActor actor = new TPActor(singleLineFormVert(length));
         actor.name = "player";
         actor.setPos(pos);
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
@@ -61,7 +61,7 @@ public final class TPFactory {
      * Creates a new {@code TPActor} with single-line form of random length.
      */
     public static TPActor lineActor(TPProgram prog) {
-        TPForm form = singleLineFormHoriz(randLineLength());
+        TPForm form = singleLineFormVert(randLineLength());
         return droneActor("line", form, prog);
     }
 
@@ -97,7 +97,7 @@ public final class TPFactory {
         TPForm form = zigzagForm(width, sectionLength, numSections);
         TPActor actor = new TPActor(form);
         actor.name = "zigzag (" + numSections + " sections)";
-        actor.setColorGetter(randColorGetter());
+        actor.setColorGetter(randColorGetterDynamic());
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
         // random angle and heading
         actor.angle = Math.random() * Math.PI;
@@ -107,26 +107,26 @@ public final class TPFactory {
 
     public static TPActor regularPolygonActorWithKeyPart(TPProgram prog) {
         TPActor actor = regularPolygonActor(prog);
-        setStrongWithRandomKeyLine(actor);
+        setStrongWithRandomKeyLink(actor.getForm());
         return actor;
     }
 
     public static TPActor regularThistleActorWithKeyPart(TPProgram prog) {
         TPActor actor = regularThistleActor(prog);
-        setStrongWithRandomKeyLine(actor);
+        setStrongWithRandomKeyLink(actor.getForm());
         return actor;
     }
 
     public static TPActor zigzagActorWithKeyPart(TPProgram prog) {
         TPActor actor = zigzagActor(prog);
-        setStrongWithRandomKeyLine(actor);
+        setStrongWithRandomKeyLink(actor.getForm());
         return actor;
     }
 
     public static TPActor droneActor(String name, TPForm form, TPProgram prog) {
         TPActor actor = new TPActor(form);
         actor.name = name;
-        actor.setColorGetter(randColorGetter());
+        actor.setColorGetter(randColorGetterDynamic());
         actor.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_PARTS_AT_BOUNDS);
         setRandHeading(actor);
         actor.angleInertia = randAngleInertia();
@@ -138,8 +138,8 @@ public final class TPFactory {
         Spawning spawn = new Spawning();
         spawn.setArchetype(new TPActor(singleLineFormHoriz(50)));
         spawn.setInterval(randInt(10, 500));
-        if (Math.random() < 0.5)
-            spawn.setRelativeRotation(0.5);
+        if (Math.random() < 0.3)
+            spawn.setRelativeRotation(Geom.QUARTER_TURN);
         TPActor actor = lineActor(prog);
         actor.name = "shooter";
         actor.addBehaviour(spawn);
@@ -148,10 +148,11 @@ public final class TPFactory {
 
     /*------------------------- powerup drones -------------------------*/
 
-    public static TPActor powerupActor(String name, TPForm form, TPProgram prog) {
+    public static TPActor powerupActor(TPProgram prog, String name, TPForm form, PowerupBehaviour powerup) {
+        setPowerupForm(form, powerup);
         TPActor actor = new TPActor(form);
         actor.name = name;
-        actor.setColorGetter(randColorGetter());
+        actor.setColorGetter(randColorGetterDynamic());
         // actor.angleInertia = randAngleInertia(0.001);
         actor.angle = Math.random() * Math.PI;
         actor.setPos(randBoundaryPos(prog));
@@ -161,66 +162,75 @@ public final class TPFactory {
     }
 
     public static TPActor powerupActorShooting(TPProgram prog) {
-        TPForm form = powerupFormShooting();
-        return powerupActor("powerup: shooting", form, prog);
+        return powerupActor(prog, "powerup: shooting",
+                            powerupFormShooting(), new PowerupBehaviourShooting());
     }
 
     public static TPActor powerupActorSticky(TPProgram prog) {
-        TPForm form = powerupFormSticky();
-        return powerupActor("powerup: shooting", form, prog);
+        return powerupActor(prog, "powerup: shooting",
+                            powerupFormSticky(), new PowerupBehaviourSticky());
     }
 
     public static TPActor powerupActorStrong(TPProgram prog) {
-        TPForm form = powerupFormStrong();
-        return powerupActor("powerup: shooting", form, prog);
-    }
-
-    public static TPForm powerupForm(TPLine[] lines, PowerupBehaviour powerup) {
-        boolean first = true;
-        for (TPLine tpl : lines) {
-            if (first) {
-                tpl.addBehaviour(new SuicidePactBehaviour());
-                tpl.addBehaviour(powerup);
-                first = false;
-            } else {
-                tpl.setStrength(TPLine.STRENGTH_HEAVY);
-            }
-        }
-        return new TPForm(lines);
+        return powerupActor(prog, "powerup: shooting",
+                            powerupFormStrong(), new PowerupBehaviourStrong());
     }
 
     public static TPForm powerupFormShooting() {
-        int unit = 10;
-        TPLine[] lines = new TPLine[5];
-        lines[0] = new TPLine(new Line(0, -unit, 0, unit));
-        lines[1] = new TPLine(new Line(unit * -6, unit * -2, 0, -unit));
-        lines[2] = new TPLine(new Line(unit * -6, unit * 2, 0, unit));
-        lines[3] = new TPLine(new Line(unit * 6, unit * -2, 0, -unit));
-        lines[4] = new TPLine(new Line(unit * 6, unit * 2, 0, unit));
-        return powerupForm(lines, new PowerupBehaviourShooting());
+        double unit = 10;
+        TPForm form = new TPForm();
+        Node n1 = new Node(0, -unit);
+        Node n2 = new Node(0, unit);
+        Node n3 = new Node(unit * -6, unit * -2);
+        Node n4 = new Node(unit * -6, unit * 2);
+        Node n5 = new Node(unit * 6, unit * -2);
+        Node n6 = new Node(unit * 6, unit * 2);
+        form.addPart(new TPLink(n1, n2));
+        form.addPart(new TPLink(n3, n1));
+        form.addPart(new TPLink(n4, n2));
+        form.addPart(new TPLink(n5, n1));
+        form.addPart(new TPLink(n6, n2));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm powerupFormSticky() {
-        int unit = 10;
-        TPLine[] lines = new TPLine[6];
-        lines[0] = new TPLine(new Line(0, -unit, 0, unit));
-        lines[1] = new TPLine(new Line(unit * -1, unit * -2, unit * -1, unit * 2));
-        lines[2] = new TPLine(new Line(unit * -1, unit * -2, 0, -unit));
-        lines[3] = new TPLine(new Line(unit * -1, unit * 2, 0, unit));
-        lines[4] = new TPLine(new Line(unit * 6, unit * -2, 0, -unit));
-        lines[5] = new TPLine(new Line(unit * 6, unit * 2, 0, unit));
-        return powerupForm(lines, new PowerupBehaviourSticky());
+        double unit = 10;
+        TPForm form = new TPForm();
+        Node n1 = new Node(0, -unit);
+        Node n2 = new Node(0, unit);
+        Node n3 = new Node(-unit, unit * -2);
+        Node n4 = new Node(-unit, unit * 2);
+        Node n5 = new Node(unit * 6, unit * -2);
+        Node n6 = new Node(unit * 6, unit * 2);
+        form.addPart(new TPLink(n1, n2));
+        form.addPart(new TPLink(n3, n4));
+        form.addPart(new TPLink(n3, n1));
+        form.addPart(new TPLink(n4, n2));
+        form.addPart(new TPLink(n5, n1));
+        form.addPart(new TPLink(n6, n2));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm powerupFormStrong() {
-        int unit = 10;
-        TPLine[] lines = new TPLine[5];
-        lines[0] = new TPLine(new Line(0.001, 0, 0, unit * 3));
-        lines[1] = new TPLine(new Line(0.001, 0, unit * 6, unit * -6));
-        lines[2] = new TPLine(new Line(0.001, 0, unit * -6, unit * -6));
-        lines[3] = new TPLine(new Line(0.001, unit * 3, unit * 6, unit * -3));
-        lines[4] = new TPLine(new Line(0.001, unit * 3, unit * -6, unit * -3));
-        return powerupForm(lines, new PowerupBehaviourStrong());
+        double zero = 0.00000001;
+        double unit = 10;
+        TPForm form = new TPForm();
+        Node n1 = new Node(zero, 0);
+        Node n2 = new Node(0, unit * 3);
+        Node n3 = new Node(unit * 6, unit * -6);
+        Node n4 = new Node(unit * -6, unit * -6);
+        Node n5 = new Node(zero, unit * 3);
+        Node n6 = new Node(unit * 6, unit * -3);
+        Node n7 = new Node(unit * -6, unit * -3);
+        form.addPart(new TPLink(n1, n2));
+        form.addPart(new TPLink(n1, n3));
+        form.addPart(new TPLink(n1, n4));
+        form.addPart(new TPLink(n5, n6));
+        form.addPart(new TPLink(n5, n7));
+        form.housekeeping();
+        return form;
     }
 
     /*------------------------------ form ------------------------------*/
@@ -231,82 +241,121 @@ public final class TPFactory {
 
     public static TPForm singleLineFormHoriz(double length) {
         double half = length / 2;
-        Pt start = new Pt(-half, 0);
-        Pt end = new Pt(half, 0);
-        return new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
+        TPForm form = new TPForm();
+        form.addPart(new TPLink(new Node(-half, 0), new Node(half, 0)));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm singleLineFormVert(double length) {
         double half = length / 2;
-        Pt start = new Pt(0, -half);
-        Pt end = new Pt(0, half);
-        return new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
+        TPForm form = new TPForm();
+        form.addPart(new TPLink(new Node(0, -half), new Node(0, half)));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm singleLineForm(double x1, double y1, double x2, double y2) {
-        Pt start = new Pt(x1, y1);
-        Pt end = new Pt(x2, y2);
-        return new TPForm(new TPPart[] { new TPLine(new Line(start, end)) });
+        TPForm form = new TPForm();
+        form.addPart(new TPLink(new Node(x1, y1), new Node(x2, y2)));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm rectangleForm(double w, double h) {
         double halfW = w / 2;
         double halfH = h / 2;
-        Pt a = new Pt(-halfW, -halfH); // top-left
-        Pt b = new Pt(-halfW, halfH);  // bottom-left
-        Pt c = new Pt(halfW, halfH);   // bottom-right
-        Pt d = new Pt(halfW, -halfH);  // top-right
-        TPLine lineA = new TPLine(new Line(a, b));
-        TPLine lineB = new TPLine(new Line(b, c));
-        TPLine lineC = new TPLine(new Line(c, d));
-        TPLine lineD = new TPLine(new Line(d, a));
-        return new TPForm(new TPPart[] { lineA, lineB, lineC, lineD });
+        Node a = new Node(-halfW, -halfH);
+        Node b = new Node(-halfW, halfH);
+        Node c = new Node(halfW, halfH);
+        Node d = new Node(halfW, -halfH);
+        TPForm form = new TPForm();
+        form.addPart(new TPLink(a, b));
+        form.addPart(new TPLink(b, c));
+        form.addPart(new TPLink(c, d));
+        form.addPart(new TPLink(d, a));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm regularPolygonForm(double size, int numSides) {
-        Pt[] points = regularPolygonPoints(size, numSides);
-        TPLine[] lines = new TPLine[points.length];
-        for (int i = 0; i < (lines.length - 1); i++)
-            lines[i] = new TPLine(new Line(points[i], points[i + 1]));
-        lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
-        return new TPForm(lines);
+        Node[] nodes = pointsToNodes(regularPolygonPoints(size, numSides));
+        TPForm form = new TPForm();
+        for (int i = 0; i < (nodes.length - 1); i++)
+            form.addPart(new TPLink(nodes[i], nodes[i + 1]));
+        form.addPart(new TPLink(nodes[nodes.length - 1], nodes[0]));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm regularThistleForm(double size, int numSides) {
-        Pt zero = new Pt(0.000001, 0.000001);
-        Pt[] points = regularPolygonPoints(size, numSides);
-        TPLine[] lines = new TPLine[points.length];
-        for (int i = 0; i < lines.length; i++)
-            lines[i] = new TPLine(new Line(zero, points[i]));
-        return new TPForm(lines);
+        Node zeroNode = makeZeroNode();
+        Node[] nodes = pointsToNodes(regularPolygonPoints(size, numSides));
+        TPForm form = new TPForm();
+        for (Node n : nodes)
+            form.addPart(new TPLink(zeroNode, n));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm segmentedPolygonForm(double size, int numSides) {
-        Pt zero = new Pt(0.000001, 0.000001);
-        Pt[] points = regularPolygonPoints(size, numSides);
-        TPLine[] lines = new TPLine[points.length * 2];
-        int index = 0;
-        // thistle points
-        for (int i = 0; i < points.length; i++) {
-            lines[index] = new TPLine(new Line(zero, points[i]));
-            index++;
-        }
-        // polygon points
-        for (int i = 0; i < (points.length - 1); i++) {
-            lines[index] = new TPLine(new Line(points[i], points[i + 1]));
-            index++;
-        }
-        lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
+        Node zeroNode = makeZeroNode();
+        Node[] nodes = pointsToNodes(regularPolygonPoints(size, numSides));
+        TPForm form = new TPForm();
+        // thistle nodes
+        for (Node n : nodes)
+            form.addPart(new TPLink(zeroNode, n));
+        // polygon nodes
+        for (int i = 0; i < (nodes.length - 1); i++)
+            form.addPart(new TPLink(nodes[i], nodes[i + 1]));
+        form.addPart(new TPLink(nodes[nodes.length - 1], nodes[0]));
+        form.housekeeping();
+        return form;
+    }
 
-        return new TPForm(lines);
+    public static TPForm zigzagForm(double width, double sectionLength, int numSections) {
+        return openPathForm(zigzagPoints(width, sectionLength, numSections));
+    }
+
+    /**
+     * @param size Size in greatest dimension (length).
+     */
+    public static TPForm shipForm1(double size) {
+        double half = size / 2;
+        double quart = size / 4;
+        Node[] nodes = new Node[3];
+        nodes[0] = new Node(half, 0);
+        nodes[1] = new Node(-half, quart);
+        nodes[2] = new Node(-half, -quart);
+        TPForm form = closedLoopForm(nodes);
+        form.housekeeping();
+        setSuicidePact(form);
+        return form;
+    }
+
+    public static TPForm openPathForm(Pt[] points) {
+        return openPathForm(pointsToNodes(points));
+    }
+
+    public static TPForm openPathForm(Node[] nodes) {
+        TPForm form = new TPForm();
+        for (int i = 0; i < (nodes.length - 1); i++)
+            form.addPart(new TPLink(nodes[i], nodes[i + 1]));
+        form.housekeeping();
+        return form;
     }
 
     public static TPForm closedLoopForm(Pt[] points) {
-        TPLine[] lines = new TPLine[points.length];
-        for (int i = 0; i < (lines.length - 1); i++)
-            lines[i] = new TPLine(new Line(points[i], points[i + 1]));
-        lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
-        return new TPForm(lines);
+        return closedLoopForm(pointsToNodes(points));
+    }
+
+    public static TPForm closedLoopForm(Node[] nodes) {
+        TPForm form = new TPForm();
+        for (int i = 0; i < (nodes.length - 1); i++)
+            form.addPart(new TPLink(nodes[i], nodes[i + 1]));
+        form.addPart(new TPLink(nodes[nodes.length - 1], nodes[0]));
+        form.housekeeping();
+        return form;
     }
 
     public static Pt[] regularPolygonPoints(double size, int numSides) {
@@ -318,15 +367,6 @@ public final class TPFactory {
                                Math.cos(angle) * size);
         }
         return points;
-    }
-
-    public static TPForm zigzagForm(double width, double sectionLength, int numSections) {
-        Pt[] points = zigzagPoints(width, sectionLength, numSections);
-        TPLine[] lines = new TPLine[points.length - 1];
-        for (int i = 0; i < (lines.length); i++)
-            lines[i] = new TPLine(new Line(points[i], points[i + 1]));
-        // lines[lines.length - 1] = new TPLine(new Line(points[points.length - 1], points[0]));
-        return new TPForm(lines);
     }
 
     public static Pt[] zigzagPoints(double width, double sectionLength, int numSections) {
@@ -342,25 +382,10 @@ public final class TPFactory {
         return points;
     }
 
-    /**
-     * @param size Size in greatest dimension (length).
-     */
-    public static TPForm shipForm1(double size) {
-        double half = -(size / 2);
-        double quart = size / 4;
-        TPLine[] lines = new TPLine[3];
-        lines[0] = new TPLine(0, half, -quart, -half);
-        lines[1] = new TPLine(0, half, quart, -half);
-        lines[2] = new TPLine(-quart, -half, quart, -half);
-        return new TPForm(lines);
-    }
-
     /*--------------------------- text-actor ---------------------------*/
 
     public static TPActor textActor(TPProgram prog, String text) {
         TPActor a = new TPActor(textFormCentered(text));
-        // a.setBoundaryBehaviour(TPActor.BoundaryBehaviour.WRAP_AT_BOUNDS);
-        // TPFactory.setRandHeading(a);
         return a;
     }
 
@@ -375,38 +400,52 @@ public final class TPFactory {
 
     /*------------------------------ line ------------------------------*/
 
-    public static TPLine lineStandard(double x1, double y1, double x2, double y2) {
-        return lineStandard(x1, y1, x2, y2, null);
+    public static TPLink linkStandard(double x1, double y1, double x2, double y2) {
+        return linkStandard(x1, y1, x2, y2, null);
     }
 
-    public static TPLine lineStandard(double x1, double y1, double x2, double y2,
+    public static TPLink linkStandard(double x1, double y1, double x2, double y2,
                                       ColorGetter col) {
-        TPLine tpl = new TPLine(new Line(x1, y1, x2, y2));
-        tpl.setColorGetter(col);
-        return tpl;
+        TPLink ln = new TPLink(new Node(x1, y1), new Node(x2, y2));
+        ln.setColorGetter(col);
+        return ln;
     }
 
-    public static TPLine lineStrong(double x1, double y1, double x2, double y2) {
-        return lineStrong(x1, y1, x2, y2, null);
+    public static TPLink linkStrong(double x1, double y1, double x2, double y2) {
+        return linkStrong(x1, y1, x2, y2, null);
     }
 
-    public static TPLine lineStrong(double x1, double y1, double x2, double y2,
+    public static TPLink linkStrong(double x1, double y1, double x2, double y2,
                                     ColorGetter col) {
-        TPLine tpl = new TPLine(new Line(x1, y1, x2, y2));
-        tpl.setStrength(TPLine.STRENGTH_HEAVY);
-        tpl.setColorGetter(col);
-        return tpl;
+        TPLink ln = new TPLink(new Node(x1, y1), new Node(x2, y2));
+        ln.setStrength(TPLink.STRENGTH_HEAVY);
+        ln.setColorGetter(col);
+        return ln;
     }
 
     /*----------------------------- color ------------------------------*/
 
-    public static ColorGetter randColorGetter() {
+    public static ColorGetter randColorGetterDynamic() {
         ColorGetter[] items = new ColorGetter[] {
-            // new ColorMono(),
             new ColorRandom(),
             new ColorRandomMono(),
             new ColorSmoothMono(),
             new ColorSmoothColor(),
+        };
+        int index = (int) (Math.random() * items.length);
+        return items[index];
+    }
+
+    public static ColorGetter randColorGetterMono() {
+        ColorGetter[] items = new ColorGetter[] {
+            ColorMono.WHITE,
+            ColorMono.BLACK,
+            ColorMono.RED,
+            ColorMono.GREEN,
+            ColorMono.BLUE,
+            ColorMono.CYAN,
+            ColorMono.MAGENTA,
+            ColorMono.YELLOW,
         };
         int index = (int) (Math.random() * items.length);
         return items[index];
@@ -430,18 +469,12 @@ public final class TPFactory {
     }
 
     public static double randAngleInertia() {
-        // return randAngleInertia(0.007);
         return rand(0.007);
     }
 
     public static void setRandAngleAndHeading(TPActor actor) {
         setRandHeading(actor);
         setRandAngle(actor);
-    }
-
-    // public static double randAngleInertia(double max) {
-    public static double rand(double max) {
-        return Math.random() * max;
     }
 
     public static Pt centerPos(TPProgram prog) {
@@ -488,24 +521,10 @@ public final class TPFactory {
     }
 
     public static void anchorToRandPoint(TPActor actor, TPActor anchorActor) {
-        TPForm form = anchorActor.getForm();
-        TPLine line = null;
-
-        // count lines in form, then choose one
-        int n = 0;
-        for (int i = 0; i < form.numParts(); i++)
-            if (form.getPart(i) instanceof TPLine)
-                n++;
-
-        int chosen = (int) (Math.random() * n);
-
-        for (int i = 0; i < form.numParts(); i++)
-            if (form.getPart(i) instanceof TPLine)
-                if (i == chosen)
-                    line = (TPLine) form.getPart(i);
-
+        int chosenIndex = (int) (Math.random() * anchorActor.getForm().numNodes());
+        Node anchorNode = anchorActor.getForm().getNode(chosenIndex);
         PointAnchor anchor = new PointAnchor();
-        anchor.setAnchor(line, form);
+        anchor.setAnchor(anchorNode);
         actor.addBehaviour(anchor);
         // add as child, so that they don't destroy one-another
         anchorActor.addChild(actor);
@@ -513,37 +532,43 @@ public final class TPFactory {
 
     /*--------------------------- properties ---------------------------*/
 
-    public static void setStrongWithRandomKeyLine(TPActor actor) {
-        TPForm form = actor.getForm();
-        // count number of line-parts
-        int lineCount = 0;
-        for (int i = 0; i < form.numParts(); i++) {
-            if (form.getPart(i) instanceof TPLine) {
-                lineCount++;
-            }
-        }
-        // choose one at random
-        int chosen = randInt(lineCount);
-        lineCount = 0;
-        for (int i = 0; i < form.numParts(); i++) {
-            if (form.getPart(i) instanceof TPLine) {
-                TPLine tpl = (TPLine) form.getPart(i);
-                if (lineCount == chosen) {
-                    tpl.setStrength(TPLine.STRENGTH_LIGHT);
-                    tpl.addBehaviour(new SuicidePactBehaviour());
-                } else {
-                    tpl.setStrength(TPLine.STRENGTH_HEAVY);
-                }
-                lineCount++;
+    public static void setStrongWithRandomKeyLink(TPForm form) {
+        // choose one link at random
+        int chosen = randInt(form.numLinks());
+        for (int i = 0; i < form.numLinks(); i++) {
+            if (i == chosen) {
+                form.getLink(i).setStrength(TPLink.STRENGTH_LIGHT);
+                form.getLink(i).addBehaviour(new PartSuicidePact());
+            } else {
+                form.getLink(i).setStrength(TPLink.STRENGTH_HEAVY);
             }
         }
     }
 
+    /**
+     * <p>Adds powerup behaviour to first link of form.</p>
+     */
+    public static void setPowerupForm(TPForm form, PowerupBehaviour powerup) {
+        if (form.numLinks() > 0) {
+            form.getLink(0).setStrength(TPLink.STRENGTH_LIGHT);
+            form.getLink(0).addBehaviour(new PartSuicidePact());
+            form.getLink(0).addBehaviour(powerup);
+            for (int i = 1; i < form.numLinks(); i++) {
+                form.getLink(i).setStrength(TPLink.STRENGTH_HEAVY);
+            }
+        }
+    }
+
+    public static void setSuicidePact(TPForm form) {
+        for (int i = 0; i < form.numLinks(); i++)
+            form.getLink(i).addBehaviour(new PartSuicidePact());
+    }
+
     /*------------------------- helper methods -------------------------*/
 
-    // private static double rand(double max) {
-    //     return Math.random() * max;
-    // }
+    public static double rand(double max) {
+        return Math.random() * max;
+    }
 
     public static double rand(double min, double max) {
         double dist = max - min;
@@ -557,6 +582,17 @@ public final class TPFactory {
     public static int randInt(int min, int max) {
         double dist = max - min;
         return (int) (min + (Math.random() * dist));
+    }
+
+    private static Node makeZeroNode() {
+        return new Node(NEARLY_ZERO, NEARLY_ZERO);
+    }
+
+    private static Node[] pointsToNodes(Pt[] points) {
+        Node[] nodes = new Node[points.length];
+        for (int i = 0; i < points.length; i++)
+            nodes[i] = new Node(points[i].x, points[i].y);
+        return nodes;
     }
 
 }

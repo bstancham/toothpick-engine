@@ -550,8 +550,9 @@ public class TPProgram implements Iterable<TPActor>, TPEncodingHelper {
                     for (int i = 0; i < a.numChildren(); i++)
                         addActor(a.getChild(i));
             }
-        for (TPActor a : toRemove)
+        for (TPActor a : toRemove) {
             actors.remove(a);
+        }
         toRemove.clear();
         // add
         for (TPActor a : toAdd)

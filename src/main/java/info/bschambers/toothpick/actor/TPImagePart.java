@@ -16,10 +16,10 @@ public class TPImagePart extends TPPart {
     }
 
     @Override
-    public void update(double x, double y, double angle) {
-        this.x = x;
-        this.y = y;
-        super.update(x, y, angle);
+    public void update(TPActor a) {
+        this.x = a.x;
+        this.y = a.y;
+        super.update(a);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class TPImagePart extends TPPart {
         TPImagePart other = new TPImagePart(image);
         other.x = x;
         other.y = y;
-        other.copyBehaviours(this);
+        other.copyPartProperties(this);
         return other;
     }
 

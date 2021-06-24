@@ -2,8 +2,7 @@ package info.bschambers.toothpick.ui.swing;
 
 import info.bschambers.toothpick.TPGeometry;
 import info.bschambers.toothpick.actor.*;
-import info.bschambers.toothpick.geom.Line;
-import info.bschambers.toothpick.geom.Pt;
+import info.bschambers.toothpick.geom.*;
 import info.bschambers.toothpick.geom.Rect;
 import info.bschambers.toothpick.ui.TPMenu;
 import info.bschambers.toothpick.ui.TPMenuItem;
@@ -40,15 +39,6 @@ public class Gfx {
     public static final Stroke STROKE_19 = new BasicStroke(19);
     public static final Stroke STROKE_20 = new BasicStroke(20);
 
-    // private static final Stroke[] strokes0To5 = new Stroke[] {
-    //     STROKE_0,
-    //     STROKE_1,
-    //     STROKE_2,
-    //     STROKE_3,
-    //     STROKE_4,
-    //     STROKE_5
-    // };
-
     private static final Stroke[] strokes0to20 = new Stroke[] {
         STROKE_0,
         STROKE_1,
@@ -73,25 +63,16 @@ public class Gfx {
         STROKE_20
     };
 
-    // public static Stroke getStrokeForLineStrength(TPLine tpl) {
-    //     int strength = tpl.getStrength();
-    //     if (strength <= 0)
-    //         return STROKE_0;
-    //     if (strength >= 5)
-    //         return STROKE_5;
-    //     return strokes0To5[strength];
-    // }
-
-    public static Stroke getStrokeForLineStrength(TPGeometry geom, TPLine tpl) {
-        return getStrokeForLineStrength(tpl, geom.lineWidthScale);
+    public static Stroke getStrokeForLineStrength(TPGeometry geom, int strength) {
+        return getStrokeForLineStrength(strength, geom.lineWidthScale);
     }
 
     /**
      * Get stroke, with scaling. If resulting stroke size is larger than 20, return
      * STROKE_20.
      */
-    public static Stroke getStrokeForLineStrength(TPLine tpl, int scaling) {
-        int strength = tpl.getStrength() * scaling;
+    public static Stroke getStrokeForLineStrength(int inputStrength, int scaling) {
+        int strength = inputStrength * scaling;
         if (strength < 0)
             strength = 0;
         else if (strength >= strokes0to20.length)
@@ -186,7 +167,6 @@ public class Gfx {
     }
 
     public static void actor(Graphics g, TPGeometry geom, TPActor a) {
-
         g.setColor(a.getColor());
         form(g, geom, a.getForm());
 
@@ -200,28 +180,25 @@ public class Gfx {
     }
 
     public static void vertices(Graphics g, TPGeometry geom, TPForm form) {
-        for (int i = 0; i < form.numParts(); i++) {
-            TPPart part = form.getPart(i);
-            if (part instanceof TPLine)
-                vertices(g, geom, (TPLine) part);
-        }
-    }
-
-    public static void vertices(Graphics g, TPGeometry geom, TPLine line) {
-        point(g, geom, line.getLine().start, 2);
-        point(g, geom, line.getLine().end, 2);
+        for (int i = 0; i < form.numNodes(); i++)
+            point(g, geom, form.getNode(i), 2);
     }
 
     public static void point(Graphics g, TPGeometry geom, Pt p, int size) {
         g.fillOval((int) geom.xToScreen(p.x), (int) geom.yToScreen(p.y), size, size);
     }
 
+    public static void point(Graphics g, TPGeometry geom, Node n, int size) {
+        g.fillOval((int) geom.xToScreen(n.getX()), (int) geom.yToScreen(n.getY()), size, size);
+    }
+
     public static void form(Graphics g, TPGeometry geom, TPForm form) {
+        for (int i = 0; i < form.numLinks(); i++) {
+            link(g, geom, form.getLink(i));
+        }
         for (int i = 0; i < form.numParts(); i++) {
             TPPart part = form.getPart(i);
-            if (part instanceof TPLine) {
-                tpLine(g, geom, (TPLine) part);
-            } else if (part instanceof TPExplosion) {
+            if (part instanceof TPExplosion) {
                 explosion(g, geom, (TPExplosion) part);
             } else if (part instanceof TPTextPart) {
                 text(g, geom, (TPTextPart) part);
@@ -231,13 +208,17 @@ public class Gfx {
         }
     }
 
-    public static void tpLine(Graphics g, TPGeometry geom, TPLine tpl) {
+    public static void link(Graphics g, TPGeometry geom, TPLink ln) {
         Color col = g.getColor();
-        // NOTE: some TPLine instances have their own color-getter
-        if (tpl.getColorGetter() != null) {
-            g.setColor(tpl.getColorGetter().get());
+        // NOTE: some TPLink instances have their own color-getter
+        if (ln.getColorGetter() != null) {
+            g.setColor(ln.getColorGetter().get());
         }
-        line(g, geom, getStrokeForLineStrength(geom, tpl), tpl.getLine().start, tpl.getLine().end);
+        // use transposed display co-ordinates to facilitate wrapping larger forms around
+        // arena boundaries
+        line(g, geom, getStrokeForLineStrength(geom, ln.getStrength()),
+             ln.getDisplayXStart(), ln.getDisplayYStart(),
+             ln.getDisplayXEnd(), ln.getDisplayYEnd());
         g.setColor(col);
     }
 
@@ -269,7 +250,8 @@ public class Gfx {
         double len2 = 15;
         double x1 = player.getActor().x;
         double y1 = player.getActor().y;
-        double angle = (player.getActor().angle + 1.5) * Math.PI;
+        // double angle = (player.getActor().angle + 1.5) * Math.PI;
+        double angle = player.getActor().angle;
         double x2 = x1 + Math.cos(angle) * len1;
         double y2 = y1 + Math.sin(angle) * len1;
         double x3 = x1 + Math.cos(angle) * len2;

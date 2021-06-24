@@ -12,7 +12,7 @@ public abstract class KeyInputHandler implements ActorBehaviour {
         };
 
     protected double xyStep = 1;
-    protected double angleStep = 0.005;
+    protected double angleStep = 0.015;
 
     public KeyBinding bindUp      = new KeyBinding("up",       81); // q
     public KeyBinding bindDown    = new KeyBinding("down",     65); // a

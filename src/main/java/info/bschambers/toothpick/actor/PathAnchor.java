@@ -2,21 +2,20 @@ package info.bschambers.toothpick.actor;
 
 import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.geom.Geom;
-import info.bschambers.toothpick.geom.Line;
-import info.bschambers.toothpick.geom.Pt;
+import info.bschambers.toothpick.geom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PathAnchor implements ActorBehaviour {
 
-    private List<TPLine> path = new ArrayList<>();
+    private List<TPLink> path = new ArrayList<>();
     private int currentIndex = 0;
     private double currentDist = 0;
     private double distStep = 0.3;
     private boolean loop = true;
     private boolean reverse = false;
 
-    public void addToPath(TPLine pathPart) {
+    public void addToPath(TPLink pathPart) {
         path.add(pathPart);
     }
 
@@ -25,54 +24,53 @@ public class PathAnchor implements ActorBehaviour {
      * appear in the form.</p>
      */
     public void makePath(TPActor actor) {
-        path = new ArrayList<TPLine>();
-        for (int i = 0; i < actor.getForm().numParts(); i++)
-            if (actor.getForm().getPart(i) instanceof TPLine)
-                addToPath((TPLine) actor.getForm().getPart(i));
+        path = new ArrayList<TPLink>();
+        for (int i = 0; i < actor.getForm().numLinks(); i++)
+            addToPath(actor.getForm().getLink(i));
         currentIndex = 0;
     }
 
     public void update(TPProgram prog, TPActor a) {
 
         if (path.size() > 0) {
-            TPLine currentLine = path.get(currentIndex);
-            if (currentLine.isAlive()) {
+            TPLink currentLink = path.get(currentIndex);
+            if (currentLink.isAlive()) {
 
                 // increment distance
                 currentDist += distStep;
-                Pt start = getStart(currentLine);
-                Pt end = getEnd(currentLine);
+                Node start = getStart(currentLink);
+                Node end = getEnd(currentLink);
                 double lineDist = Geom.distance(start, end);
 
                 // if end of line is passed, go to next line
                 if (currentDist > lineDist) {
                     currentDist -= lineDist;
                     endOfLine();
-                    currentLine = path.get(currentIndex);
-                    start = getStart(currentLine);
-                    end = getEnd(currentLine);
+                    currentLink = path.get(currentIndex);
+                    start = getStart(currentLink);
+                    end = getEnd(currentLink);
                 }
 
                 // calculate current position
-                double angle = Geom.angle(start, end);
-                double x = start.x + (currentDist * (Math.cos(angle)));
-                double y = start.y + (currentDist * (Math.sin(angle)));
+                double angle = Geom.angle(start.getX(), start.getY(), end.getX(), end.getY());
+                double x = start.getX() + (currentDist * (Math.cos(angle)));
+                double y = start.getY() + (currentDist * (Math.sin(angle)));
                 a.x = x;
                 a.y = y;
             }
         }
     }
 
-    private Pt getStart(TPLine tpl) {
+    private Node getStart(TPLink ln) {
         if (reverse)
-            return tpl.getLine().end;
-        return tpl.getLine().start;
+            return ln.getEndNode();
+        return ln.getStartNode();
     }
 
-    private Pt getEnd(TPLine tpl) {
+    private Node getEnd(TPLink ln) {
         if (reverse)
-            return tpl.getLine().start;
-        return tpl.getLine().end;
+            return ln.getStartNode();
+        return ln.getEndNode();
     }
 
     private void endOfLine() {

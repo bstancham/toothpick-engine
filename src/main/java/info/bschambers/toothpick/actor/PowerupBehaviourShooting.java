@@ -12,7 +12,7 @@ public class PowerupBehaviourShooting extends PowerupBehaviour {
     }
 
     @Override
-    protected void applyPowerup(TPActor actor) {
+    public void applyPowerup(TPActor actor) {
         actor.setTriggerBehaviour(new TrigActionShooter());
     }
 

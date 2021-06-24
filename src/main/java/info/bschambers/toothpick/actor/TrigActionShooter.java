@@ -7,12 +7,10 @@ public class TrigActionShooter implements TriggerBehaviour {
     private int delay = 200;
     private int waitCount = 0;
 
-    public TrigActionShooter() {
-        this(200);
-    }
+    public TrigActionShooter() { this(200); }
 
     public TrigActionShooter(int delay) {
-        this(new TPActor(TPFactory.singleLineFormVert(50)), delay);
+        this(new TPActor(TPFactory.singleLineFormHoriz(50)), delay);
     }
 
     public TrigActionShooter(TPActor bulletArchetype, int delay) {
@@ -39,8 +37,8 @@ public class TrigActionShooter implements TriggerBehaviour {
         bullet.x = actor.x;
         bullet.y = actor.y;
         bullet.angle = actor.angle + relAngle;
-        bullet.xInertia = Math.sin(bullet.angle * Math.PI) * bulletSpeed;
-        bullet.yInertia = -(Math.cos(bullet.angle * Math.PI) * bulletSpeed);
+        bullet.xInertia = Math.cos(bullet.angle) * bulletSpeed;
+        bullet.yInertia = (Math.sin(bullet.angle) * bulletSpeed);
         bullet.setBoundaryBehaviour(TPActor.BoundaryBehaviour.DIE_AT_BOUNDS);
         actor.addChild(bullet);
     }

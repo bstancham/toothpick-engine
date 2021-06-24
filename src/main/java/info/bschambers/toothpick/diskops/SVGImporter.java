@@ -3,7 +3,8 @@ package info.bschambers.toothpick.diskops;
 import info.bschambers.toothpick.TPProgram;
 import info.bschambers.toothpick.actor.TPActor;
 import info.bschambers.toothpick.actor.TPForm;
-import info.bschambers.toothpick.actor.TPLine;
+import info.bschambers.toothpick.actor.TPLink;
+import info.bschambers.toothpick.geom.Node;
 import java.io.*;
 import java.util.List;
 import javax.xml.parsers.*;
@@ -141,9 +142,9 @@ public class SVGImporter {
             double y1 = Double.parseDouble(y1Str);
             double x2 = Double.parseDouble(x2Str);
             double y2 = Double.parseDouble(y2Str);
-            TPLine line = new TPLine(x1, y1, x2, y2);
-            form.addPart(line);
-            System.out.println("LINE: " + line);
+            System.out.println("LINE:...");
+            form.addLinkReuseNodes(x1, y1, x2, y2);
+            form.housekeeping();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -159,11 +160,11 @@ public class SVGImporter {
             double y = Double.parseDouble(yStr);
             double w = Double.parseDouble(wStr);
             double h = Double.parseDouble(hStr);
-            form.addPart(new TPLine(x, y, x + w, y));
-            form.addPart(new TPLine(x + w, y, x + w, y + h));
-            form.addPart(new TPLine(x + w, y + h, x, y + h));
-            form.addPart(new TPLine(x, y + h, x, y));
             System.out.println("RECT...");
+            form.addLinkReuseNodes(x, y, x + w, y);
+            form.addLinkReuseNodes(x + w, y, x + w, y + h);
+            form.addLinkReuseNodes(x + w, y + h, x, y + h);
+            form.addLinkReuseNodes(x, y + h, x, y);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -209,9 +210,7 @@ public class SVGImporter {
                     i++;
                 } else if (i == 4) {
                     y2 = Double.parseDouble(str);
-                    TPLine line = new TPLine(x1, y1, x2, y2);
-                    form.addPart(line);
-                    System.out.println("... " + line);
+                    form.addLinkReuseNodes(x1, y1, x2, y2);
                     x1 = x2;
                     y1 = y2;
                     i = 3;
@@ -220,9 +219,7 @@ public class SVGImporter {
 
             if (closedShape) {
                 System.out.println("... closing shape...");
-                TPLine line = new TPLine(x1, y1, firstX, firstY);
-                form.addPart(line);
-                System.out.println("... " + line);
+                form.addLinkReuseNodes(x1, y1, firstX, firstY);
             }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -306,8 +303,9 @@ public class SVGImporter {
                         fetchInputB();
                     if (inputCount == 2) {
                         System.out.println("... LINE from " + x + ", " + y + " to " + a + ", " + b);
-                        TPLine line = new TPLine(x, y, a, b);
-                        form.addPart(line);
+                        // TPLine line = new TPLine(x, y, a, b);
+                        // form.addPart(line);
+                        form.addLinkReuseNodes(x, y, a, b);
                         x = a;
                         y = b;
                         inputCount = 0;
@@ -318,8 +316,9 @@ public class SVGImporter {
                     if (inputCount == 1) {
                         System.out.println("... HORIZONTAL LINE from "
                                            + x + ", " + y + " to " + a + ", " + y);
-                        TPLine line = new TPLine(x, y, a, y);
-                        form.addPart(line);
+                        // TPLine line = new TPLine(x, y, a, y);
+                        // form.addPart(line);
+                        form.addLinkReuseNodes(x, y, a, y);
                         x = a;
                         inputCount = 0;
                     }
@@ -329,8 +328,9 @@ public class SVGImporter {
                     if (inputCount == 1) {
                         System.out.println("... VERTICAL LINE from "
                                            + x + ", " + y + " to " + x + ", " + b);
-                        TPLine line = new TPLine(x, y, x, b);
-                        form.addPart(line);
+                        // TPLine line = new TPLine(x, y, x, b);
+                        // form.addPart(line);
+                        form.addLinkReuseNodes(x, y, x, b);
                         y = b;
                         inputCount = 0;
                     }
@@ -345,8 +345,9 @@ public class SVGImporter {
             System.out.println("... CLOSE PATH (line from "
                                + x + ", " + y + " to "
                                + firstX + ", " + firstY + ")");
-            TPLine line = new TPLine(x, y, firstX, firstY);
-            form.addPart(line);
+            // TPLine line = new TPLine(x, y, firstX, firstY);
+            // form.addPart(line);
+            form.addLinkReuseNodes(x, y, firstX, firstY);
         }
 
         private void fetchInputA() {
