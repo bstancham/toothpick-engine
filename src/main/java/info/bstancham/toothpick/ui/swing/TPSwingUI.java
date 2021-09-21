@@ -15,6 +15,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.MenuItem;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -128,6 +129,7 @@ public class TPSwingUI extends JFrame
 
         public TPSwingPanel() {
             img = new TPSmearImage();
+            setLayout(null);
         }
 
         public void schedulteResizeSmearImage() {
@@ -258,7 +260,9 @@ public class TPSwingUI extends JFrame
     /*-------------------------- Mouse Input ---------------------------*/
 
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        menu.mouseClicked();
+    }
 
     @Override
     public void mousePressed(MouseEvent e) {}
@@ -273,7 +277,11 @@ public class TPSwingUI extends JFrame
     public void mouseExited(MouseEvent e) {}
 
     @Override
-    public void mouseMoved(MouseEvent e) {}
+    public void mouseMoved(MouseEvent e) {
+        Insets in = getInsets();
+        menu.mouseMoved(e.getX() - in.left,
+                        e.getY() - in.top);
+    }
 
     @Override
     public void mouseDragged(MouseEvent e) {}

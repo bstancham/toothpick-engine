@@ -1,6 +1,7 @@
 package info.bstancham.toothpick.ui;
 
 import info.bstancham.toothpick.TPBase;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,162 @@ public class TPMenu implements TPMenuItem {
     private int selected = 0;
     private Runnable initAction = () -> {};
 
+    private boolean mouseInside = false;
+    private int mouseOverIndex = -1;
+
+    private List<Color> colors = new ArrayList<>();
+
+    public Color bgColor = Color.BLUE;
+    public Color defaultColor = Color.WHITE;
+    public Color borderColor = Color.WHITE;
+    public Color mouseOverColor = Color.RED;
+    private String subMenuPrefix = ">>> ";
+
+    public int posX = 30;
+    public int posY = 30;
+    public int padLeft = 10;
+    public int padRight = 10;
+    public int padTop = 20;
+    public int padBot = 10;
+    private int subMenuOffset = 50;
+
+    // guess at size of font
+    public int charWidth = 8;
+    public int lineHeight = 20;
+
+    // dynamically assigned variables
+    private int longestLine = 0;
+    public int textWidth = 0;
+    public int textHeight = 0;
+    public int width = 0;
+    public int height = 0;
+
+    private void recalculateDimensions() {
+
+        // find longest line
+        longestLine = text().length(); // title
+        for (TPMenuOption opt : options) {
+            if (opt == null) {
+                System.out.println("NULL OPTION");
+            } else {
+                // System.out.println(opt);
+                // System.out.println(opt.get());
+                if (opt.get() == null) {
+                    System.out.println("NULL ITEM");
+                } else {
+
+                    // System.out.println(opt.get().text());
+                    // String str = opt.get().text();
+                    if (opt.get().text() == null) {
+                        System.out.println("NULL STRING");
+                    } else {
+                        int len = opt.get().text().length();
+                        if (opt.get() instanceof TPMenu)
+                            len += subMenuPrefix.length();
+                        if (len > longestLine)
+                            longestLine = len;
+                    }
+                }
+            }
+        }
+
+        textWidth = charWidth * longestLine;
+        // add extra lineHeight to allow for menu title
+        textHeight = lineHeight * (options.size() + 1);
+        width = textWidth + padLeft + padRight;
+        height = textHeight + padTop + padBot;
+
+    }
+
+    public int optionsPosY() {
+       // add 2*lineHeight to allow for menu title
+        return posY + padTop + lineHeight + 5;
+    }
+
+    public int posYForItem(int index) {
+        return optionsPosY() + (index * lineHeight);
+    }
+
+    /**
+     / Sets {@code mouseInside} and {@code mouseOverIndex}.
+    */
+    public void mouseMoved(int mouseX, int mouseY) {
+
+        if (delegating) {
+            TPMenuItem item = getSelectedItem();
+            if (item instanceof TPMenu) {
+                ((TPMenu) item).mouseMoved(mouseX, mouseY);
+            }
+        }
+
+        // need to set mouseInside, whether delegating or not
+        if (mouseX >= posX &&
+            mouseY >= posY &&
+            mouseX <= posX + width &&
+            mouseY <= posY + height) {
+
+            mouseInside = true;
+
+            // if NOT delegating, need to check whether mouse is over any item
+            if (!delegating) {
+                int y = mouseY - optionsPosY();
+                mouseOverIndex = y / lineHeight;
+                if (mouseOverIndex >= getNumItems())
+                    mouseOverIndex = getNumItems() - 1;
+            }
+
+        } else {
+            // mouse pointer NOT inside menu
+            mouseInside = false;
+            mouseOverIndex = -1;
+        }
+    }
+
+    public int getMouseOverIndex() {
+        return mouseOverIndex;
+    }
+
+    /**
+     * If mouse is over an item, invoke it's action.
+     *
+     * If delegating, pass click on to selected item using recursion.
+     *
+     * If delegating, click on old menu to go back.
+     *
+     * @return True, if mouse pointer is inside menu.
+     */
+    public boolean mouseClicked() {
+
+        if (delegating) {
+            boolean ret = false;
+            TPMenuItem item = getSelectedItem();
+            if (item instanceof TPMenu) {
+                ret = ((TPMenu) item).mouseClicked();
+            }
+            if (ret) {
+                return true;
+            } else {
+                if (mouseInside) {
+                    delegating = false;
+                    return true;
+                }
+                return false;
+            }
+        } else {
+
+            if (mouseInside) {
+                if (mouseOverIndex >= 0 &&
+                    mouseOverIndex < getNumItems()) {
+                    selected = mouseOverIndex;
+                    action(Code.RET, -1);
+                }
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     public TPMenu(String title) {
         this(() -> title);
     }
@@ -29,7 +186,10 @@ public class TPMenu implements TPMenuItem {
     /**
      * Discards all menu-options.
      */
-    public void clear() { options.clear(); }
+    public void clear() {
+        options.clear();
+        colors.clear();
+    }
 
     @Override
     public String text() {
@@ -54,6 +214,10 @@ public class TPMenu implements TPMenuItem {
                     opt.update();
                     TPMenu m = (TPMenu) opt.get();
                     m.setParent(this);
+
+                    m.posX = posX + subMenuOffset;
+                    m.posY = posY + subMenuOffset;
+
                     m.runInitAction();
                 } else {
                     getSelectedOption().get().action(c, keyCode);
@@ -150,6 +314,8 @@ public class TPMenu implements TPMenuItem {
 
     public void add(TPMenuItem item) {
         options.add(new TPMenuOption(item));
+        colors.add(defaultColor);
+        recalculateDimensions();
     }
 
     /**
@@ -158,6 +324,8 @@ public class TPMenu implements TPMenuItem {
      */
     public void add(Supplier<TPMenuItem> itemSupplier) {
         options.add(new TPMenuOption(itemSupplier));
+        colors.add(defaultColor);
+        recalculateDimensions();
     }
 
     /**
@@ -169,6 +337,18 @@ public class TPMenu implements TPMenuItem {
 
     public TPMenuItem getItem(int index) {
         return options.get(index).get();
+    }
+
+    public String getMenuText(int index) {
+        TPMenuItem item = getItem(index);
+        if (item instanceof TPMenu)
+            return subMenuPrefix + item.text();
+        else
+            return item.text();
+    }
+
+    public Color getColor(int index) {
+        return colors.get(index);
     }
 
     public int getSelectedIndex() {
@@ -194,7 +374,7 @@ public class TPMenu implements TPMenuItem {
     /**
      * Facilitates dynamic menu items.
      */
-    private class TPMenuOption {
+    public static class TPMenuOption {
 
         private TPMenuItem item = null;
         private Supplier<TPMenuItem> itemSupplier;

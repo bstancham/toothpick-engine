@@ -263,43 +263,58 @@ public class Gfx {
     }
 
     public static void menu(Graphics g, TPMenu menu) {
-        menu(g, menu, 30, 30);
-    }
 
-    public static void menu(Graphics g, TPMenu menu, int posX, int posY) {
-        TextBox box = new TextBox();
-        if (menu.isHidden()) {
-            box.add("press 'h' to show menu");
-            box.paint(g);
-        } else {
-            box.add(menu.text());
-            box.add("");
-            for (int i = 0; i < menu.getNumItems(); i++) {
-                TPMenuItem item = menu.getItem(i);
-                String line = item.text();
-                if (item instanceof TPMenu)
-                    line = ">>> " + line;
-                box.add(line);
-            }
-            box.posX = posX;
-            box.posY = posY;
-            box.paint(g);
-            // mark selected item
-            int sel = menu.getSelectedIndex() + 2;
-            int x = 6 + box.posX;
-            int y = 5 + box.posY + box.padTop + (sel * box.lineHeight);
-            int w = box.textWidth;
-            int h = box.lineHeight;
-            g.setColor(Color.CYAN);
-            g.drawRect(x, y, w, h);
-            // sub-menu
-            if (menu.isDelegating()) {
-                TPMenuItem item = menu.getSelectedItem();
-                if (item instanceof TPMenu) {
-                    menu(g, (TPMenu) item, posX + 30, posY + 30);
-                }
+        // box
+        if (menu.bgColor != null) {
+            g.setColor(menu.bgColor);
+            g.fillRect(menu.posX, menu.posY, menu.width, menu.height);
+        }
+        if (menu.borderColor != null) {
+            g.setColor(menu.borderColor);
+            g.drawRect(menu.posX, menu.posY, menu.width, menu.height);
+        }
+
+        // mark mouse-over item
+        int mouseIndex = menu.getMouseOverIndex();
+        if (mouseIndex >= 0) {
+            int x = 6 + menu.posX;
+            int y = menu.posYForItem(mouseIndex);
+            int w = menu.textWidth;
+            int h = menu.lineHeight;
+            g.setColor(menu.mouseOverColor);
+            g.fillRect(x, y, w, h);
+        }
+
+        // text
+        int x = menu.posX + menu.padLeft;
+        int y = menu.posY + menu.padTop;
+        // title
+        g.setColor(menu.defaultColor);
+        g.drawString(menu.text(), x, y);
+        y += menu.lineHeight * 2;
+        // menu items
+        for (int i = 0; i < menu.getNumItems(); i++) {
+            g.setColor(menu.getColor(i));
+            g.drawString(menu.getMenuText(i), x, y);
+            y += menu.lineHeight;
+        }
+
+        // mark selected item
+        x = 6 + menu.posX;
+        y = menu.posYForItem(menu.getSelectedIndex());
+        int w = menu.textWidth;
+        int h = menu.lineHeight;
+        g.setColor(menu.borderColor);
+        g.drawRect(x, y, w, h);
+
+        // sub-menu
+        if (menu.isDelegating()) {
+            TPMenuItem item = menu.getSelectedItem();
+            if (item instanceof TPMenu) {
+                menu(g, (TPMenu) item);
             }
         }
+
     }
 
     public static class TextBox {

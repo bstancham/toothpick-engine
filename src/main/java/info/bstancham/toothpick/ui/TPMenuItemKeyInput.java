@@ -16,7 +16,12 @@ public class TPMenuItemKeyInput implements TPMenuItem {
 
     @Override
     public String text() {
-        return textSupplier.get();
+        try {
+            return textSupplier.get();
+        } catch (NullPointerException e) {
+            System.out.println("ERROR! null pointer in TPMenuItemKeyInput");
+        }
+        return "NULL";
     }
 
     @Override
